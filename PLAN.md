@@ -177,14 +177,17 @@ Output (PNG / SVG / native surface)
    - SVG output mode (plain SVG, patch original) - TODO
    - Backend selection flag - TODO
 
-### Phase 4: Documentation
+### Phase 4: Documentation - COMPLETE
 
 **Goal:** Complete project documentation.
 
-1. **README.md** - New project introduction
-2. **SPEC.md** - Technical specification
-3. **API docs** - Rust doc comments
-4. **Examples** - Usage in examples/
+1. **README.md** - DONE (new project introduction with all options)
+2. **SPEC.md** - DONE (technical specification)
+3. **API docs** - DONE (Rust doc comments on all public APIs)
+4. **Examples** - DONE (cli/examples/basic.rs)
+5. **CLAUDE.md** - DONE (updated for new structure)
+6. **DEPENDENCIES.md** - DONE (package justifications)
+7. **CHANGELOG.md** - DONE (initial entry)
 
 ### Phase 5: Python & WASM (Future)
 
