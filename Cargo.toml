@@ -5,8 +5,6 @@ members = [
     "points_on_curve",
     "svg_path_ops",
     "rough_tiny_skia",
-    "rough_iced",
     "rough_vello",
-    "rough_plotters_svg",
 ]
 resolver = "2"

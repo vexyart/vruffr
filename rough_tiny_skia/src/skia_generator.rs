@@ -29,7 +29,8 @@ pub struct SkiaGenerator {
 #[derive(Clone)]
 pub struct SkiaOpset<F: Float + Trig> {
     pub op_set_type: OpSetType,
-    pub ops: Path,
+    /// The tiny-skia path. May be None if the path was empty or degenerate.
+    pub ops: Option<Path>,
     pub size: Option<Point2D<F>>,
     pub path: Option<String>,
 }
@@ -78,6 +79,12 @@ impl SkiaGenerator {
 impl<F: Float + Trig> SkiaDrawable<F> {
     pub fn draw(&self, ctx: &mut PixmapMut) {
         for set in self.sets.iter() {
+            // Skip empty or degenerate paths
+            let path = match &set.ops {
+                Some(p) => p,
+                None => continue,
+            };
+
             match set.op_set_type {
                 OpSetType::Path => {
                     if self.options.stroke_line_dash.is_some() {
@@ -119,7 +126,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                         );
                         paint.anti_alias = true;
 
-                        ctx.stroke_path(&set.ops, &paint, &stroke, Transform::identity(), None);
+                        ctx.stroke_path(path, &paint, &stroke, Transform::identity(), None);
                     } else {
                         let mut stroke = Stroke::default();
                         stroke.width = self.options.stroke_width.unwrap_or(1.0);
@@ -140,7 +147,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                         );
                         paint.anti_alias = true;
 
-                        ctx.stroke_path(&set.ops, &paint, &stroke, Transform::identity(), None);
+                        ctx.stroke_path(path, &paint, &stroke, Transform::identity(), None);
                     }
                 }
                 OpSetType::FillPath => {
@@ -162,7 +169,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                     match self.shape.as_str() {
                         "curve" | "polygon" | "path" => {
                             ctx.fill_path(
-                                &set.ops,
+                                path,
                                 &paint,
                                 FillRule::EvenOdd,
                                 Transform::identity(),
@@ -171,7 +178,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                         }
                         _ => {
                             ctx.fill_path(
-                                &set.ops,
+                                path,
                                 &paint,
                                 FillRule::Winding,
                                 Transform::identity(),
@@ -181,11 +188,6 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                     }
                 }
                 OpSetType::FillSketch => {
-                    let mut fweight = self.options.fill_weight.unwrap_or_default();
-                    if fweight < 0.0 {
-                        fweight = self.options.stroke_width.unwrap_or(1.0) / 2.0;
-                    }
-
                     if self.options.fill_line_dash.is_some() {
                         let mut stroke = Stroke::default();
                         stroke.width = self.options.fill_weight.unwrap_or(1.0);
@@ -222,7 +224,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                             fill_color_components.3,
                         );
                         paint.anti_alias = true;
-                        ctx.stroke_path(&set.ops, &paint, &stroke, Transform::identity(), None);
+                        ctx.stroke_path(path, &paint, &stroke, Transform::identity(), None);
                     } else {
                         let mut stroke = Stroke::default();
                         stroke.width = self.options.fill_weight.unwrap_or(1.0);
@@ -246,7 +248,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                             fill_color_components.3,
                         );
                         paint.anti_alias = true;
-                        ctx.stroke_path(&set.ops, &paint, &stroke, Transform::identity(), None);
+                        ctx.stroke_path(path, &paint, &stroke, Transform::identity(), None);
                     }
                 }
             }
@@ -254,31 +256,51 @@ impl<F: Float + Trig> SkiaDrawable<F> {
     }
 }
 
-fn opset_to_shape<F: Trig + Float + FromPrimitive>(op_set: &OpSet<F>) -> Path {
+/// Convert an OpSet to a tiny-skia Path.
+///
+/// Returns `None` if the path is empty, degenerate, or contains only MoveTo operations.
+fn opset_to_shape<F: Trig + Float + FromPrimitive>(op_set: &OpSet<F>) -> Option<Path> {
+    if op_set.ops.is_empty() {
+        return None;
+    }
+
     let mut path: PathBuilder = PathBuilder::new();
+    let mut has_drawing_op = false;
+
     for item in op_set.ops.iter() {
         match item.op {
-            OpType::Move => path.move_to(
-                item.data[0].to_f32().unwrap(),
-                item.data[1].to_f32().unwrap(),
-            ),
-            OpType::BCurveTo => path.cubic_to(
-                item.data[0].to_f32().unwrap(),
-                item.data[1].to_f32().unwrap(),
-                item.data[2].to_f32().unwrap(),
-                item.data[3].to_f32().unwrap(),
-                item.data[4].to_f32().unwrap(),
-                item.data[5].to_f32().unwrap(),
-            ),
+            OpType::Move => {
+                if let (Some(x), Some(y)) = (item.data[0].to_f32(), item.data[1].to_f32()) {
+                    path.move_to(x, y);
+                }
+            }
+            OpType::BCurveTo => {
+                if let (Some(x1), Some(y1), Some(x2), Some(y2), Some(x3), Some(y3)) = (
+                    item.data[0].to_f32(),
+                    item.data[1].to_f32(),
+                    item.data[2].to_f32(),
+                    item.data[3].to_f32(),
+                    item.data[4].to_f32(),
+                    item.data[5].to_f32(),
+                ) {
+                    path.cubic_to(x1, y1, x2, y2, x3, y3);
+                    has_drawing_op = true;
+                }
+            }
             OpType::LineTo => {
-                path.line_to(
-                    item.data[0].to_f32().unwrap(),
-                    item.data[1].to_f32().unwrap(),
-                );
+                if let (Some(x), Some(y)) = (item.data[0].to_f32(), item.data[1].to_f32()) {
+                    path.line_to(x, y);
+                    has_drawing_op = true;
+                }
             }
         }
     }
-    path.finish().unwrap()
+
+    if has_drawing_op {
+        path.finish()
+    } else {
+        None
+    }
 }
 
 impl SkiaGenerator {
@@ -413,5 +435,135 @@ fn convert_line_join_from_roughr_to_piet(
         Some(roughr::core::LineJoin::Round) => LineJoin::Round,
         Some(roughr::core::LineJoin::Bevel) => LineJoin::Bevel,
         None => LineJoin::Miter,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use roughr::core::{Op, OpSet, OpSetType, OpType, OptionsBuilder};
+
+    /// Test that empty OpSet returns None instead of panicking
+    #[test]
+    fn test_opset_to_shape_empty() {
+        let empty_opset: OpSet<f64> = OpSet {
+            op_set_type: OpSetType::Path,
+            ops: vec![],
+            size: None,
+            path: None,
+        };
+        let result = opset_to_shape(&empty_opset);
+        assert!(result.is_none());
+    }
+
+    /// Test that OpSet with only MoveTo returns None
+    #[test]
+    fn test_opset_to_shape_only_moveto() {
+        let moveto_only: OpSet<f64> = OpSet {
+            op_set_type: OpSetType::Path,
+            ops: vec![Op {
+                op: OpType::Move,
+                data: vec![10.0, 20.0],
+            }],
+            size: None,
+            path: None,
+        };
+        let result = opset_to_shape(&moveto_only);
+        assert!(result.is_none());
+    }
+
+    /// Test that OpSet with actual drawing ops returns Some(Path)
+    #[test]
+    fn test_opset_to_shape_with_line() {
+        let opset_with_line: OpSet<f64> = OpSet {
+            op_set_type: OpSetType::Path,
+            ops: vec![
+                Op {
+                    op: OpType::Move,
+                    data: vec![0.0, 0.0],
+                },
+                Op {
+                    op: OpType::LineTo,
+                    data: vec![100.0, 100.0],
+                },
+            ],
+            size: None,
+            path: None,
+        };
+        let result = opset_to_shape(&opset_with_line);
+        assert!(result.is_some());
+    }
+
+    /// Test SkiaGenerator can create a line without panicking
+    #[test]
+    fn test_skia_generator_line() {
+        let options = OptionsBuilder::default().build().unwrap();
+        let gen = SkiaGenerator::new(options);
+        let drawable: SkiaDrawable<f64> = gen.line(0.0, 0.0, 100.0, 100.0);
+        assert!(!drawable.sets.is_empty());
+    }
+
+    /// Test SkiaGenerator can create a rectangle without panicking
+    #[test]
+    fn test_skia_generator_rectangle() {
+        let options = OptionsBuilder::default().build().unwrap();
+        let gen = SkiaGenerator::new(options);
+        let drawable: SkiaDrawable<f64> = gen.rectangle(10.0, 10.0, 80.0, 60.0);
+        assert!(!drawable.sets.is_empty());
+    }
+
+    /// Test SkiaGenerator can create a circle without panicking
+    #[test]
+    fn test_skia_generator_circle() {
+        let options = OptionsBuilder::default().build().unwrap();
+        let gen = SkiaGenerator::new(options);
+        let drawable: SkiaDrawable<f64> = gen.circle(50.0, 50.0, 40.0);
+        assert!(!drawable.sets.is_empty());
+    }
+
+    /// Test draw() handles empty paths gracefully
+    #[test]
+    fn test_drawable_draw_with_empty_path() {
+        let options = OptionsBuilder::default().build().unwrap();
+        let drawable: SkiaDrawable<f64> = SkiaDrawable {
+            shape: "test".to_string(),
+            options,
+            sets: vec![SkiaOpset {
+                op_set_type: OpSetType::Path,
+                ops: None, // Empty path
+                size: None,
+                path: None,
+            }],
+        };
+
+        let mut pixmap = tiny_skia::Pixmap::new(100, 100).unwrap();
+        // Should not panic
+        drawable.draw(&mut pixmap.as_mut());
+    }
+
+    /// Test rendering a path string that might cause issues
+    #[test]
+    fn test_skia_generator_path() {
+        let options = OptionsBuilder::default().build().unwrap();
+        let gen = SkiaGenerator::new(options);
+        let drawable: SkiaDrawable<f64> =
+            gen.path("M 10 10 L 90 10 L 90 90 L 10 90 Z".to_string());
+        assert!(!drawable.sets.is_empty());
+    }
+
+    /// Test that the generator works with hachure fills
+    #[test]
+    fn test_skia_generator_with_fill() {
+        use palette::Srgba;
+        use roughr::core::FillStyle;
+
+        let options = OptionsBuilder::default()
+            .fill(Srgba::new(0.0, 0.0, 1.0, 1.0))
+            .fill_style(FillStyle::Hachure)
+            .build()
+            .unwrap();
+        let gen = SkiaGenerator::new(options);
+        let drawable: SkiaDrawable<f64> = gen.rectangle(10.0, 10.0, 80.0, 60.0);
+        assert!(!drawable.sets.is_empty());
     }
 }
