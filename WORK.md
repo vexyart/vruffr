@@ -43,9 +43,9 @@ cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
 
 ### Next Steps
 
-1. Clean up extra/src/ after CLI migration
-2. Update .gitignore for new structure
-3. Add Rust doc comments to public APIs
+1. Add Rust doc comments to public APIs (Phase 4)
+2. Tag initial vruffr release (Cleanup & Polish)
+3. Consider Phase 2 rename (optional - large refactor)
 
 ---
 

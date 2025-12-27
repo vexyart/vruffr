@@ -175,15 +175,20 @@ impl Default for SketchOptions {
 /// Warnings about unsupported SVG elements
 #[derive(Debug, Default)]
 pub struct RenderWarnings {
+    /// SVG contains text that couldn't be rendered (no fonts available)
     pub has_text: bool,
+    /// SVG contains embedded images (not supported in sketch mode)
     pub has_images: bool,
 }
 
 /// Information about a validated SVG
 #[derive(Debug)]
 pub struct SvgInfo {
+    /// Width of the SVG in pixels
     pub width: u32,
+    /// Height of the SVG in pixels
     pub height: u32,
+    /// Warnings about unsupported elements
     pub warnings: RenderWarnings,
 }
 
