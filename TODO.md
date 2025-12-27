@@ -72,7 +72,7 @@
 - [ ] Add backend selection CLI flag
 - [ ] Add SVG output format flag
 - [ ] Add SVGpatch output mode
-- [ ] Verify all test-data renders without panics
+- [x] Verify all test-data renders without panics
 - [ ] Adapt extra/test-data.sh for new structure
 - [ ] Adapt extra/build.sh for new structure
 

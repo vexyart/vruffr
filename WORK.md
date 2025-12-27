@@ -25,13 +25,18 @@ cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
 # roughr: 23 passed
 # rough_tiny_skia: 9 passed
 # vruffr-cli: 62 passed
+
+# All test-data SVGs render without panics:
+./target/release/vruffr extra/test-data/*.svg
+# sag-default.svg, sag-hachure.svg, sag-strokes.svg, sag.svg, tigr.svg, tigr1.svg
+# All rendered successfully with both default and --adaptive-strength 1.0
 ```
 
 ### Next Steps
 
-1. Move profile settings from cli/Cargo.toml to workspace root
-2. Test CLI with sample SVGs
-3. Continue Phase 3 remaining tasks
+1. Test with mixed-size SVG elements for adaptive roughness
+2. Add backend selection CLI flag (Phase 3)
+3. Add SVG output format flag (Phase 3)
 
 ---
 
