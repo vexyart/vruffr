@@ -35,14 +35,15 @@
 - [x] Add unit tests for deduplication with various cases
 - [ ] Test with SVGs containing known duplicate paths
 
-### Adaptive Roughness (Core Implementation DONE)
+### Adaptive Roughness - COMPLETE
 
 - [x] Add adaptive_strength field to Options (roughr/src/core.rs)
 - [x] Add reference_size field to Options (roughr/src/core.rs)
 - [x] Implement characteristic_size calculation (sqrt of bbox area)
 - [x] Implement adaptive scaling function (size_ratio ^ power)
-- [ ] Integrate adaptive scaling into CLI/skesvg
-- [ ] Add --adaptive-strength CLI flag
+- [x] Integrate adaptive scaling into CLI (cli/src/lib.rs)
+- [x] Add --adaptive-strength CLI flag
+- [x] Add --reference-size CLI flag
 - [x] Add unit tests for adaptive scaling function (7 tests)
 - [ ] Test with mixed-size SVG elements
 - [ ] Document adaptive roughness in README
@@ -61,11 +62,12 @@
 - [ ] Update all use statements across crates
 - [ ] Run cargo test --workspace to verify rename
 
-## Phase 3: Integrate skesvg
+## Phase 3: Integrate CLI - IN PROGRESS
 
-- [ ] Move extra/src/ to cli/
-- [ ] Create cli/Cargo.toml with path dependencies
-- [ ] Switch skesvg from crates.io to workspace deps
+- [x] Move extra/src/ to cli/
+- [x] Create cli/Cargo.toml with path dependencies
+- [x] Switch from crates.io to workspace path deps
+- [x] Rename CLI binary to vruffr
 - [ ] Remove catch_unwind panic handlers from cli
 - [ ] Add backend selection CLI flag
 - [ ] Add SVG output format flag

@@ -48,16 +48,52 @@ cargo test -p rough_tiny_skia --lib --tests
 # 9 passed
 ```
 
+6. **Moved CLI to workspace** (Phase 3)
+   - Created `cli/` directory in workspace
+   - Moved extra/src/ to cli/src/
+   - Created cli/Cargo.toml with path dependencies to roughr and rough_tiny_skia
+   - Renamed library from skesvg to vruffr
+   - Renamed binary from skesvg to vruffr
+   - Added cli to workspace members in root Cargo.toml
+
+7. **Integrated adaptive roughness into CLI**
+   - Added `--adaptive-strength` flag (default: 0.0, disabled)
+   - Added `--reference-size` flag (default: 100.0)
+   - Added `adaptive_strength` and `reference_size` fields to SketchOptions
+   - Implemented `compute_effective_roughness()` in cli/src/lib.rs
+   - Applied adaptive roughness in `render_path()` and `collect_path_elements()`
+   - Updated opset_to_elements() to handle Option<Path> from rough_tiny_skia fix
+
+### Test Summary
+
+```
+cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
+# roughr: 23 passed (10 warnings)
+# rough_tiny_skia: 9 passed
+# vruffr-cli lib: 58 passed
+# vruffr-cli bin: 4 passed
+```
+
 ### Next Steps
 
-1. Integrate adaptive roughness into CLI (skesvg)
-2. Integrate dedup filter into CLI
-3. Add CLI flags for new features
+1. Integrate dedup filter into CLI (add --deduplicate flag)
+2. Remove catch_unwind panic handlers from CLI (now unnecessary)
+3. Create CHANGELOG.md
 4. Start Phase 2: Rename & Restructure
 
 ---
 
-## Files Modified
+## Files Modified This Session
+
+- `cli/` - NEW: CLI crate moved from extra/
+- `cli/Cargo.toml` - NEW: with path dependencies
+- `cli/src/main.rs` - Renamed imports, added adaptive roughness CLI args
+- `cli/src/lib.rs` - Added adaptive roughness integration, fixed Option<Path> handling
+- `Cargo.toml` - Added cli to workspace members
+- `TODO.md` - Updated with completed tasks
+- `WORK.md` - Updated work log
+
+## Files Modified Previously
 
 - `roughr/src/core.rs` - Added adaptive_strength, reference_size, effective_roughness(), characteristic_size(), 7 tests
 - `roughr/src/dedup.rs` - NEW: Path deduplication module with 12 tests
@@ -65,5 +101,4 @@ cargo test -p rough_tiny_skia --lib --tests
 - `rough_tiny_skia/src/skia_generator.rs` - Fixed panic, added 9 tests
 - `Cargo.toml` - Removed rough_iced and rough_plotters_svg
 - `PLAN.md` - Updated with Phase 1 complete, Phase 1.5 details
-- `TODO.md` - Marked completed tasks
 - `SPEC.md` - Created with technical specification
