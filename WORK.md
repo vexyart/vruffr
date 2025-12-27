@@ -6,7 +6,7 @@
 
 - **Phase 1: Foundation Cleanup** - COMPLETE
 - **Phase 1.5: Preprocessing Features** - COMPLETE
-- **Phase 3: CLI Integration** - IN PROGRESS (6/11 tasks done)
+- **Phase 3: CLI Integration** - IN PROGRESS (8/11 tasks done)
 - **Phase 4: Documentation** - IN PROGRESS (7/8 tasks done)
 
 ### Key Accomplishments
@@ -23,6 +23,9 @@
 10. Updated CLAUDE.md for new structure
 11. Created DEPENDENCIES.md
 12. Added working example in cli/examples/
+13. Cleaned up extra/ (removed migrated skesvg code)
+14. Updated .gitignore for workspace structure
+15. Adapted extra scripts for vruffr
 
 ### Test Status
 
