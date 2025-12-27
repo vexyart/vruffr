@@ -1,33 +1,108 @@
-# rough-rs
+# vruffr
 
-![rustroughlogo](https://github.com/orhanbalci/rough-rs/blob/main/roughr/assets/rust.png?raw=true)
+Transform SVG graphics into hand-drawn sketch-style output with wobbly lines, crosshatch fills, and artistic imperfection.
 
-![roughtext](https://github.com/orhanbalci/rough-rs/blob/main/roughr/assets/rough_text.png?raw=true)
+## Installation
 
-This repository contains a set of crates which in result resembles functionality in [Rough.js](https://github.com/rough-stuff/rough)
+```bash
+cargo install --path cli
+```
 
-- [points_on_curve](https://github.com/orhanbalci/rough-rs/tree/main/points_on_curve) rustlang port of [points-on-curve](https://github.com/pshihn/bezier-points) npm package written by
-[@pshihn](https://github.com/pshihn).
+Or build from source:
 
-- [svg_path_ops](https://github.com/orhanbalci/rough-rs/tree/main/svg_path_ops) originates from [path-data-parser](https://github.com/pshihn/path-data-parser) but not limited to this
-packages functionality
+```bash
+cargo build --release
+./target/release/vruffr input.svg -o output.png
+```
 
-- [roughr](https://github.com/orhanbalci/rough-rs/tree/main/roughr) core implementation of [Rough.js](https://github.com/rough-stuff/rough) drawing primitives
+## CLI Usage
 
-- [rough_piet](https://github.com/orhanbalci/rough-rs/tree/main/rough_piet) adapter between [roughr](https://github.com/orhanbalci/rough-rs/tree/main/roughr) and [piet](https://github.com/linebender/piet)
+```bash
+# Basic usage
+vruffr input.svg -o output.png
 
-- [rough_plotters_svg](https://github.com/orhanbalci/rough-rs/tree/main/rough_plotters_svg) adapter between [roughr](https://github.com/orhanbalci/rough-rs/tree/main/roughr) and [plotters-svg](https://github.com/plotters-rs/plotters)
+# Adjust roughness (0-10, default: 1.0)
+vruffr input.svg -o output.png --roughness 2.5
 
-- [rough_tiny_skia](https://github.com/orhanbalci/rough-rs/tree/main/rough_tiny_skia) adapter between [roughr](https://github.com/orhanbalci/rough-rs/tree/main/roughr) and [tiny-skia](https://github.com/RazrFalcon/tiny-skia)
+# Change fill style
+vruffr input.svg -o output.png --fill-style hachure
 
-- [rough_iced](https://github.com/orhanbalci/rough-rs/tree/main/rough_iced) adapter between [roughr](https://github.com/orhanbalci/rough-rs/tree/main/roughr) and [iced](https://github.com/iced-rs/iced)
+# Scale output
+vruffr input.svg -o output.png --scale 2.0
 
-- [rough_vello](https://github.com/orhanbalci/rough-rs/tree/main/rough_vello) adapter between [roughr](https://github.com/orhanbalci/rough-rs/tree/main/roughr) and [vello](https://github.com/linebender/vello)
+# Adaptive roughness (size-dependent)
+vruffr input.svg -o output.png --adaptive-strength 1.0
+```
 
-## 📝 License
+## Adaptive Roughness
 
-Licensed under MIT License ([LICENSE](LICENSE)).
+When `--adaptive-strength` is set (0.0-2.0), roughness automatically scales based on element size:
 
-### 🚧 Contributions
+- **Small elements** get reduced roughness to stay legible
+- **Large elements** can have increased roughness for more sketch effect
 
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in this project by you, as defined in the MIT license, shall be licensed as above, without any additional terms or conditions.
+The formula: `effective_roughness = base_roughness * (element_size / reference_size)^(strength * 0.5)`
+
+```bash
+# Normal scaling (recommended starting point)
+vruffr input.svg -o output.png --adaptive-strength 1.0
+
+# Aggressive scaling (more size variation)
+vruffr input.svg -o output.png --adaptive-strength 1.5
+
+# Custom reference size (default: 100px)
+vruffr input.svg -o output.png --adaptive-strength 1.0 --reference-size 50
+```
+
+## All Options
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--roughness` | 1.0 | Line perturbation (0-10) |
+| `--bowing` | 1.0 | Line curvature (0-10) |
+| `--seed` | 42 | Random seed for reproducibility |
+| `--fill-style` | crosshatch | Fill style: hachure, crosshatch |
+| `--hachure-angle` | -41 | Angle of hachure lines (degrees) |
+| `--hachure-gap` | 4.0 | Gap between hachure lines |
+| `--fill-weight` | 0.5 | Thickness of fill lines |
+| `--stroke-width` | - | Override stroke width |
+| `--background` | white | Background color (name or #RRGGBB) |
+| `--no-fill` | false | Skip fill rendering |
+| `--no-stroke` | false | Skip stroke rendering |
+| `--scale` | 1.0 | Output scale factor |
+| `--adaptive-strength` | 0.0 | Size-dependent roughness (0=off, 1=normal, 2=aggressive) |
+| `--reference-size` | 100 | Reference element size for adaptive scaling |
+| `--deduplicate` | false | Remove duplicate stacked paths |
+| `--dedup-epsilon` | 0.1 | Tolerance for path deduplication |
+
+## Library Usage
+
+```rust
+use vruffr::{render_sketch, SketchOptions};
+
+let svg_data = std::fs::read_to_string("input.svg")?;
+let options = SketchOptions {
+    roughness: 1.5,
+    adaptive_strength: 1.0,
+    ..Default::default()
+};
+let pixmap = render_sketch(&svg_data, &options)?;
+pixmap.save_png("output.png")?;
+```
+
+## Crates
+
+| Crate | Description |
+|-------|-------------|
+| `roughr` | Core sketch primitives (Rough.js port) |
+| `rough_tiny_skia` | tiny-skia rendering backend |
+| `rough_piet` | piet rendering backend |
+| `rough_vello` | vello GPU rendering backend |
+| `points_on_curve` | Bezier curve utilities |
+| `svg_path_ops` | SVG path manipulation |
+
+## License
+
+MIT License - see [LICENSE](LICENSE).
+
+Based on [rough-rs](https://github.com/orhanbalci/rough-rs) by [@orhanbalci](https://github.com/orhanbalci).

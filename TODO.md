@@ -46,7 +46,7 @@
 - [x] Add --reference-size CLI flag
 - [x] Add unit tests for adaptive scaling function (7 tests)
 - [x] Test with mixed-size SVG elements
-- [ ] Document adaptive roughness in README
+- [x] Document adaptive roughness in README
 
 ## Phase 2: Rename & Restructure
 
@@ -78,10 +78,10 @@
 
 ## Phase 4: Documentation
 
-- [ ] Rewrite README.md for vruffr project
-- [ ] Add installation instructions
-- [ ] Add CLI usage examples
-- [ ] Add library usage examples
+- [x] Rewrite README.md for vruffr project
+- [x] Add installation instructions
+- [x] Add CLI usage examples
+- [x] Add library usage examples
 - [x] Write SPEC.md with technical specification
 - [ ] Add Rust doc comments to all public APIs
 - [ ] Create examples/ directory with working examples
