@@ -1,0 +1,49 @@
+# Changelog
+
+All notable changes to vruffr will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+
+- **Adaptive roughness scaling**: New `--adaptive-strength` and `--reference-size` CLI flags
+  - Automatically scales roughness based on element size
+  - Smaller elements get proportionally less roughness to prevent distortion
+  - Formula: `effective = base * (size/reference)^(strength*0.5)`
+  - Default: disabled (strength=0.0)
+
+- **Path deduplication module** (`roughr::dedup`)
+  - `PathSignature` struct for geometric identity (bbox, length, vertex count, command hash, centroid)
+  - `deduplicate_paths()` function with bucket-based matching
+  - Epsilon-tolerant path equivalence testing
+  - Handles overlapping stroke/fill paths from SVG editors
+
+- **CLI as workspace member** (`cli/`)
+  - Renamed from skesvg to vruffr
+  - Uses path dependencies to roughr and rough_tiny_skia
+  - Binary: `vruffr`
+
+### Fixed
+
+- **rough_tiny_skia panic on degenerate paths** (line 281)
+  - `opset_to_shape()` now returns `Option<Path>` instead of panicking
+  - `SkiaOpset.ops` field changed to `Option<Path>`
+  - `draw()` method gracefully skips None paths
+  - Added 9 comprehensive tests for edge cases
+
+### Removed
+
+- `rough_iced` backend (unused)
+- `rough_plotters_svg` backend (unused)
+
+### Changed
+
+- Workspace now includes cli crate
+- roughr Options struct has new fields: `adaptive_strength`, `reference_size`
+
+## [0.12.0] - Previous Release
+
+Initial fork from rough-rs with roughr, rough_piet, rough_tiny_skia, rough_vello backends.
