@@ -29,7 +29,3 @@ path = "src/main.rs"
 [lib]
 name = "vruffr"
 path = "src/lib.rs"
-
-[profile.release]
-lto = true
-codegen-units = 1

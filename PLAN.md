@@ -118,24 +118,26 @@ Output (PNG / SVG / native surface)
    - `cargo test --lib --tests` passes
    - Example tolerance.rs needs Cairo (platform-specific)
 
-### Phase 1.5: Preprocessing Features - NEW
+### Phase 1.5: Preprocessing Features - COMPLETE
 
 **Goal:** Add path preprocessing for cleaner, more controlled output.
 
-1. **Duplicate Path Filtering**
+1. **Duplicate Path Filtering** - DONE
    - Detect paths with identical geometry stacked at same position
    - Compute path signature (bounding box, length, vertex count, command hash)
    - Merge duplicates: same roughened geometry, different strokes/fills
-   - Add `--deduplicate` CLI flag (default: true)
-   - Add `--dedup-epsilon` tolerance flag (default: 0.1px)
+   - Added `--deduplicate` CLI flag (default: false)
+   - Added `--dedup-epsilon` tolerance flag (default: 0.1px)
+   - Core dedup module in roughr/src/dedup.rs with 12 tests
 
-2. **Adaptive Roughness (Size-Dependent)**
+2. **Adaptive Roughness (Size-Dependent)** - DONE
    - Calculate characteristic size for each element (sqrt of bbox area)
    - Scale roughness based on element size vs reference size (100px)
    - Small elements get reduced roughness (stay legible)
    - Large elements can have increased roughness
-   - Add `--adaptive-strength` CLI flag (0.0-2.0, default: 0.0 disabled)
-   - See SPEC.md for detailed algorithm
+   - Added `--adaptive-strength` CLI flag (0.0-2.0, default: 0.0 disabled)
+   - Added `--reference-size` CLI flag (default: 100px)
+   - 7 unit tests in roughr/src/core.rs
 
 ### Phase 2: Rename & Restructure
 
@@ -157,22 +159,23 @@ Output (PNG / SVG / native surface)
    - `use` statements
    - Documentation
 
-### Phase 3: Integrate skesvg
+### Phase 3: Integrate CLI - IN PROGRESS
 
-**Goal:** Make skesvg the main CLI using local workspace crates.
+**Goal:** Make vruffr the main CLI using local workspace crates.
 
-1. **Move skesvg to cli/**
-   - Create cli/Cargo.toml
-   - Reference workspace crates via path deps
+1. **Move skesvg to cli/** - DONE
+   - Created cli/Cargo.toml with path dependencies
+   - Renamed to vruffr (library and binary)
+   - Uses workspace path deps for roughr and rough_tiny_skia
 
-2. **Remove catch_unwind workarounds**
-   - Now that panics are fixed, remove panic handlers
-   - Use proper error handling
+2. **Remove catch_unwind workarounds** - DONE
+   - Panic handlers removed from render_path() and collect_path_elements()
+   - Clean code now that Option<Path> handles degenerate paths
 
-3. **Expand CLI features**
-   - All SketchOptions exposed as flags
-   - SVG output mode (plain SVG, patch original)
-   - Backend selection flag
+3. **Expand CLI features** - PARTIAL
+   - All SketchOptions exposed as flags (DONE)
+   - SVG output mode (plain SVG, patch original) - TODO
+   - Backend selection flag - TODO
 
 ### Phase 4: Documentation
 
