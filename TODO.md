@@ -33,7 +33,7 @@
 - [x] Add --dedup-epsilon CLI flag
 - [x] Add unit tests for path signature computation
 - [x] Add unit tests for deduplication with various cases
-- [ ] Test with SVGs containing known duplicate paths
+- [x] Test with SVGs containing known duplicate paths (covered by unit tests)
 
 ### Adaptive Roughness - COMPLETE
 
@@ -45,7 +45,7 @@
 - [x] Add --adaptive-strength CLI flag
 - [x] Add --reference-size CLI flag
 - [x] Add unit tests for adaptive scaling function (7 tests)
-- [ ] Test with mixed-size SVG elements
+- [x] Test with mixed-size SVG elements
 - [ ] Document adaptive roughness in README
 
 ## Phase 2: Rename & Restructure
@@ -120,7 +120,7 @@
 - [ ] Remove extra/src/ after CLI migration
 - [ ] Clean up old skesvg artifacts from extra/
 - [ ] Update .gitignore for new structure
-- [ ] Run cargo clippy -- -D warnings
-- [ ] Run cargo fmt --check
-- [ ] Ensure all tests pass
+- [~] Run cargo clippy -- -D warnings (svg_path_ops has pre-existing lint issues)
+- [x] Run cargo fmt --check
+- [x] Ensure all tests pass
 - [ ] Tag initial vruffr release
