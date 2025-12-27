@@ -117,9 +117,9 @@
 
 ## Cleanup & Polish
 
-- [ ] Remove extra/src/ after CLI migration
-- [ ] Clean up old skesvg artifacts from extra/
-- [ ] Update .gitignore for new structure
+- [x] Remove extra/src/ after CLI migration
+- [x] Clean up old skesvg artifacts from extra/
+- [x] Update .gitignore for new structure
 - [~] Run cargo clippy -- -D warnings (svg_path_ops has pre-existing lint issues)
 - [x] Run cargo fmt --check
 - [x] Ensure all tests pass

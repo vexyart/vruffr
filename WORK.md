@@ -40,8 +40,8 @@ cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
 
 ### Next Steps
 
-1. Update CLAUDE.md for new project structure
-2. Add examples/ directory with working examples
+1. Clean up extra/src/ after CLI migration
+2. Update .gitignore for new structure
 3. Add Rust doc comments to public APIs
 
 ---
