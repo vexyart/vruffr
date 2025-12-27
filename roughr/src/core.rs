@@ -131,6 +131,14 @@ pub struct Options {
     pub fixed_decimal_place_digits: Option<f32>,
     #[builder(default = "None")]
     pub randomizer: Option<StdRng>,
+    /// Adaptive roughness strength (0.0 = disabled, 1.0 = normal, 2.0 = aggressive).
+    /// When enabled, roughness is scaled based on element size relative to reference_size.
+    #[builder(default = "Some(0.0)")]
+    pub adaptive_strength: Option<f32>,
+    /// Reference element size in pixels for adaptive roughness scaling.
+    /// Elements of this size use the base roughness value.
+    #[builder(default = "Some(100.0)")]
+    pub reference_size: Option<f32>,
 }
 
 impl Default for Options {
@@ -165,7 +173,42 @@ impl Default for Options {
             fill_line_dash_offset: None,
             fixed_decimal_place_digits: None,
             randomizer: None,
+            adaptive_strength: Some(0.0),
+            reference_size: Some(100.0),
         }
+    }
+}
+
+impl Options {
+    /// Calculate the effective roughness for an element of the given size.
+    /// If adaptive_strength is 0 (disabled), returns the base roughness unchanged.
+    /// Otherwise, scales roughness based on element size relative to reference_size.
+    ///
+    /// Formula: effective = base * (size / reference_size) ^ (strength * 0.5)
+    /// - Small elements get reduced roughness (stay legible)
+    /// - Large elements can get increased roughness
+    /// - Scale is clamped to [0.2, 2.0] range
+    pub fn effective_roughness(&self, element_size: f32) -> f32 {
+        let base_roughness = self.roughness.unwrap_or(1.0);
+        let adaptive_strength = self.adaptive_strength.unwrap_or(0.0);
+
+        if adaptive_strength <= 0.0 || element_size <= 0.0 {
+            return base_roughness;
+        }
+
+        let reference_size = self.reference_size.unwrap_or(100.0).max(1.0);
+        let size_ratio = element_size / reference_size;
+        let raw_scale = size_ratio.powf(adaptive_strength * 0.5);
+
+        // Clamp scale to reasonable range
+        let scale = raw_scale.clamp(0.2, 2.0);
+        base_roughness * scale
+    }
+
+    /// Calculate characteristic size from bounding box dimensions.
+    /// Uses geometric mean (sqrt of area) for balanced scaling.
+    pub fn characteristic_size(width: f32, height: f32) -> f32 {
+        (width * height).sqrt()
     }
 }
 
@@ -244,4 +287,101 @@ pub fn _c<U: Float + FromPrimitive>(inp: f32) -> U {
 
 pub fn _cc<U: Float + FromPrimitive>(inp: f64) -> U {
     U::from(inp).expect("can not parse from f64")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_effective_roughness_disabled() {
+        let opts = Options {
+            roughness: Some(1.5),
+            adaptive_strength: Some(0.0), // disabled
+            ..Default::default()
+        };
+        // When disabled, any element size returns base roughness
+        assert!((opts.effective_roughness(10.0) - 1.5).abs() < 0.001);
+        assert!((opts.effective_roughness(100.0) - 1.5).abs() < 0.001);
+        assert!((opts.effective_roughness(500.0) - 1.5).abs() < 0.001);
+    }
+
+    #[test]
+    fn test_effective_roughness_reference_size() {
+        let opts = Options {
+            roughness: Some(1.0),
+            adaptive_strength: Some(1.0),
+            reference_size: Some(100.0),
+            ..Default::default()
+        };
+        // Element at reference size should have scale ~1.0
+        let eff = opts.effective_roughness(100.0);
+        assert!((eff - 1.0).abs() < 0.001, "Expected 1.0, got {}", eff);
+    }
+
+    #[test]
+    fn test_effective_roughness_small_element() {
+        let opts = Options {
+            roughness: Some(1.0),
+            adaptive_strength: Some(1.0),
+            reference_size: Some(100.0),
+            ..Default::default()
+        };
+        // 10px element: scale = (10/100)^0.5 = 0.316
+        let eff = opts.effective_roughness(10.0);
+        assert!(eff < 1.0, "Small element should have reduced roughness, got {}", eff);
+        assert!(eff > 0.2, "Should not go below min scale, got {}", eff);
+    }
+
+    #[test]
+    fn test_effective_roughness_large_element() {
+        let opts = Options {
+            roughness: Some(1.0),
+            adaptive_strength: Some(1.0),
+            reference_size: Some(100.0),
+            ..Default::default()
+        };
+        // 400px element: scale = (400/100)^0.5 = 2.0
+        let eff = opts.effective_roughness(400.0);
+        assert!(eff > 1.0, "Large element should have increased roughness, got {}", eff);
+        assert!(eff <= 2.0, "Should not exceed max scale, got {}", eff);
+    }
+
+    #[test]
+    fn test_effective_roughness_clamping() {
+        let opts = Options {
+            roughness: Some(1.0),
+            adaptive_strength: Some(2.0), // aggressive
+            reference_size: Some(100.0),
+            ..Default::default()
+        };
+        // Very small element should clamp to 0.2 scale
+        let eff_small = opts.effective_roughness(1.0);
+        assert!((eff_small - 0.2).abs() < 0.001, "Should clamp to 0.2, got {}", eff_small);
+
+        // Very large element should clamp to 2.0 scale
+        let eff_large = opts.effective_roughness(10000.0);
+        assert!((eff_large - 2.0).abs() < 0.001, "Should clamp to 2.0, got {}", eff_large);
+    }
+
+    #[test]
+    fn test_effective_roughness_zero_size() {
+        let opts = Options {
+            roughness: Some(1.5),
+            adaptive_strength: Some(1.0),
+            ..Default::default()
+        };
+        // Zero size should return base roughness
+        assert!((opts.effective_roughness(0.0) - 1.5).abs() < 0.001);
+    }
+
+    #[test]
+    fn test_characteristic_size() {
+        // Square: 100x100 = 100
+        assert!((Options::characteristic_size(100.0, 100.0) - 100.0).abs() < 0.001);
+        // Rectangle: 50x200 = sqrt(10000) = 100
+        assert!((Options::characteristic_size(50.0, 200.0) - 100.0).abs() < 0.001);
+        // Small: 10x10 = 10
+        assert!((Options::characteristic_size(10.0, 10.0) - 10.0).abs() < 0.001);
+    }
 }

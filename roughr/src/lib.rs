@@ -159,6 +159,7 @@
 extern crate derive_builder;
 
 pub mod core;
+pub mod dedup;
 pub mod filler;
 pub mod generator;
 pub mod geometry;

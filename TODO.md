@@ -18,32 +18,32 @@
 - [x] Delete rough_plotters_svg directory
 - [x] Run cargo test --lib --tests to verify baseline
 
-## Phase 1.5: Preprocessing Features - NEW
+## Phase 1.5: Preprocessing Features - IN PROGRESS
 
-### Duplicate Path Filtering
+### Duplicate Path Filtering (Core Implementation DONE)
 
-- [ ] Create path signature struct (bbox, length, vertex_count, command_hash)
-- [ ] Implement path signature computation function
-- [ ] Implement path equivalence test with epsilon tolerance
-- [ ] Create deduplication filter that groups paths by signature
-- [ ] Implement stroke/fill merge strategy for duplicate groups
+- [x] Create path signature struct (bbox, length, vertex_count, command_hash)
+- [x] Implement path signature computation function
+- [x] Implement path equivalence test with epsilon tolerance
+- [x] Create deduplication filter that groups paths by signature
+- [x] Implement stroke/fill merge strategy for duplicate groups
 - [ ] Add deduplicate_paths field to SketchOptions
 - [ ] Add dedup_epsilon field to SketchOptions
 - [ ] Add --deduplicate CLI flag
 - [ ] Add --dedup-epsilon CLI flag
-- [ ] Add unit tests for path signature computation
-- [ ] Add unit tests for deduplication with various cases
+- [x] Add unit tests for path signature computation
+- [x] Add unit tests for deduplication with various cases
 - [ ] Test with SVGs containing known duplicate paths
 
-### Adaptive Roughness
+### Adaptive Roughness (Core Implementation DONE)
 
-- [ ] Add adaptive_strength field to SketchOptions
-- [ ] Add reference_size field to SketchOptions
-- [ ] Implement characteristic_size calculation (sqrt of bbox area)
-- [ ] Implement adaptive scaling function (size_ratio ^ power)
-- [ ] Integrate adaptive scaling into roughr path generation
+- [x] Add adaptive_strength field to Options (roughr/src/core.rs)
+- [x] Add reference_size field to Options (roughr/src/core.rs)
+- [x] Implement characteristic_size calculation (sqrt of bbox area)
+- [x] Implement adaptive scaling function (size_ratio ^ power)
+- [ ] Integrate adaptive scaling into CLI/skesvg
 - [ ] Add --adaptive-strength CLI flag
-- [ ] Add unit tests for adaptive scaling function
+- [x] Add unit tests for adaptive scaling function (7 tests)
 - [ ] Test with mixed-size SVG elements
 - [ ] Document adaptive roughness in README
 
