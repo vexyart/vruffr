@@ -6,7 +6,8 @@
 
 - **Phase 1: Foundation Cleanup** - COMPLETE
 - **Phase 1.5: Preprocessing Features** - COMPLETE
-- **Phase 3: CLI Integration** - IN PROGRESS (5/11 tasks done)
+- **Phase 3: CLI Integration** - IN PROGRESS (6/11 tasks done)
+- **Phase 4: Documentation** - IN PROGRESS (5/8 tasks done)
 
 ### Key Accomplishments
 
@@ -17,6 +18,8 @@
 5. Moved CLI to workspace with path dependencies
 6. Removed catch_unwind handlers (no longer needed)
 7. Added all preprocessing CLI flags
+8. Verified all test-data SVGs render without panics
+9. Rewrote README.md with vruffr documentation
 
 ### Test Status
 
@@ -34,9 +37,9 @@ cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
 
 ### Next Steps
 
-1. Test with mixed-size SVG elements for adaptive roughness
-2. Add backend selection CLI flag (Phase 3)
-3. Add SVG output format flag (Phase 3)
+1. Update CLAUDE.md for new project structure
+2. Add examples/ directory with working examples
+3. Add Rust doc comments to public APIs
 
 ---
 
