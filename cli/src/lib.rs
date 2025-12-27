@@ -139,6 +139,10 @@ pub struct SketchOptions {
     pub adaptive_strength: f32,
     /// Reference element size in pixels for adaptive roughness scaling (default: 100)
     pub reference_size: f32,
+    /// Remove duplicate stacked paths before roughening
+    pub deduplicate: bool,
+    /// Tolerance in pixels for path deduplication matching
+    pub dedup_epsilon: f32,
 }
 
 impl Default for SketchOptions {
@@ -162,6 +166,8 @@ impl Default for SketchOptions {
             font_size: None,
             adaptive_strength: 0.0,
             reference_size: 100.0,
+            deduplicate: false,
+            dedup_epsilon: 0.1,
         }
     }
 }
@@ -186,10 +192,7 @@ fn build_usvg_options(sketch_options: Option<&SketchOptions>) -> usvg::Options<'
     let mut fontdb = fontdb::Database::new();
     fontdb.load_system_fonts();
 
-    let mut opts = usvg::Options {
-        fontdb: Arc::new(fontdb),
-        ..Default::default()
-    };
+    let mut opts = usvg::Options { fontdb: Arc::new(fontdb), ..Default::default() };
 
     if let Some(sketch) = sketch_options {
         if let Some(ref font) = sketch.font {
@@ -215,11 +218,7 @@ pub fn validate_svg(svg_data: &str) -> Result<SvgInfo> {
     let mut warnings = RenderWarnings::default();
     check_warnings(tree.root(), &mut warnings);
 
-    Ok(SvgInfo {
-        width,
-        height,
-        warnings,
-    })
+    Ok(SvgInfo { width, height, warnings })
 }
 
 fn check_warnings(group: &usvg::Group, warnings: &mut RenderWarnings) {
@@ -484,10 +483,7 @@ fn skia_path_to_svg_string(path: &tiny_skia::Path) -> String {
 }
 
 /// Convert SkiaOpset to SketchElements
-fn opset_to_elements(
-    set: &SkiaOpset<f64>,
-    options: &roughr::core::Options,
-) -> Vec<SketchElement> {
+fn opset_to_elements(set: &SkiaOpset<f64>, options: &roughr::core::Options) -> Vec<SketchElement> {
     let path = match &set.ops {
         Some(p) => p,
         None => return vec![],
@@ -646,13 +642,25 @@ pub fn elements_to_svg(
         let mut attrs = vec![format!(r#"d="{}""#, elem.path_data)];
 
         if let Some([r, g, b, a]) = elem.fill {
-            attrs.push(format!(r#"fill="rgba({},{},{},{:.2})""#, r, g, b, a as f32 / 255.0));
+            attrs.push(format!(
+                r#"fill="rgba({},{},{},{:.2})""#,
+                r,
+                g,
+                b,
+                a as f32 / 255.0
+            ));
         } else {
             attrs.push(r#"fill="none""#.to_string());
         }
 
         if let Some([r, g, b, a]) = elem.stroke {
-            attrs.push(format!(r#"stroke="rgba({},{},{},{:.2})""#, r, g, b, a as f32 / 255.0));
+            attrs.push(format!(
+                r#"stroke="rgba({},{},{},{:.2})""#,
+                r,
+                g,
+                b,
+                a as f32 / 255.0
+            ));
             attrs.push(format!(r#"stroke-width="{:.2}""#, elem.stroke_width));
             attrs.push(r#"stroke-linecap="round""#.to_string());
             attrs.push(r#"stroke-linejoin="round""#.to_string());
@@ -848,11 +856,7 @@ mod tests {
 
     #[test]
     fn test_sketch_options_clone() {
-        let opts = SketchOptions {
-            roughness: 2.5,
-            seed: 999,
-            ..Default::default()
-        };
+        let opts = SketchOptions { roughness: 2.5, seed: 999, ..Default::default() };
         let cloned = opts.clone();
 
         assert!((cloned.roughness - 2.5).abs() < 0.001);
@@ -861,10 +865,7 @@ mod tests {
 
     #[test]
     fn test_render_warnings_debug() {
-        let warnings = RenderWarnings {
-            has_text: true,
-            has_images: false,
-        };
+        let warnings = RenderWarnings { has_text: true, has_images: false };
         let debug_str = format!("{:?}", warnings);
 
         assert!(debug_str.contains("has_text"));

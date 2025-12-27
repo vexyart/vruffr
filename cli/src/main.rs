@@ -100,6 +100,14 @@ struct Args {
     /// Reference element size in pixels for adaptive roughness scaling (default: 100)
     #[arg(long, default_value = "100.0")]
     reference_size: f32,
+
+    /// Remove duplicate stacked paths before roughening (default: false)
+    #[arg(long)]
+    deduplicate: bool,
+
+    /// Tolerance in pixels for path deduplication matching (default: 0.1)
+    #[arg(long, default_value = "0.1")]
+    dedup_epsilon: f32,
 }
 
 fn print_warnings(warnings: &vruffr::RenderWarnings) {
@@ -204,6 +212,8 @@ fn main() -> Result<()> {
         font_size: args.font_size,
         adaptive_strength: args.adaptive_strength,
         reference_size: args.reference_size,
+        deduplicate: args.deduplicate,
+        dedup_epsilon: args.dedup_epsilon,
     };
 
     let format = infer_format(&args.output, args.format);
@@ -228,8 +238,8 @@ fn main() -> Result<()> {
             }
         }
         OutputFormat::SvgPlain => {
-            let (svg_output, warnings) = vruffr::render_to_svg(&svg_data, &options)
-                .context("Failed to render sketch")?;
+            let (svg_output, warnings) =
+                vruffr::render_to_svg(&svg_data, &options).context("Failed to render sketch")?;
 
             std::fs::write(&args.output, &svg_output)
                 .with_context(|| format!("Failed to save SVG: {}", args.output.display()))?;
@@ -246,8 +256,8 @@ fn main() -> Result<()> {
         OutputFormat::Svg => {
             // For now, SVG format acts same as SvgPlain
             // TODO: Embed sketch paths back into original SVG structure
-            let (svg_output, warnings) = vruffr::render_to_svg(&svg_data, &options)
-                .context("Failed to render sketch")?;
+            let (svg_output, warnings) =
+                vruffr::render_to_svg(&svg_data, &options).context("Failed to render sketch")?;
 
             std::fs::write(&args.output, &svg_output)
                 .with_context(|| format!("Failed to save SVG: {}", args.output.display()))?;

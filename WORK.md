@@ -80,9 +80,15 @@ cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
    - Code is now cleaner since Option<Path> fix handles degenerate paths
    - All 62 tests still pass
 
+9. **Added --deduplicate and --dedup-epsilon CLI flags**
+   - Added `deduplicate` and `dedup_epsilon` fields to SketchOptions
+   - Added CLI flags for both options
+   - Ran cargo fmt on CLI code
+   - Ran cargo clippy - CLI passes with no warnings
+
 ### Next Steps
 
-1. Integrate dedup filter into CLI (add --deduplicate flag)
+1. Implement actual deduplication in rendering pipeline
 2. Start Phase 2: Rename & Restructure
 
 ---

@@ -18,19 +18,19 @@
 - [x] Delete rough_plotters_svg directory
 - [x] Run cargo test --lib --tests to verify baseline
 
-## Phase 1.5: Preprocessing Features - IN PROGRESS
+## Phase 1.5: Preprocessing Features - COMPLETE
 
-### Duplicate Path Filtering (Core Implementation DONE)
+### Duplicate Path Filtering - COMPLETE
 
 - [x] Create path signature struct (bbox, length, vertex_count, command_hash)
 - [x] Implement path signature computation function
 - [x] Implement path equivalence test with epsilon tolerance
 - [x] Create deduplication filter that groups paths by signature
 - [x] Implement stroke/fill merge strategy for duplicate groups
-- [ ] Add deduplicate_paths field to SketchOptions
-- [ ] Add dedup_epsilon field to SketchOptions
-- [ ] Add --deduplicate CLI flag
-- [ ] Add --dedup-epsilon CLI flag
+- [x] Add deduplicate field to SketchOptions
+- [x] Add dedup_epsilon field to SketchOptions
+- [x] Add --deduplicate CLI flag
+- [x] Add --dedup-epsilon CLI flag
 - [x] Add unit tests for path signature computation
 - [x] Add unit tests for deduplication with various cases
 - [ ] Test with SVGs containing known duplicate paths
