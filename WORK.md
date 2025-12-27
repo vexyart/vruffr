@@ -7,7 +7,7 @@
 - **Phase 1: Foundation Cleanup** - COMPLETE
 - **Phase 1.5: Preprocessing Features** - COMPLETE
 - **Phase 3: CLI Integration** - IN PROGRESS (6/11 tasks done)
-- **Phase 4: Documentation** - IN PROGRESS (5/8 tasks done)
+- **Phase 4: Documentation** - IN PROGRESS (7/8 tasks done)
 
 ### Key Accomplishments
 
@@ -20,6 +20,9 @@
 7. Added all preprocessing CLI flags
 8. Verified all test-data SVGs render without panics
 9. Rewrote README.md with vruffr documentation
+10. Updated CLAUDE.md for new structure
+11. Created DEPENDENCIES.md
+12. Added working example in cli/examples/
 
 ### Test Status
 
