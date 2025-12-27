@@ -324,7 +324,7 @@ fn render_path(path: &usvg::Path, options: &SketchOptions, pixmap: &mut PixmapMu
 
     let effective_roughness = compute_effective_roughness(path, options);
 
-    // Handle fill - wrap in catch_unwind to handle problematic paths
+    // Handle fill
     if !options.no_fill {
         if let Some(fill) = path.fill() {
             let fill_color = extract_color(fill.paint());
@@ -342,21 +342,13 @@ fn render_path(path: &usvg::Path, options: &SketchOptions, pixmap: &mut PixmapMu
                 .build()
                 .unwrap();
 
-            let path_clone = svg_path.clone();
-            if let Ok(drawable) = std::panic::catch_unwind(|| {
-                let fill_gen = SkiaGenerator::new(fill_options);
-                fill_gen.path::<f64>(path_clone)
-            }) {
-                // draw() may also panic, wrap it too
-                let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                    drawable.draw(pixmap);
-                }));
-            }
-            // Silently skip paths that cause panics in roughr
+            let fill_gen = SkiaGenerator::new(fill_options);
+            let drawable = fill_gen.path::<f64>(svg_path.clone());
+            drawable.draw(pixmap);
         }
     }
 
-    // Handle stroke - wrap in catch_unwind to handle problematic paths
+    // Handle stroke
     if !options.no_stroke {
         if let Some(stroke) = path.stroke() {
             let stroke_color = extract_color(stroke.paint());
@@ -371,16 +363,9 @@ fn render_path(path: &usvg::Path, options: &SketchOptions, pixmap: &mut PixmapMu
                 .build()
                 .unwrap();
 
-            if let Ok(drawable) = std::panic::catch_unwind(|| {
-                let stroke_gen = SkiaGenerator::new(stroke_options);
-                stroke_gen.path::<f64>(svg_path)
-            }) {
-                // draw() may also panic, wrap it too
-                let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                    drawable.draw(pixmap);
-                }));
-            }
-            // Silently skip paths that cause panics in roughr
+            let stroke_gen = SkiaGenerator::new(stroke_options);
+            let drawable = stroke_gen.path::<f64>(svg_path);
+            drawable.draw(pixmap);
         }
     }
 }
@@ -543,10 +528,7 @@ fn opset_to_elements(
 }
 
 /// Collect sketch elements from a usvg path
-fn collect_path_elements(
-    path: &usvg::Path,
-    options: &SketchOptions,
-) -> Vec<SketchElement> {
+fn collect_path_elements(path: &usvg::Path, options: &SketchOptions) -> Vec<SketchElement> {
     let svg_path = path_to_svg_string(path);
     if svg_path.is_empty() {
         return vec![];
@@ -555,7 +537,7 @@ fn collect_path_elements(
     let effective_roughness = compute_effective_roughness(path, options);
     let mut elements = Vec::new();
 
-    // Handle fill - wrap in catch_unwind to handle problematic paths
+    // Handle fill
     if !options.no_fill {
         if let Some(fill) = path.fill() {
             let fill_color = extract_color(fill.paint());
@@ -573,21 +555,15 @@ fn collect_path_elements(
                 .build()
                 .unwrap();
 
-            let path_clone = svg_path.clone();
-            let opts_clone = fill_options.clone();
-            if let Ok(result) = std::panic::catch_unwind(|| {
-                let fill_gen = SkiaGenerator::new(opts_clone);
-                fill_gen.path::<f64>(path_clone)
-            }) {
-                for set in &result.sets {
-                    elements.extend(opset_to_elements(set, &fill_options));
-                }
+            let fill_gen = SkiaGenerator::new(fill_options.clone());
+            let result = fill_gen.path::<f64>(svg_path.clone());
+            for set in &result.sets {
+                elements.extend(opset_to_elements(set, &fill_options));
             }
-            // Silently skip paths that cause panics in roughr
         }
     }
 
-    // Handle stroke - wrap in catch_unwind to handle problematic paths
+    // Handle stroke
     if !options.no_stroke {
         if let Some(stroke) = path.stroke() {
             let stroke_color = extract_color(stroke.paint());
@@ -602,16 +578,11 @@ fn collect_path_elements(
                 .build()
                 .unwrap();
 
-            let opts_clone = stroke_options.clone();
-            if let Ok(result) = std::panic::catch_unwind(|| {
-                let stroke_gen = SkiaGenerator::new(opts_clone);
-                stroke_gen.path::<f64>(svg_path)
-            }) {
-                for set in &result.sets {
-                    elements.extend(opset_to_elements(set, &stroke_options));
-                }
+            let stroke_gen = SkiaGenerator::new(stroke_options.clone());
+            let result = stroke_gen.path::<f64>(svg_path);
+            for set in &result.sets {
+                elements.extend(opset_to_elements(set, &stroke_options));
             }
-            // Silently skip paths that cause panics in roughr
         }
     }
 

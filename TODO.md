@@ -68,7 +68,7 @@
 - [x] Create cli/Cargo.toml with path dependencies
 - [x] Switch from crates.io to workspace path deps
 - [x] Rename CLI binary to vruffr
-- [ ] Remove catch_unwind panic handlers from cli
+- [x] Remove catch_unwind panic handlers from cli
 - [ ] Add backend selection CLI flag
 - [ ] Add SVG output format flag
 - [ ] Add SVGpatch output mode
@@ -87,7 +87,7 @@
 - [ ] Create examples/ directory with working examples
 - [ ] Update CLAUDE.md for new project structure
 - [ ] Create DEPENDENCIES.md listing all deps with justification
-- [ ] Create CHANGELOG.md with initial entry
+- [x] Create CHANGELOG.md with initial entry
 
 ## Phase 5: Python & WASM (Future)
 

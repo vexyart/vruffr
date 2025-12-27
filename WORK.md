@@ -74,12 +74,16 @@ cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
 # vruffr-cli bin: 4 passed
 ```
 
+8. **Removed catch_unwind panic handlers from CLI**
+   - Removed `std::panic::catch_unwind` from `render_path()`
+   - Removed `std::panic::catch_unwind` from `collect_path_elements()`
+   - Code is now cleaner since Option<Path> fix handles degenerate paths
+   - All 62 tests still pass
+
 ### Next Steps
 
 1. Integrate dedup filter into CLI (add --deduplicate flag)
-2. Remove catch_unwind panic handlers from CLI (now unnecessary)
-3. Create CHANGELOG.md
-4. Start Phase 2: Rename & Restructure
+2. Start Phase 2: Rename & Restructure
 
 ---
 
