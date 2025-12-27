@@ -85,7 +85,7 @@
 - [x] Write SPEC.md with technical specification
 - [ ] Add Rust doc comments to all public APIs
 - [ ] Create examples/ directory with working examples
-- [ ] Update CLAUDE.md for new project structure
+- [x] Update CLAUDE.md for new project structure
 - [ ] Create DEPENDENCIES.md listing all deps with justification
 - [x] Create CHANGELOG.md with initial entry
 

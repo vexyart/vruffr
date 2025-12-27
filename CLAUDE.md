@@ -2,101 +2,84 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Structure
+
+```
+vruffr/
+├── cli/                 # CLI tool (vruffr binary)
+├── roughr/              # Core sketch primitives
+├── rough_tiny_skia/     # tiny-skia rendering backend
+├── rough_piet/          # piet rendering backend
+├── rough_vello/         # vello GPU backend
+├── points_on_curve/     # Bezier curve utilities
+├── svg_path_ops/        # SVG path manipulation
+└── extra/               # Reference code (read-only)
+```
+
 ## Development Commands
 
-### Standard Rust Workflow
-
 ```bash
-# Format code
-cargo fmt
-
-# Lint with strict warnings
-cargo clippy -- -D warnings
+# Build and run CLI
+cargo build --release
+./target/release/vruffr input.svg -o output.png
 
 # Run tests
-cargo test
+cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
 
-# Build release binary
-cargo build --release
+# Format and lint
+cargo fmt
+cargo clippy -p roughr -p rough_tiny_skia -p vruffr-cli -- -D warnings
 
-# Run the tool (once implemented)
-cargo run -- input.svg output.png
+# Full quality check
+cargo fmt --check && cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
 ```
 
-### Full Quality Check
+Note: `svg_path_ops` has pre-existing clippy warnings from the original fork.
 
-```bash
-cargo fmt --check && cargo clippy -- -D warnings && cargo test
-```
+## Key Crates
 
-### Working with External Dependencies
+| Crate | Purpose | Entry Point |
+|-------|---------|-------------|
+| `vruffr-cli` | CLI binary and library | `cli/src/main.rs` |
+| `roughr` | Core primitives, dedup module | `roughr/src/lib.rs` |
+| `rough_tiny_skia` | Rendering to PNG via tiny-skia | `rough_tiny_skia/src/lib.rs` |
 
-External libraries in `ext/` are git submodules or vendored code:
-- Do not modify code in `ext/` directly
-- Reference them via path dependencies in Cargo.toml
-- To update: navigate to the specific ext/ directory and git pull
+## Testing Strategy
 
-### Testing Strategy
+- Unit tests in each crate's `src/` with `#[cfg(test)]`
+- Integration tests: `cargo test -p vruffr-cli`
+- Manual testing: `./target/release/vruffr extra/test-data/*.svg -o /tmp/out.png`
 
-Per project guidelines (from IDEA.md):
-- Unit tests for each function
-- Edge cases: empty files, invalid SVG, huge files
-- Integration tests: end-to-end SVG → PNG conversion
-- Functional examples in `examples/` directory
-- Test script: `./test.sh` (create if needed)
+## Key Patterns
 
-## Key Constraints
-
-1. **Minimalism:** Favor existing libraries over custom code
-2. **Rust Standards:**
-   - Error handling with `Result<T, E>`, using `thiserror` (libs) or `anyhow` (apps)
-   - Avoid `panic!` except for unrecoverable errors
-   - Minimize `unsafe` code
-3. **Testing:** ≥80% coverage target, focus on edge cases
-4. **File Size:** Functions ≤20 lines, files ≤200 lines where possible
-5. **Documentation:** Update WORK.md, PLAN.md, TODO.md, CHANGELOG.md, DEPENDENCIES.md
-
-## Common Patterns
-
-### Error Handling
+### Adaptive Roughness
 ```rust
-use anyhow::{Context, Result};
-
-fn process_svg(path: &Path) -> Result<Image> {
-    let svg_data = std::fs::read(path)
-        .context("Failed to read SVG file")?;
-    // ...
+// In cli/src/lib.rs
+fn compute_effective_roughness(path: &usvg::Path, options: &SketchOptions) -> f32 {
+    let size = (bbox.width() * bbox.height()).sqrt();
+    let scale = (size / reference_size).powf(strength * 0.5);
+    base_roughness * scale.clamp(0.2, 2.0)
 }
 ```
 
-### Dependency References
-In main Cargo.toml, reference ext/ libraries as path dependencies:
-```toml
-[dependencies]
-roughr = { path = "ext/rough-rs/roughr" }
-rough_vello = { path = "ext/rough-rs/rough_vello" }
-vello = { path = "ext/vello/vello" }
-# or use published versions if compatible
+### Option<Path> Pattern
+```rust
+// rough_tiny_skia returns Option<Path> to handle degenerate paths gracefully
+fn opset_to_shape(&self, o: &OpSet<F>) -> Option<Path> {
+    // Returns None for empty/degenerate paths instead of panicking
+}
 ```
 
-## Version Compatibility
+## Constraints
 
-Key version constraints from vello_svg:
-- vello 0.6 → usvg 0.45
-- Monitor compatibility between rough_vello (uses vello 0.5) and latest vello
-
-## Project Documentation
-
-Required files per development guidelines:
-- **README.md**: Purpose, installation, usage (≤200 lines)
-- **PLAN.md**: Architecture decisions, future goals
-- **TODO.md**: Flat checklist with status markers `[ ]` `[~]` `[x]` `[-]` `[!]`
-- **WORK.md**: Work log with reasoning, test results, next steps
-- **CHANGELOG.md**: Release notes
-- **DEPENDENCIES.md**: Package choices with justification
+1. **Minimalism:** Favor existing libraries over custom code
+2. **Error Handling:** Use `anyhow` for CLI, `thiserror` for libraries
+3. **No Panics:** Return `Option` or `Result` instead
+4. **Testing:** Cover edge cases (empty paths, degenerate geometry)
+5. **Documentation:** Keep WORK.md, TODO.md, CHANGELOG.md updated
 
 ## Reference Materials
 
-Analysis documents in `ref/`:
-- `ref/101gem.md`, `ref/102gpt.md`, `ref/103cla.md`, `ref/104sci.md`: Research and analysis
-- Review these for additional context on implementation approaches
+- `extra/` contains skesvg reference code (read-only, don't modify)
+- `PLAN.md` has architecture decisions and phase roadmap
+- `SPEC.md` has technical specification
