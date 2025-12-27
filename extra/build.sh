@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-# Build script for skesvg
+# Build script for vruffr
 # Creates release binary and universal macOS DMG
 
 set -euo pipefail
 
-PROJECT="skesvg"
-VERSION=$(grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+cd "$(dirname "$0")/.."
+
+PROJECT="vruffr"
+VERSION=$(grep '^version' cli/Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
 
 echo "=== Building $PROJECT v$VERSION ==="
 
@@ -14,10 +16,10 @@ rustup target add aarch64-apple-darwin x86_64-apple-darwin 2>/dev/null || true
 
 # Build for both architectures
 echo "Building for Apple Silicon (aarch64)..."
-cargo build --release --target aarch64-apple-darwin
+cargo build --release --target aarch64-apple-darwin -p vruffr-cli
 
 echo "Building for Intel (x86_64)..."
-cargo build --release --target x86_64-apple-darwin
+cargo build --release --target x86_64-apple-darwin -p vruffr-cli
 
 # Create universal binary
 echo "Creating universal binary..."
@@ -57,10 +59,9 @@ Installation:
 
 Usage:
   $PROJECT input.svg -o output.png
-  $PROJECT input.svg -o output.svg
   $PROJECT --help
 
-For more info: https://github.com/adam/skesvg
+For more info: https://github.com/vexyart/vruffr
 EOF
 
 # Remove old DMG if exists

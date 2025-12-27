@@ -73,8 +73,8 @@
 - [ ] Add SVG output format flag
 - [ ] Add SVGpatch output mode
 - [x] Verify all test-data renders without panics
-- [ ] Adapt extra/test-data.sh for new structure
-- [ ] Adapt extra/build.sh for new structure
+- [x] Adapt extra/test-data.sh for new structure
+- [x] Adapt extra/build.sh for new structure
 
 ## Phase 4: Documentation
 
