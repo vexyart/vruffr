@@ -123,4 +123,4 @@
 - [~] Run cargo clippy -- -D warnings (svg_path_ops has pre-existing lint issues)
 - [x] Run cargo fmt --check
 - [x] Ensure all tests pass
-- [ ] Tag initial vruffr release
+- [x] Tag initial vruffr release (v0.1.0)
