@@ -20,7 +20,7 @@
 
 ## Phase 1.5: Preprocessing Features - COMPLETE
 
-### Duplicate Path Filtering - COMPLETE (module only)
+### Duplicate Path Filtering - COMPLETE
 
 - [x] Create path signature struct (bbox, length, vertex_count, command_hash)
 - [x] Implement path signature computation function
@@ -34,7 +34,7 @@
 - [x] Add unit tests for path signature computation
 - [x] Add unit tests for deduplication with various cases
 - [x] Test with SVGs containing known duplicate paths (covered by unit tests)
-- [ ] Wire dedup into render pipeline (CLI flags exist but not integrated)
+- [x] Wire dedup into render pipeline (PNG and SVG output)
 
 ### Adaptive Roughness - COMPLETE
 

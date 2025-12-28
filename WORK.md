@@ -29,6 +29,7 @@
 16. Added doc comments to all public APIs
 17. Tagged v0.1.0 initial release
 18. Verified SVG output format works (with --format and auto-detection)
+19. **Wired dedup into render pipeline** (both PNG and SVG output)
 
 ### Test Status
 
@@ -36,12 +37,12 @@
 cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
 # rough_tiny_skia: 9 passed
 # roughr: 23 passed (3 ignored)
-# vruffr-cli: 58 lib + 4 integration + 1 doc = 63 passed
+# vruffr-cli: 62 lib + 4 main + 1 doc = 67 passed
 
 # All test-data SVGs render without panics:
 ./target/release/vruffr extra/test-data/*.svg
 # sag-default.svg, sag-hachure.svg, sag-strokes.svg, sag.svg, tigr.svg, tigr1.svg
-# All rendered successfully with both default and --adaptive-strength 1.0
+# All rendered successfully with --deduplicate flag
 ```
 
 ### Next Steps

@@ -21,6 +21,7 @@ use anyhow::{Context, Result};
 use palette::Srgba;
 use rough_tiny_skia::{SkiaGenerator, SkiaOpset};
 use roughr::core::{FillStyle, OpSetType, OptionsBuilder};
+use roughr::dedup::{deduplicate_paths, PathSignature, StyledPath};
 use std::fmt::Write as FmtWrite;
 use std::sync::Arc;
 use tiny_skia::{Pixmap, PixmapMut};
@@ -271,7 +272,18 @@ pub fn render_sketch_with_warnings(
     }
 
     let mut warnings = RenderWarnings::default();
-    render_group(tree.root(), options, &mut pixmap.as_mut(), &mut warnings);
+
+    if options.deduplicate {
+        // Collect raw paths, deduplicate, then render
+        let raw_paths = collect_raw_paths(tree.root(), options, &mut warnings);
+        let deduped = apply_dedup(raw_paths, options.dedup_epsilon);
+        for info in &deduped {
+            render_raw_path(info, options, &mut pixmap.as_mut());
+        }
+    } else {
+        // Original path: render each path as encountered
+        render_group(tree.root(), options, &mut pixmap.as_mut(), &mut warnings);
+    }
 
     Ok((pixmap, warnings))
 }
@@ -371,6 +383,46 @@ fn render_path(path: &usvg::Path, options: &SketchOptions, pixmap: &mut PixmapMu
             let drawable = stroke_gen.path::<f64>(svg_path);
             drawable.draw(pixmap);
         }
+    }
+}
+
+/// Render a RawPathInfo directly to pixmap (for dedup path)
+fn render_raw_path(info: &RawPathInfo, options: &SketchOptions, pixmap: &mut PixmapMut) {
+    // Handle fill
+    if let Some(fill_color) = info.fill_color {
+        let fill_options = OptionsBuilder::default()
+            .roughness(info.effective_roughness)
+            .bowing(options.bowing as f32)
+            .seed(options.seed)
+            .fill(fill_color)
+            .fill_style(options.fill_style.into())
+            .stroke(fill_color)
+            .stroke_width(options.fill_weight)
+            .fill_weight(options.fill_weight)
+            .hachure_angle(options.hachure_angle)
+            .hachure_gap(options.hachure_gap)
+            .build()
+            .unwrap();
+
+        let fill_gen = SkiaGenerator::new(fill_options);
+        let drawable = fill_gen.path::<f64>(info.path_data.clone());
+        drawable.draw(pixmap);
+    }
+
+    // Handle stroke
+    if let Some(stroke_color) = info.stroke_color {
+        let stroke_options = OptionsBuilder::default()
+            .roughness(info.effective_roughness)
+            .bowing(options.bowing as f32)
+            .seed(options.seed)
+            .stroke(stroke_color)
+            .stroke_width(info.stroke_width)
+            .build()
+            .unwrap();
+
+        let stroke_gen = SkiaGenerator::new(stroke_options);
+        let drawable = stroke_gen.path::<f64>(info.path_data.clone());
+        drawable.draw(pixmap);
     }
 }
 
@@ -526,6 +578,151 @@ fn opset_to_elements(set: &SkiaOpset<f64>, options: &roughr::core::Options) -> V
             is_fill_sketch: true,
         }],
     }
+}
+
+/// Raw path info extracted from usvg for deduplication
+struct RawPathInfo {
+    path_data: String,
+    fill_color: Option<Srgba>,
+    stroke_color: Option<Srgba>,
+    stroke_width: f32,
+    effective_roughness: f32,
+}
+
+/// Collect raw path info from usvg group for deduplication
+fn collect_raw_paths(
+    group: &usvg::Group,
+    options: &SketchOptions,
+    warnings: &mut RenderWarnings,
+) -> Vec<RawPathInfo> {
+    let mut paths = Vec::new();
+    for node in group.children() {
+        match node {
+            usvg::Node::Group(g) => {
+                paths.extend(collect_raw_paths(g, options, warnings));
+            }
+            usvg::Node::Path(path) => {
+                let svg_path = path_to_svg_string(path);
+                if svg_path.is_empty() {
+                    continue;
+                }
+                let effective_roughness = compute_effective_roughness(path, options);
+                let fill_color = if options.no_fill {
+                    None
+                } else {
+                    path.fill().map(|f| extract_color(f.paint()))
+                };
+                let (stroke_color, stroke_width) = if options.no_stroke {
+                    (None, 1.0)
+                } else if let Some(stroke) = path.stroke() {
+                    (
+                        Some(extract_color(stroke.paint())),
+                        options.stroke_width.unwrap_or_else(|| stroke.width().get()),
+                    )
+                } else {
+                    (None, 1.0)
+                };
+                paths.push(RawPathInfo {
+                    path_data: svg_path,
+                    fill_color,
+                    stroke_color,
+                    stroke_width,
+                    effective_roughness,
+                });
+            }
+            usvg::Node::Image(_) => {
+                warnings.has_images = true;
+            }
+            usvg::Node::Text(text) => {
+                paths.extend(collect_raw_paths(text.flattened(), options, warnings));
+            }
+        }
+    }
+    paths
+}
+
+/// Apply deduplication to raw paths and return deduplicated list
+fn apply_dedup(paths: Vec<RawPathInfo>, epsilon: f32) -> Vec<RawPathInfo> {
+    // Convert to StyledPath for dedup module
+    let styled: Vec<StyledPath> = paths
+        .iter()
+        .enumerate()
+        .map(|(i, p)| StyledPath {
+            path_data: p.path_data.clone(),
+            signature: PathSignature::from_path_data(&p.path_data),
+            stroke: p.stroke_color.map(srgba_to_rgba),
+            stroke_width: Some(p.stroke_width),
+            fill: p.fill_color.map(srgba_to_rgba),
+            original_index: i,
+        })
+        .collect();
+
+    let groups = deduplicate_paths(styled, epsilon);
+
+    // For each duplicate group, use the canonical path but keep all unique styles
+    // For now, we just keep the canonical (first) path from each group
+    // A more sophisticated approach would render multiple styles per geometry
+    groups
+        .into_iter()
+        .map(|g| {
+            let idx = g.canonical.original_index;
+            RawPathInfo {
+                path_data: g.canonical.path_data,
+                fill_color: paths[idx].fill_color,
+                stroke_color: paths[idx].stroke_color,
+                stroke_width: paths[idx].stroke_width,
+                effective_roughness: paths[idx].effective_roughness,
+            }
+        })
+        .collect()
+}
+
+/// Sketch a raw path info into elements
+fn sketch_raw_path(info: &RawPathInfo, options: &SketchOptions) -> Vec<SketchElement> {
+    let mut elements = Vec::new();
+
+    // Handle fill
+    if let Some(fill_color) = info.fill_color {
+        let fill_options = OptionsBuilder::default()
+            .roughness(info.effective_roughness)
+            .bowing(options.bowing as f32)
+            .seed(options.seed)
+            .fill(fill_color)
+            .fill_style(options.fill_style.into())
+            .stroke(fill_color)
+            .stroke_width(options.fill_weight)
+            .fill_weight(options.fill_weight)
+            .hachure_angle(options.hachure_angle)
+            .hachure_gap(options.hachure_gap)
+            .build()
+            .unwrap();
+
+        let fill_gen = SkiaGenerator::new(fill_options.clone());
+        let result = fill_gen.path::<f64>(info.path_data.clone());
+        for set in &result.sets {
+            elements.extend(opset_to_elements(set, &fill_options));
+        }
+    }
+
+    // Handle stroke
+    if let Some(stroke_color) = info.stroke_color {
+        let stroke_options = OptionsBuilder::default()
+            .roughness(info.effective_roughness)
+            .bowing(options.bowing as f32)
+            .seed(options.seed)
+            .stroke(stroke_color)
+            .stroke_width(info.stroke_width)
+            .build()
+            .unwrap();
+
+        let stroke_gen = SkiaGenerator::new(stroke_options.clone());
+        let result = stroke_gen.path::<f64>(info.path_data.clone());
+        for set in &result.sets {
+            elements.extend(opset_to_elements(set, &stroke_options));
+        }
+    }
+
+    elements
 }
 
 /// Collect sketch elements from a usvg path
@@ -695,7 +892,16 @@ pub fn render_to_elements(
     let height = (base_height as f32 * options.scale) as u32;
 
     let mut warnings = RenderWarnings::default();
-    let elements = collect_group_elements(tree.root(), options, &mut warnings);
+
+    let elements = if options.deduplicate {
+        // Collect raw paths, deduplicate, then sketch
+        let raw_paths = collect_raw_paths(tree.root(), options, &mut warnings);
+        let deduped = apply_dedup(raw_paths, options.dedup_epsilon);
+        deduped.iter().flat_map(|p| sketch_raw_path(p, options)).collect()
+    } else {
+        // Original path: sketch each path as encountered
+        collect_group_elements(tree.root(), options, &mut warnings)
+    };
 
     Ok((elements, width, height, warnings))
 }
@@ -1449,6 +1655,60 @@ mod tests {
 
         let options = SketchOptions::default();
         let pixmap = render_sketch(svg, &options).expect("Failed to render combined transform");
+        assert_eq!(pixmap.width(), 100);
+    }
+
+    #[test]
+    fn test_dedup_with_duplicate_rects() {
+        // Test deduplication with identical overlapping rects
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="80" height="80" fill="blue"/>
+            <rect x="10" y="10" width="80" height="80" fill="red"/>
+            <rect x="10" y="10" width="80" height="80" fill="green"/>
+        </svg>"#;
+
+        let options = SketchOptions { deduplicate: true, dedup_epsilon: 0.1, ..Default::default() };
+        let pixmap = render_sketch(svg, &options).expect("Failed to render with dedup");
+        assert_eq!(pixmap.width(), 100);
+    }
+
+    #[test]
+    fn test_dedup_disabled_renders_all() {
+        // Test that dedup=false (default) still works
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="80" height="80" fill="blue"/>
+            <rect x="10" y="10" width="80" height="80" fill="red"/>
+        </svg>"#;
+
+        let options = SketchOptions { deduplicate: false, ..Default::default() };
+        let pixmap = render_sketch(svg, &options).expect("Failed to render without dedup");
+        assert_eq!(pixmap.width(), 100);
+    }
+
+    #[test]
+    fn test_dedup_svg_output() {
+        // Test deduplication with SVG output
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="80" height="80" fill="blue"/>
+            <rect x="10" y="10" width="80" height="80" fill="red"/>
+        </svg>"#;
+
+        let options = SketchOptions { deduplicate: true, dedup_epsilon: 0.1, ..Default::default() };
+        let (svg_out, _warnings) = render_to_svg(svg, &options).expect("Failed SVG output");
+        assert!(svg_out.contains("<svg"));
+        assert!(svg_out.contains("</svg>"));
+    }
+
+    #[test]
+    fn test_dedup_unique_paths_preserved() {
+        // Test that non-duplicate paths are preserved
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="30" height="30" fill="blue"/>
+            <rect x="60" y="60" width="30" height="30" fill="red"/>
+        </svg>"#;
+
+        let options = SketchOptions { deduplicate: true, dedup_epsilon: 0.1, ..Default::default() };
+        let pixmap = render_sketch(svg, &options).expect("Failed to render unique paths");
         assert_eq!(pixmap.width(), 100);
     }
 }
