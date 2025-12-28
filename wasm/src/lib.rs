@@ -47,6 +47,8 @@ pub struct WasmOptions {
     pub duotone: Option<String>,
     #[serde(default)]
     pub stroke_scale: Option<f32>,
+    #[serde(default)]
+    pub dpi: Option<f32>,
 }
 
 fn default_roughness() -> f64 {
@@ -106,6 +108,7 @@ impl WasmOptions {
             noise: self.noise.unwrap_or(0.0),
             edge_roughen: self.edge_roughen.unwrap_or(0.0),
             stroke_scale: self.stroke_scale.unwrap_or(1.0),
+            dpi: self.dpi.unwrap_or(150.0),
             ..Default::default()
         }
     }

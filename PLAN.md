@@ -64,8 +64,12 @@ vruffr/
 - `--stroke-scale` multiplier for stroke widths
 - Proportional thickness without overriding SVG values
 
+### Phase 10: DPI Control - COMPLETE
+- `--dpi` flag for output pixel density (default: 150)
+- Higher resolution PNG outputs vs SVG's standard 96 DPI
+
 ## Success Criteria - ALL MET
 
-- 119 tests passing
+- 119+ tests passing
 - All crates use vruffr-* naming
 - All features work in CLI, WASM, and Python bindings
