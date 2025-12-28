@@ -34,9 +34,9 @@
 
 ```
 cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
-# roughr: 23 passed
 # rough_tiny_skia: 9 passed
-# vruffr-cli: 62 passed
+# roughr: 23 passed (3 ignored)
+# vruffr-cli: 58 lib + 4 integration + 1 doc = 63 passed
 
 # All test-data SVGs render without panics:
 ./target/release/vruffr extra/test-data/*.svg
