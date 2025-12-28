@@ -24,11 +24,14 @@ cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 
 - **Phase 1**: Foundation cleanup (panic fixes)
 - **Phase 1.5**: Preprocessing (dedup, adaptive roughness)
+- **Phase 2**: Crate & directory renaming (vruffr_*)
 - **Phase 3**: CLI Integration (full-featured)
 - **Phase 4**: Documentation (README, SPEC, API docs)
 - **Phase 5**: Full WASM/Python rendering pipelines
 - **Phase 6**: Color modes (grayscale, sepia, invert), noise/grain
-- **Infrastructure**: CI/CD, build scripts, MkDocs
+- **Phase 7**: Edge roughening (--edge-roughen)
+- **Phase 8**: Duotone mode (--duotone)
+- **Phase 9**: Stroke scaling (--stroke-scale)
 
 ### Features
 
