@@ -70,7 +70,7 @@
 - [x] Rename CLI binary to vruffr
 - [x] Remove catch_unwind panic handlers from cli
 - [ ] Add backend selection CLI flag
-- [ ] Add SVG output format flag
+- [x] Add SVG output format flag
 - [ ] Add SVGpatch output mode
 - [x] Verify all test-data renders without panics
 - [x] Adapt extra/test-data.sh for new structure

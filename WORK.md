@@ -6,7 +6,7 @@
 
 - **Phase 1: Foundation Cleanup** - COMPLETE
 - **Phase 1.5: Preprocessing Features** - COMPLETE
-- **Phase 3: CLI Integration** - IN PROGRESS (8/11 tasks done)
+- **Phase 3: CLI Integration** - IN PROGRESS (9/11 tasks done)
 - **Phase 4: Documentation** - COMPLETE
 
 ### Key Accomplishments
@@ -28,6 +28,7 @@
 15. Adapted extra scripts for vruffr
 16. Added doc comments to all public APIs
 17. Tagged v0.1.0 initial release
+18. Verified SVG output format works (with --format and auto-detection)
 
 ### Test Status
 
