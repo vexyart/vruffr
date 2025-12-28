@@ -17,7 +17,7 @@ All core phases complete. Project production-ready.
 
 ```
 cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
-# 116 tests passing
+# 118 tests passing
 ```
 
 ### Completed Phases
@@ -42,6 +42,8 @@ cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 | Adaptive | `--adaptive-strength` | 0.0-2.0 |
 | Dedup | `--deduplicate` | flag |
 | Background | `--background` | transparent, white, black, #RGB, #RGBA, #RRGGBB, #RRGGBBAA |
+| Edge roughen | `--edge-roughen` | 0.0-1.0 |
+| Duotone | `--duotone` | "#shadow,#highlight" |
 
 ---
 
