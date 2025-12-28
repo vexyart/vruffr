@@ -228,7 +228,10 @@ fn parse_path_geometry(path_data: &str) -> ((f32, f32, f32, f32), f32, usize, u6
 
     while chars.peek().is_some() {
         // Skip whitespace
-        while chars.peek().map_or(false, |c| c.is_whitespace() || *c == ',') {
+        while chars
+            .peek()
+            .map_or(false, |c| c.is_whitespace() || *c == ',')
+        {
             chars.next();
         }
 
@@ -250,7 +253,9 @@ fn parse_path_geometry(path_data: &str) -> ((f32, f32, f32, f32), f32, usize, u6
                     current_y = nums[1];
                     start_x = current_x;
                     start_y = current_y;
-                    update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y);
+                    update_bounds(
+                        &mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y,
+                    );
                     sum_x += current_x;
                     sum_y += current_y;
                     point_count += 1;
@@ -262,7 +267,9 @@ fn parse_path_geometry(path_data: &str) -> ((f32, f32, f32, f32), f32, usize, u6
                     current_y += nums[1];
                     start_x = current_x;
                     start_y = current_y;
-                    update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y);
+                    update_bounds(
+                        &mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y,
+                    );
                     sum_x += current_x;
                     sum_y += current_y;
                     point_count += 1;
@@ -275,7 +282,9 @@ fn parse_path_geometry(path_data: &str) -> ((f32, f32, f32, f32), f32, usize, u6
                     path_length += (dx * dx + dy * dy).sqrt();
                     current_x = nums[0];
                     current_y = nums[1];
-                    update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y);
+                    update_bounds(
+                        &mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y,
+                    );
                     sum_x += current_x;
                     sum_y += current_y;
                     point_count += 1;
@@ -286,7 +295,9 @@ fn parse_path_geometry(path_data: &str) -> ((f32, f32, f32, f32), f32, usize, u6
                     path_length += (nums[0] * nums[0] + nums[1] * nums[1]).sqrt();
                     current_x += nums[0];
                     current_y += nums[1];
-                    update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y);
+                    update_bounds(
+                        &mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y,
+                    );
                     sum_x += current_x;
                     sum_y += current_y;
                     point_count += 1;
@@ -296,7 +307,9 @@ fn parse_path_geometry(path_data: &str) -> ((f32, f32, f32, f32), f32, usize, u6
                 if !nums.is_empty() {
                     path_length += (nums[0] - current_x).abs();
                     current_x = nums[0];
-                    update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y);
+                    update_bounds(
+                        &mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y,
+                    );
                     sum_x += current_x;
                     sum_y += current_y;
                     point_count += 1;
@@ -306,7 +319,9 @@ fn parse_path_geometry(path_data: &str) -> ((f32, f32, f32, f32), f32, usize, u6
                 if !nums.is_empty() {
                     path_length += nums[0].abs();
                     current_x += nums[0];
-                    update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y);
+                    update_bounds(
+                        &mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y,
+                    );
                     sum_x += current_x;
                     sum_y += current_y;
                     point_count += 1;
@@ -316,7 +331,9 @@ fn parse_path_geometry(path_data: &str) -> ((f32, f32, f32, f32), f32, usize, u6
                 if !nums.is_empty() {
                     path_length += (nums[0] - current_y).abs();
                     current_y = nums[0];
-                    update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y);
+                    update_bounds(
+                        &mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y,
+                    );
                     sum_x += current_x;
                     sum_y += current_y;
                     point_count += 1;
@@ -326,7 +343,9 @@ fn parse_path_geometry(path_data: &str) -> ((f32, f32, f32, f32), f32, usize, u6
                 if !nums.is_empty() {
                     path_length += nums[0].abs();
                     current_y += nums[0];
-                    update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y);
+                    update_bounds(
+                        &mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y,
+                    );
                     sum_x += current_x;
                     sum_y += current_y;
                     point_count += 1;
@@ -342,9 +361,15 @@ fn parse_path_geometry(path_data: &str) -> ((f32, f32, f32, f32), f32, usize, u6
                     path_length += (ctrl_length + chord) / 2.0;
                     current_x = nums[4];
                     current_y = nums[5];
-                    update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y);
-                    update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, nums[0], nums[1]);
-                    update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, nums[2], nums[3]);
+                    update_bounds(
+                        &mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y,
+                    );
+                    update_bounds(
+                        &mut min_x, &mut min_y, &mut max_x, &mut max_y, nums[0], nums[1],
+                    );
+                    update_bounds(
+                        &mut min_x, &mut min_y, &mut max_x, &mut max_y, nums[2], nums[3],
+                    );
                     sum_x += current_x;
                     sum_y += current_y;
                     point_count += 1;
@@ -365,7 +390,9 @@ fn parse_path_geometry(path_data: &str) -> ((f32, f32, f32, f32), f32, usize, u6
                     path_length += (ctrl_length + chord) / 2.0;
                     current_x = x;
                     current_y = y;
-                    update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y);
+                    update_bounds(
+                        &mut min_x, &mut min_y, &mut max_x, &mut max_y, current_x, current_y,
+                    );
                     update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, x1, y1);
                     update_bounds(&mut min_x, &mut min_y, &mut max_x, &mut max_y, x2, y2);
                     sum_x += current_x;
@@ -404,7 +431,13 @@ fn parse_path_geometry(path_data: &str) -> ((f32, f32, f32, f32), f32, usize, u6
         max_y = 0.0;
     }
 
-    ((min_x, min_y, max_x, max_y), path_length, vertex_count, command_hash, centroid)
+    (
+        (min_x, min_y, max_x, max_y),
+        path_length,
+        vertex_count,
+        command_hash,
+        centroid,
+    )
 }
 
 /// Parse a sequence of numbers from the character iterator.
@@ -413,7 +446,10 @@ fn parse_numbers(chars: &mut std::iter::Peekable<std::str::Chars>) -> Vec<f32> {
 
     loop {
         // Skip whitespace and commas
-        while chars.peek().map_or(false, |c| c.is_whitespace() || *c == ',') {
+        while chars
+            .peek()
+            .map_or(false, |c| c.is_whitespace() || *c == ',')
+        {
             chars.next();
         }
 
@@ -431,7 +467,10 @@ fn parse_numbers(chars: &mut std::iter::Peekable<std::str::Chars>) -> Vec<f32> {
         }
 
         // Parse digits and decimal point
-        while chars.peek().map_or(false, |c| c.is_ascii_digit() || *c == '.') {
+        while chars
+            .peek()
+            .map_or(false, |c| c.is_ascii_digit() || *c == '.')
+        {
             num_str.push(chars.next().unwrap());
         }
 
@@ -456,7 +495,14 @@ fn parse_numbers(chars: &mut std::iter::Peekable<std::str::Chars>) -> Vec<f32> {
     numbers
 }
 
-fn update_bounds(min_x: &mut f32, min_y: &mut f32, max_x: &mut f32, max_y: &mut f32, x: f32, y: f32) {
+fn update_bounds(
+    min_x: &mut f32,
+    min_y: &mut f32,
+    max_x: &mut f32,
+    max_y: &mut f32,
+    x: f32,
+    y: f32,
+) {
     *min_x = min_x.min(x);
     *min_y = min_y.min(y);
     *max_x = max_x.max(x);

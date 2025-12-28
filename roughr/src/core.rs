@@ -331,7 +331,11 @@ mod tests {
         };
         // 10px element: scale = (10/100)^0.5 = 0.316
         let eff = opts.effective_roughness(10.0);
-        assert!(eff < 1.0, "Small element should have reduced roughness, got {}", eff);
+        assert!(
+            eff < 1.0,
+            "Small element should have reduced roughness, got {}",
+            eff
+        );
         assert!(eff > 0.2, "Should not go below min scale, got {}", eff);
     }
 
@@ -345,7 +349,11 @@ mod tests {
         };
         // 400px element: scale = (400/100)^0.5 = 2.0
         let eff = opts.effective_roughness(400.0);
-        assert!(eff > 1.0, "Large element should have increased roughness, got {}", eff);
+        assert!(
+            eff > 1.0,
+            "Large element should have increased roughness, got {}",
+            eff
+        );
         assert!(eff <= 2.0, "Should not exceed max scale, got {}", eff);
     }
 
@@ -359,11 +367,19 @@ mod tests {
         };
         // Very small element should clamp to 0.2 scale
         let eff_small = opts.effective_roughness(1.0);
-        assert!((eff_small - 0.2).abs() < 0.001, "Should clamp to 0.2, got {}", eff_small);
+        assert!(
+            (eff_small - 0.2).abs() < 0.001,
+            "Should clamp to 0.2, got {}",
+            eff_small
+        );
 
         // Very large element should clamp to 2.0 scale
         let eff_large = opts.effective_roughness(10000.0);
-        assert!((eff_large - 2.0).abs() < 0.001, "Should clamp to 2.0, got {}", eff_large);
+        assert!(
+            (eff_large - 2.0).abs() < 0.001,
+            "Should clamp to 2.0, got {}",
+            eff_large
+        );
     }
 
     #[test]

@@ -9,7 +9,10 @@ fn vruffr_bin() -> Command {
 
 #[test]
 fn test_cli_help() {
-    let output = vruffr_bin().arg("--help").output().expect("Failed to run vruffr");
+    let output = vruffr_bin()
+        .arg("--help")
+        .output()
+        .expect("Failed to run vruffr");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("vruffr"));
@@ -19,7 +22,10 @@ fn test_cli_help() {
 
 #[test]
 fn test_cli_version() {
-    let output = vruffr_bin().arg("--version").output().expect("Failed to run vruffr");
+    let output = vruffr_bin()
+        .arg("--version")
+        .output()
+        .expect("Failed to run vruffr");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("vruffr"));
@@ -105,7 +111,10 @@ fn test_cli_dry_run() {
         .expect("Failed to run vruffr");
 
     assert!(output.status.success(), "CLI failed: {:?}", output);
-    assert!(!output_path.exists(), "Output should not be created in dry-run mode");
+    assert!(
+        !output_path.exists(),
+        "Output should not be created in dry-run mode"
+    );
 
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(stderr.contains("Valid SVG"), "Should report valid SVG");
@@ -183,7 +192,12 @@ fn test_cli_stdin() {
         .expect("Failed to spawn vruffr");
 
     use std::io::Write;
-    child.stdin.take().unwrap().write_all(svg.as_bytes()).expect("Failed to write stdin");
+    child
+        .stdin
+        .take()
+        .unwrap()
+        .write_all(svg.as_bytes())
+        .expect("Failed to write stdin");
 
     let output = child.wait_with_output().expect("Failed to wait");
     assert!(output.status.success(), "CLI failed: {:?}", output);

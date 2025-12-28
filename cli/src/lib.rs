@@ -901,7 +901,10 @@ pub fn render_to_elements(
         // Collect raw paths, deduplicate, then sketch
         let raw_paths = collect_raw_paths(tree.root(), options, &mut warnings);
         let deduped = apply_dedup(raw_paths, options.dedup_epsilon);
-        deduped.iter().flat_map(|p| sketch_raw_path(p, options)).collect()
+        deduped
+            .iter()
+            .flat_map(|p| sketch_raw_path(p, options))
+            .collect()
     } else {
         // Original path: sketch each path as encountered
         collect_group_elements(tree.root(), options, &mut warnings)
@@ -1672,7 +1675,11 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="green"/>
         </svg>"#;
 
-        let options = SketchOptions { deduplicate: true, dedup_epsilon: 0.1, ..Default::default() };
+        let options = SketchOptions {
+            deduplicate: true,
+            dedup_epsilon: 0.1,
+            ..Default::default()
+        };
         let pixmap = render_sketch(svg, &options).expect("Failed to render with dedup");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1698,7 +1705,11 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="red"/>
         </svg>"#;
 
-        let options = SketchOptions { deduplicate: true, dedup_epsilon: 0.1, ..Default::default() };
+        let options = SketchOptions {
+            deduplicate: true,
+            dedup_epsilon: 0.1,
+            ..Default::default()
+        };
         let (svg_out, _warnings) = render_to_svg(svg, &options).expect("Failed SVG output");
         assert!(svg_out.contains("<svg"));
         assert!(svg_out.contains("</svg>"));
@@ -1712,7 +1723,11 @@ mod tests {
             <rect x="60" y="60" width="30" height="30" fill="red"/>
         </svg>"#;
 
-        let options = SketchOptions { deduplicate: true, dedup_epsilon: 0.1, ..Default::default() };
+        let options = SketchOptions {
+            deduplicate: true,
+            dedup_epsilon: 0.1,
+            ..Default::default()
+        };
         let pixmap = render_sketch(svg, &options).expect("Failed to render unique paths");
         assert_eq!(pixmap.width(), 100);
     }

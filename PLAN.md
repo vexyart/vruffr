@@ -31,23 +31,28 @@ vruffr/
     └── ext/             # Reference libraries (READ-ONLY)
 ```
 
-### Target State
+### Current State (Achieved)
 
 ```
 vruffr/
-├── crates/
-│   ├── vruffr-core/     # Core primitives (from roughr)
-│   ├── vruffr-path/     # Path operations (from svg_path_ops + points_on_curve)
-│   ├── vruffr-skia/     # tiny-skia backend (from rough_tiny_skia)
-│   ├── vruffr-piet/     # piet backends (from rough_piet)
-│   ├── vruffr-vello/    # vello backend (from rough_vello)
-│   └── vruffr/          # Main library unifying all backends
-├── cli/                 # Rust CLI tool (from skesvg)
-├── python/              # Python bindings (PyO3)
-├── wasm/                # WASM-web package
-├── examples/            # Usage examples
-└── extra/ext/           # Reference libraries (READ-ONLY)
+├── roughr/              # Core sketch primitives
+├── points_on_curve/     # Bezier utilities
+├── svg_path_ops/        # SVG path manipulation
+├── rough_tiny_skia/     # tiny-skia backend
+├── rough_piet/          # piet backends
+├── rough_vello/         # vello backend
+├── cli/                 # Rust CLI tool (vruffr binary)
+├── python/              # Python bindings scaffold (PyO3/maturin)
+├── wasm/                # WASM bindings scaffold (wasm-bindgen)
+├── examples/            # Example SVGs and Rust code
+├── src_docs/            # MkDocs documentation source
+├── .github/workflows/   # CI/CD (build, test, release, docs)
+├── build.sh             # Master build script
+├── demo.sh              # Demo runner
+└── extra/               # Reference libraries (READ-ONLY, gitignored)
 ```
+
+Note: Phase 2 (crate renaming to vruffr-*) deferred as optional polish.
 
 ### Rendering Pipeline
 
@@ -191,17 +196,19 @@ Output (PNG / SVG / native surface)
 6. **DEPENDENCIES.md** - DONE (package justifications)
 7. **CHANGELOG.md** - DONE (initial entry)
 
-### Phase 5: Python & WASM (Future)
+### Phase 5: Python & WASM - PARTIAL
 
 **Goal:** Language bindings for broader adoption.
 
-1. **Python bindings** (PyO3/maturin)
-   - vruffr-py package
-   - Fire-based CLI wrapper
+1. **Scaffolding** - COMPLETE
+   - python/ directory with PyO3/maturin setup
+   - wasm/ directory with wasm-bindgen setup
+   - Playground HTML page for WASM demo
 
-2. **WASM package**
-   - wasm-pack build
-   - Browser demo
+2. **Rendering Pipelines** - TODO
+   - Complete WASM render_to_svg implementation
+   - Complete Python render_to_png/svg implementation
+   - Fire-based Python CLI wrapper
 
 ### Phase 6: Advanced Features (Future)
 

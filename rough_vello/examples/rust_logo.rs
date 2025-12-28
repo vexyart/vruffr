@@ -7,7 +7,6 @@ use rough_vello::VelloGenerator;
 use roughr::core::{FillStyle, OptionsBuilder};
 use svg_path_ops::pt::PathTransformer;
 
-
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)

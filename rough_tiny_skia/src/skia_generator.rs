@@ -8,16 +8,7 @@ use palette::Srgba;
 use roughr::core::{Drawable, OpSet, OpSetType, OpType, Options};
 use roughr::generator::Generator;
 use tiny_skia::{
-    FillRule,
-    LineCap,
-    LineJoin,
-    Paint,
-    Path,
-    PathBuilder,
-    PixmapMut,
-    Stroke,
-    StrokeDash,
-    Transform,
+    FillRule, LineCap, LineJoin, Paint, Path, PathBuilder, PixmapMut, Stroke, StrokeDash, Transform,
 };
 
 #[derive(Default)]
@@ -461,10 +452,7 @@ mod tests {
     fn test_opset_to_shape_only_moveto() {
         let moveto_only: OpSet<f64> = OpSet {
             op_set_type: OpSetType::Path,
-            ops: vec![Op {
-                op: OpType::Move,
-                data: vec![10.0, 20.0],
-            }],
+            ops: vec![Op { op: OpType::Move, data: vec![10.0, 20.0] }],
             size: None,
             path: None,
         };
@@ -478,14 +466,8 @@ mod tests {
         let opset_with_line: OpSet<f64> = OpSet {
             op_set_type: OpSetType::Path,
             ops: vec![
-                Op {
-                    op: OpType::Move,
-                    data: vec![0.0, 0.0],
-                },
-                Op {
-                    op: OpType::LineTo,
-                    data: vec![100.0, 100.0],
-                },
+                Op { op: OpType::Move, data: vec![0.0, 0.0] },
+                Op { op: OpType::LineTo, data: vec![100.0, 100.0] },
             ],
             size: None,
             path: None,
@@ -546,8 +528,7 @@ mod tests {
     fn test_skia_generator_path() {
         let options = OptionsBuilder::default().build().unwrap();
         let gen = SkiaGenerator::new(options);
-        let drawable: SkiaDrawable<f64> =
-            gen.path("M 10 10 L 90 10 L 90 90 L 10 90 Z".to_string());
+        let drawable: SkiaDrawable<f64> = gen.path("M 10 10 L 90 10 L 90 90 L 10 90 Z".to_string());
         assert!(!drawable.sets.is_empty());
     }
 

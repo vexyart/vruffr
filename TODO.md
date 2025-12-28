@@ -93,13 +93,19 @@
 - [x] Create DEPENDENCIES.md listing all deps with justification
 - [x] Create CHANGELOG.md with initial entry
 
-## Phase 5: Python & WASM (Future)
+## Phase 5: Python & WASM
 
-- [ ] Set up python/ directory with maturin/PyO3
-- [ ] Create Python wrapper for core functionality
+### Scaffolding - COMPLETE
+
+- [x] Set up python/ directory with maturin/PyO3
+- [x] Set up wasm/ directory with wasm-pack
+- [x] Create browser demo/playground HTML page
+
+### Rendering Pipelines - IN PROGRESS
+
+- [ ] Implement full WASM rendering pipeline
+- [ ] Implement full Python rendering pipeline
 - [ ] Create Fire-based Python CLI
-- [ ] Set up wasm/ directory with wasm-pack
-- [ ] Create browser demo for WASM
 - [ ] Add Python package tests
 - [ ] Add WASM integration tests
 
@@ -118,6 +124,15 @@
 - [ ] Add noise/grain post-processing
 - [ ] Add edge roughening filter
 - [ ] Research and prototype additional sketch effects
+
+## Project Infrastructure - COMPLETE
+
+- [x] Create src_docs/ with MkDocs Material documentation
+- [x] Create GitHub Actions workflows (CI, Release, Docs)
+- [x] Create build.sh master script
+- [x] Create demo.sh with examples
+- [x] Consolidate examples/ folder
+- [x] Remove obsolete extra/ files
 
 ## Cleanup & Polish
 

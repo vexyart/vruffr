@@ -8,31 +8,13 @@ use points_on_curve::{curve_to_bezier, points_on_bezier_curves};
 use svgtypes::PathSegment;
 
 use crate::core::{
-    Drawable,
-    FillStyle,
-    OpSet,
-    OpSetType,
-    OpType,
-    Options,
-    OptionsBuilder,
-    PathInfo,
-    _c,
+    Drawable, FillStyle, OpSet, OpSetType, OpType, Options, OptionsBuilder, PathInfo, _c,
 };
 use crate::geometry::{convert_bezier_quadratic_to_cubic, BezierQuadratic};
 use crate::points_on_path::{points_on_path, points_on_segments};
 use crate::renderer::{
-    bezier_cubic,
-    bezier_quadratic,
-    curve,
-    ellipse_with_params,
-    generate_ellipse_params,
-    line,
-    linear_path,
-    pattern_fill_arc,
-    pattern_fill_polygons,
-    rectangle,
-    solid_fill_polygon,
-    svg_path,
+    bezier_cubic, bezier_quadratic, curve, ellipse_with_params, generate_ellipse_params, line,
+    linear_path, pattern_fill_arc, pattern_fill_polygons, rectangle, solid_fill_polygon, svg_path,
     svg_segments,
 };
 
