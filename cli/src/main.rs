@@ -84,6 +84,11 @@ struct Args {
     #[arg(short = 's', long, default_value = "1.0")]
     scale: f32,
 
+    /// Output resolution in pixels per inch (default: 150, SVG assumes 96)
+    /// Higher values produce larger, more detailed output
+    #[arg(long, default_value = "150.0")]
+    dpi: f32,
+
     /// Validate SVG without rendering (checks if parseable)
     #[arg(long)]
     dry_run: bool,

@@ -28,6 +28,22 @@ mkdir -p "$OUTPUT_DIR"
 
 log() { echo -e "\033[0;32m==>\033[0m $1"; }
 
+# Generate both PNG and SVG outputs for a given combination
+generate_both() {
+    local input_svg="$1"
+    local base_output="$2"
+    shift 2
+    local extra_args=("$@")
+    
+    # Generate PNG
+    $VRUFFR "$input_svg" -o "${base_output}.png" "${extra_args[@]}"
+    echo "  Created: ${base_output}.png"
+    
+    # Generate SVG
+    $VRUFFR "$input_svg" -o "${base_output}.svg" "${extra_args[@]}"
+    echo "  Created: ${base_output}.svg"
+}
+
 # Create a simple test SVG if examples don't exist
 create_test_svg() {
     local file="$EXAMPLES_DIR/demo-shapes.svg"
@@ -50,21 +66,14 @@ demo_basic() {
     log "Basic conversions"
     create_test_svg
 
-    # PNG output
-    $VRUFFR "$EXAMPLES_DIR/demo-shapes.svg" -o "$OUTPUT_DIR/basic-default.png"
-    echo "  Created: $OUTPUT_DIR/basic-default.png"
-
-    # SVG output
-    $VRUFFR "$EXAMPLES_DIR/demo-shapes.svg" -o "$OUTPUT_DIR/basic-default.svg"
-    echo "  Created: $OUTPUT_DIR/basic-default.svg"
+    # Default output (both PNG and SVG)
+    generate_both "$EXAMPLES_DIR/demo-shapes.svg" "$OUTPUT_DIR/basic-default"
 
     # Transparent background
-    $VRUFFR "$EXAMPLES_DIR/demo-shapes.svg" -o "$OUTPUT_DIR/basic-transparent.png" --background transparent
-    echo "  Created: $OUTPUT_DIR/basic-transparent.png"
+    generate_both "$EXAMPLES_DIR/demo-shapes.svg" "$OUTPUT_DIR/basic-transparent" --background transparent
 
     # Scaled output
-    $VRUFFR "$EXAMPLES_DIR/demo-shapes.svg" -o "$OUTPUT_DIR/basic-2x.png" --scale 2.0
-    echo "  Created: $OUTPUT_DIR/basic-2x.png"
+    generate_both "$EXAMPLES_DIR/demo-shapes.svg" "$OUTPUT_DIR/basic-2x" --scale 2.0
 }
 
 demo_styles() {
@@ -72,36 +81,30 @@ demo_styles() {
     create_test_svg
 
     # Crosshatch (default)
-    $VRUFFR "$EXAMPLES_DIR/demo-shapes.svg" -o "$OUTPUT_DIR/style-crosshatch.png" \
+    generate_both "$EXAMPLES_DIR/demo-shapes.svg" "$OUTPUT_DIR/style-crosshatch" \
         --fill-style crosshatch
-    echo "  Created: $OUTPUT_DIR/style-crosshatch.png"
 
     # Hachure
-    $VRUFFR "$EXAMPLES_DIR/demo-shapes.svg" -o "$OUTPUT_DIR/style-hachure.png" \
+    generate_both "$EXAMPLES_DIR/demo-shapes.svg" "$OUTPUT_DIR/style-hachure" \
         --fill-style hachure
-    echo "  Created: $OUTPUT_DIR/style-hachure.png"
 
     # Hachure with different angles
     for angle in 0 30 45 90; do
-        $VRUFFR "$EXAMPLES_DIR/demo-shapes.svg" -o "$OUTPUT_DIR/style-hachure-${angle}deg.png" \
+        generate_both "$EXAMPLES_DIR/demo-shapes.svg" "$OUTPUT_DIR/style-hachure-${angle}deg" \
             --fill-style hachure --hachure-angle "$angle"
-        echo "  Created: $OUTPUT_DIR/style-hachure-${angle}deg.png"
     done
 
     # Different gaps
     for gap in 2 4 8; do
-        $VRUFFR "$EXAMPLES_DIR/demo-shapes.svg" -o "$OUTPUT_DIR/style-gap-${gap}.png" \
+        generate_both "$EXAMPLES_DIR/demo-shapes.svg" "$OUTPUT_DIR/style-gap-${gap}" \
             --fill-style hachure --hachure-gap "$gap"
-        echo "  Created: $OUTPUT_DIR/style-gap-${gap}.png"
     done
 
     # Strokes only
-    $VRUFFR "$EXAMPLES_DIR/demo-shapes.svg" -o "$OUTPUT_DIR/style-strokes-only.png" --no-fill
-    echo "  Created: $OUTPUT_DIR/style-strokes-only.png"
+    generate_both "$EXAMPLES_DIR/demo-shapes.svg" "$OUTPUT_DIR/style-strokes-only" --no-fill
 
     # Fills only
-    $VRUFFR "$EXAMPLES_DIR/demo-shapes.svg" -o "$OUTPUT_DIR/style-fills-only.png" --no-stroke
-    echo "  Created: $OUTPUT_DIR/style-fills-only.png"
+    generate_both "$EXAMPLES_DIR/demo-shapes.svg" "$OUTPUT_DIR/style-fills-only" --no-stroke
 }
 
 demo_roughness() {
@@ -109,16 +112,14 @@ demo_roughness() {
     create_test_svg
 
     for r in 0.0 0.5 1.0 1.5 2.0 3.0 5.0; do
-        $VRUFFR "$EXAMPLES_DIR/demo-shapes.svg" -o "$OUTPUT_DIR/rough-${r}.png" \
+        generate_both "$EXAMPLES_DIR/demo-shapes.svg" "$OUTPUT_DIR/rough-${r}" \
             --roughness "$r" --seed 42
-        echo "  Created: $OUTPUT_DIR/rough-${r}.png"
     done
 
     # Bowing variations
     for b in 0.0 1.0 2.0 3.0; do
-        $VRUFFR "$EXAMPLES_DIR/demo-shapes.svg" -o "$OUTPUT_DIR/bow-${b}.png" \
+        generate_both "$EXAMPLES_DIR/demo-shapes.svg" "$OUTPUT_DIR/bow-${b}" \
             --roughness 1.5 --bowing "$b" --seed 42
-        echo "  Created: $OUTPUT_DIR/bow-${b}.png"
     done
 }
 
@@ -144,15 +145,15 @@ demo_adaptive() {
 EOF
 
     # Without adaptive
-    $VRUFFR "$EXAMPLES_DIR/demo-mixed-sizes.svg" -o "$OUTPUT_DIR/adaptive-off.png" \
+    generate_both "$EXAMPLES_DIR/demo-mixed-sizes.svg" "$OUTPUT_DIR/adaptive-off" \
         --roughness 2.0 --adaptive-strength 0.0
-    echo "  Created: $OUTPUT_DIR/adaptive-off.png (no adaptive)"
+    echo "  (no adaptive)"
 
     # With adaptive
     for strength in 0.5 1.0 2.0; do
-        $VRUFFR "$EXAMPLES_DIR/demo-mixed-sizes.svg" -o "$OUTPUT_DIR/adaptive-${strength}.png" \
+        generate_both "$EXAMPLES_DIR/demo-mixed-sizes.svg" "$OUTPUT_DIR/adaptive-${strength}" \
             --roughness 2.0 --adaptive-strength "$strength" --reference-size 100
-        echo "  Created: $OUTPUT_DIR/adaptive-${strength}.png (strength=$strength)"
+        echo "  (strength=$strength)"
     done
 }
 
@@ -171,8 +172,7 @@ EOF
     # Process batch
     for svg in "$EXAMPLES_DIR"/batch-input-*.svg; do
         name=$(basename "$svg" .svg)
-        $VRUFFR "$svg" -o "$OUTPUT_DIR/${name}-sketch.png" --seed 42 -q
-        echo "  Created: $OUTPUT_DIR/${name}-sketch.png"
+        generate_both "$svg" "$OUTPUT_DIR/${name}-sketch" --seed 42 -q
     done
 }
 
@@ -193,59 +193,50 @@ demo_real_world() {
         log "Converting sag.svg"
         
         # Default conversion
-        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-default.png" --seed 42
-        echo "  Created: $OUTPUT_DIR/sag-default.png"
+        generate_both "$sag_svg" "$OUTPUT_DIR/sag-default" --seed 42
         
         # Different roughness levels
         for r in 0.5 1.5 2.5; do
-            $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-rough-${r}.png" \
+            generate_both "$sag_svg" "$OUTPUT_DIR/sag-rough-${r}" \
                 --roughness "$r" --seed 42
-            echo "  Created: $OUTPUT_DIR/sag-rough-${r}.png"
         done
         
         # Different fill styles
-        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-crosshatch.png" \
+        generate_both "$sag_svg" "$OUTPUT_DIR/sag-crosshatch" \
             --fill-style crosshatch --seed 42
-        echo "  Created: $OUTPUT_DIR/sag-crosshatch.png"
         
-        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-hachure.png" \
+        generate_both "$sag_svg" "$OUTPUT_DIR/sag-hachure" \
             --fill-style hachure --seed 42
-        echo "  Created: $OUTPUT_DIR/sag-hachure.png"
         
         # Transparent background
-        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-transparent.png" \
+        generate_both "$sag_svg" "$OUTPUT_DIR/sag-transparent" \
             --background transparent --seed 42
-        echo "  Created: $OUTPUT_DIR/sag-transparent.png"
-        
-        # SVG output
-        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-sketch.svg" --seed 42
-        echo "  Created: $OUTPUT_DIR/sag-sketch.svg"
         
         # Adaptive roughness examples
         log "  Adaptive roughness with sag.svg"
         for strength in 0.5 1.0 2.0; do
-            $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-adaptive-${strength}.png" \
+            generate_both "$sag_svg" "$OUTPUT_DIR/sag-adaptive-${strength}" \
                 --roughness 2.0 --adaptive-strength "$strength" \
                 --reference-size 100 --seed 42
-            echo "    Created: $OUTPUT_DIR/sag-adaptive-${strength}.png (strength=$strength)"
+            echo "    (strength=$strength)"
         done
         
         # Deduplication examples
         log "  Deduplication with sag.svg"
-        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-dedup.png" \
+        generate_both "$sag_svg" "$OUTPUT_DIR/sag-dedup" \
             --deduplicate --seed 42
-        echo "    Created: $OUTPUT_DIR/sag-dedup.png (with deduplication)"
+        echo "    (with deduplication)"
         
-        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-dedup-epsilon-0.5.png" \
+        generate_both "$sag_svg" "$OUTPUT_DIR/sag-dedup-epsilon-0.5" \
             --deduplicate --dedup-epsilon 0.5 --seed 42
-        echo "    Created: $OUTPUT_DIR/sag-dedup-epsilon-0.5.png (epsilon=0.5)"
+        echo "    (epsilon=0.5)"
         
         # Combined adaptive + deduplication
         log "  Combined adaptive + deduplication with sag.svg"
-        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-adaptive-dedup.png" \
+        generate_both "$sag_svg" "$OUTPUT_DIR/sag-adaptive-dedup" \
             --roughness 2.0 --adaptive-strength 1.5 \
             --reference-size 100 --deduplicate --seed 42
-        echo "    Created: $OUTPUT_DIR/sag-adaptive-dedup.png (adaptive + dedup)"
+        echo "    (adaptive + dedup)"
     else
         echo "  Warning: sag.svg not found (checked: ., examples/, examples)"
     fi
@@ -255,33 +246,24 @@ demo_real_world() {
         log "Converting tiger.svg"
         
         # Default conversion
-        $VRUFFR "$tiger_svg" -o "$OUTPUT_DIR/tiger-default.png" --seed 42
-        echo "  Created: $OUTPUT_DIR/tiger-default.png"
+        generate_both "$tiger_svg" "$OUTPUT_DIR/tiger-default" --seed 42
         
         # Different roughness levels
         for r in 0.5 1.5 2.5; do
-            $VRUFFR "$tiger_svg" -o "$OUTPUT_DIR/tiger-rough-${r}.png" \
+            generate_both "$tiger_svg" "$OUTPUT_DIR/tiger-rough-${r}" \
                 --roughness "$r" --seed 42
-            echo "  Created: $OUTPUT_DIR/tiger-rough-${r}.png"
         done
         
         # Different fill styles
-        $VRUFFR "$tiger_svg" -o "$OUTPUT_DIR/tiger-crosshatch.png" \
+        generate_both "$tiger_svg" "$OUTPUT_DIR/tiger-crosshatch" \
             --fill-style crosshatch --seed 42
-        echo "  Created: $OUTPUT_DIR/tiger-crosshatch.png"
         
-        $VRUFFR "$tiger_svg" -o "$OUTPUT_DIR/tiger-hachure.png" \
+        generate_both "$tiger_svg" "$OUTPUT_DIR/tiger-hachure" \
             --fill-style hachure --seed 42
-        echo "  Created: $OUTPUT_DIR/tiger-hachure.png"
         
         # Transparent background
-        $VRUFFR "$tiger_svg" -o "$OUTPUT_DIR/tiger-transparent.png" \
+        generate_both "$tiger_svg" "$OUTPUT_DIR/tiger-transparent" \
             --background transparent --seed 42
-        echo "  Created: $OUTPUT_DIR/tiger-transparent.png"
-        
-        # SVG output
-        $VRUFFR "$tiger_svg" -o "$OUTPUT_DIR/tiger-sketch.svg" --seed 42
-        echo "  Created: $OUTPUT_DIR/tiger-sketch.svg"
     else
         echo "  Warning: tiger.svg not found (checked: ., examples/, examples)"
     fi

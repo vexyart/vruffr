@@ -68,7 +68,18 @@ impl SkiaGenerator {
 }
 
 impl<F: Float + Trig> SkiaDrawable<F> {
+    /// Draw with identity transform (original coordinates)
     pub fn draw(&self, ctx: &mut PixmapMut) {
+        self.draw_with_transform(ctx, Transform::identity());
+    }
+
+    /// Draw with a scale transform (for DPI scaling)
+    pub fn draw_scaled(&self, ctx: &mut PixmapMut, scale: f32) {
+        self.draw_with_transform(ctx, Transform::from_scale(scale, scale));
+    }
+
+    /// Draw with a custom transform
+    pub fn draw_with_transform(&self, ctx: &mut PixmapMut, transform: Transform) {
         for set in self.sets.iter() {
             // Skip empty or degenerate paths
             let path = match &set.ops {
@@ -117,7 +128,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                         );
                         paint.anti_alias = true;
 
-                        ctx.stroke_path(path, &paint, &stroke, Transform::identity(), None);
+                        ctx.stroke_path(path, &paint, &stroke, transform, None);
                     } else {
                         let mut stroke = Stroke::default();
                         stroke.width = self.options.stroke_width.unwrap_or(1.0);
@@ -138,7 +149,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                         );
                         paint.anti_alias = true;
 
-                        ctx.stroke_path(path, &paint, &stroke, Transform::identity(), None);
+                        ctx.stroke_path(path, &paint, &stroke, transform, None);
                     }
                 }
                 OpSetType::FillPath => {
@@ -163,7 +174,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                                 path,
                                 &paint,
                                 FillRule::EvenOdd,
-                                Transform::identity(),
+                                transform,
                                 None,
                             );
                         }
@@ -172,7 +183,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                                 path,
                                 &paint,
                                 FillRule::Winding,
-                                Transform::identity(),
+                                transform,
                                 None,
                             );
                         }
@@ -215,7 +226,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                             fill_color_components.3,
                         );
                         paint.anti_alias = true;
-                        ctx.stroke_path(path, &paint, &stroke, Transform::identity(), None);
+                        ctx.stroke_path(path, &paint, &stroke, transform, None);
                     } else {
                         let mut stroke = Stroke::default();
                         stroke.width = self.options.fill_weight.unwrap_or(1.0);
@@ -239,7 +250,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                             fill_color_components.3,
                         );
                         paint.anti_alias = true;
-                        ctx.stroke_path(path, &paint, &stroke, Transform::identity(), None);
+                        ctx.stroke_path(path, &paint, &stroke, transform, None);
                     }
                 }
             }

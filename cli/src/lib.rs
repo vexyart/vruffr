@@ -189,6 +189,8 @@ pub struct SketchOptions {
     pub edge_roughen: f32,
     /// Scale factor for stroke widths (default: 1.0)
     pub stroke_scale: f32,
+    /// Output resolution in pixels per inch (default: 150, SVG assumes 96)
+    pub dpi: f32,
 }
 
 impl Default for SketchOptions {
@@ -218,6 +220,7 @@ impl Default for SketchOptions {
             noise: 0.0,
             edge_roughen: 0.0,
             stroke_scale: 1.0,
+            dpi: 150.0,
         }
     }
 }
@@ -442,8 +445,10 @@ pub fn render_sketch_with_warnings(
     let svg_size = tree.size();
     let base_width = options.width.unwrap_or(svg_size.width() as u32);
     let base_height = options.height.unwrap_or(svg_size.height() as u32);
-    let width = (base_width as f32 * options.scale) as u32;
-    let height = (base_height as f32 * options.scale) as u32;
+    // Combine user scale with DPI scale (SVG assumes 96 DPI)
+    let effective_scale = options.scale * (options.dpi / 96.0);
+    let width = (base_width as f32 * effective_scale) as u32;
+    let height = (base_height as f32 * effective_scale) as u32;
 
     let mut pixmap = Pixmap::new(width, height).context("Failed to create pixmap")?;
 
@@ -458,11 +463,11 @@ pub fn render_sketch_with_warnings(
         let raw_paths = collect_raw_paths(tree.root(), options, &mut warnings);
         let deduped = apply_dedup(raw_paths, options.dedup_epsilon);
         for info in &deduped {
-            render_raw_path(info, options, &mut pixmap.as_mut());
+            render_raw_path(info, options, &mut pixmap.as_mut(), effective_scale);
         }
     } else {
         // Original path: render each path as encountered
-        render_group(tree.root(), options, &mut pixmap.as_mut(), &mut warnings);
+        render_group(tree.root(), options, &mut pixmap.as_mut(), &mut warnings, effective_scale);
     }
 
     // Post-processing: color mode (grayscale/sepia)
@@ -482,21 +487,22 @@ fn render_group(
     options: &SketchOptions,
     pixmap: &mut PixmapMut,
     warnings: &mut RenderWarnings,
+    scale: f32,
 ) {
     for node in group.children() {
         match node {
             usvg::Node::Group(g) => {
-                render_group(g, options, pixmap, warnings);
+                render_group(g, options, pixmap, warnings, scale);
             }
             usvg::Node::Path(path) => {
-                render_path(path, options, pixmap);
+                render_path(path, options, pixmap, scale);
             }
             usvg::Node::Image(_) => {
                 warnings.has_images = true;
             }
             usvg::Node::Text(text) => {
                 // Process flattened text (text converted to paths)
-                render_group(text.flattened(), options, pixmap, warnings);
+                render_group(text.flattened(), options, pixmap, warnings, scale);
             }
         }
     }
@@ -1080,8 +1086,10 @@ pub fn render_to_elements(
     let svg_size = tree.size();
     let base_width = options.width.unwrap_or(svg_size.width() as u32);
     let base_height = options.height.unwrap_or(svg_size.height() as u32);
-    let width = (base_width as f32 * options.scale) as u32;
-    let height = (base_height as f32 * options.scale) as u32;
+    // Combine user scale with DPI scale (SVG assumes 96 DPI)
+    let effective_scale = options.scale * (options.dpi / 96.0);
+    let width = (base_width as f32 * effective_scale) as u32;
+    let height = (base_height as f32 * effective_scale) as u32;
 
     let mut warnings = RenderWarnings::default();
 
