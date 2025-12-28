@@ -296,6 +296,7 @@ fn main() -> Result<()> {
         noise: args.noise,
         edge_roughen: args.edge_roughen,
         stroke_scale: args.stroke_scale,
+        dpi: args.dpi,
     };
 
     let format = infer_format(&args.output, args.format);

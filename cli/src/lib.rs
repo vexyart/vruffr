@@ -12,9 +12,10 @@
 //!     <rect x="10" y="10" width="80" height="80" fill="blue"/>
 //! </svg>"#;
 //!
+//! // Default DPI is 150, so output is scaled by 150/96 ≈ 1.56x
 //! let options = SketchOptions::default();
 //! let pixmap = render_sketch(svg, &options).expect("render failed");
-//! assert_eq!(pixmap.width(), 100);
+//! assert_eq!(pixmap.width(), 156);  // 100 * (150/96)
 //! ```
 
 use anyhow::{Context, Result};
@@ -527,7 +528,7 @@ fn compute_effective_roughness(path: &usvg::Path, options: &SketchOptions) -> f3
     (options.roughness as f32) * scale
 }
 
-fn render_path(path: &usvg::Path, options: &SketchOptions, pixmap: &mut PixmapMut) {
+fn render_path(path: &usvg::Path, options: &SketchOptions, pixmap: &mut PixmapMut, render_scale: f32) {
     let svg_path = path_to_svg_string(path);
     if svg_path.is_empty() {
         return;
@@ -555,7 +556,7 @@ fn render_path(path: &usvg::Path, options: &SketchOptions, pixmap: &mut PixmapMu
 
             let fill_gen = SkiaGenerator::new(fill_options);
             let drawable = fill_gen.path::<f64>(svg_path.clone());
-            drawable.draw(pixmap);
+            drawable.draw_scaled(pixmap, render_scale);
         }
     }
 
@@ -577,13 +578,13 @@ fn render_path(path: &usvg::Path, options: &SketchOptions, pixmap: &mut PixmapMu
 
             let stroke_gen = SkiaGenerator::new(stroke_options);
             let drawable = stroke_gen.path::<f64>(svg_path);
-            drawable.draw(pixmap);
+            drawable.draw_scaled(pixmap, render_scale);
         }
     }
 }
 
 /// Render a RawPathInfo directly to pixmap (for dedup path)
-fn render_raw_path(info: &RawPathInfo, options: &SketchOptions, pixmap: &mut PixmapMut) {
+fn render_raw_path(info: &RawPathInfo, options: &SketchOptions, pixmap: &mut PixmapMut, render_scale: f32) {
     // Handle fill
     if let Some(fill_color) = info.fill_color {
         let fill_options = OptionsBuilder::default()
@@ -602,7 +603,7 @@ fn render_raw_path(info: &RawPathInfo, options: &SketchOptions, pixmap: &mut Pix
 
         let fill_gen = SkiaGenerator::new(fill_options);
         let drawable = fill_gen.path::<f64>(info.path_data.clone());
-        drawable.draw(pixmap);
+        drawable.draw_scaled(pixmap, render_scale);
     }
 
     // Handle stroke
@@ -618,7 +619,7 @@ fn render_raw_path(info: &RawPathInfo, options: &SketchOptions, pixmap: &mut Pix
 
         let stroke_gen = SkiaGenerator::new(stroke_options);
         let drawable = stroke_gen.path::<f64>(info.path_data.clone());
-        drawable.draw(pixmap);
+        drawable.draw_scaled(pixmap, render_scale);
     }
 }
 
@@ -1120,13 +1121,21 @@ pub fn render_to_svg(svg_data: &str, options: &SketchOptions) -> Result<(String,
 mod tests {
     use super::*;
 
+    /// Test helper: returns options with DPI=96 for 1:1 output dimensions
+    fn test_options() -> SketchOptions {
+        SketchOptions {
+            dpi: 96.0,
+            ..Default::default()
+        }
+    }
+
     #[test]
     fn test_simple_rect() {
         let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
             <rect x="10" y="10" width="80" height="80" fill="blue" stroke="black"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let result = render_sketch(svg, &options);
         assert!(result.is_ok());
 
@@ -1138,7 +1147,7 @@ mod tests {
     #[test]
     fn test_empty_svg() {
         let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"></svg>"#;
-        let options = SketchOptions::default();
+        let options = test_options();
         let result = render_sketch(svg, &options);
         assert!(result.is_ok());
     }
@@ -1155,7 +1164,7 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="url(#grad1)"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let result = render_sketch(svg, &options);
         assert!(result.is_ok());
     }
@@ -1253,7 +1262,7 @@ mod tests {
     #[test]
     fn test_empty_svg_no_paths() {
         let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"></svg>"#;
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render empty SVG");
 
         assert_eq!(pixmap.width(), 50);
@@ -1350,7 +1359,7 @@ mod tests {
             <rect fill="url(#g1)" width="100" height="100"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render gradient");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1362,7 +1371,7 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" style="fill:green;stroke:black;stroke-width:2"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render style attribute");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1377,7 +1386,7 @@ mod tests {
             <rect class="box" x="10" y="10" width="80" height="80"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render CSS class");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1389,7 +1398,7 @@ mod tests {
             <rect x="50" y="25" width="100" height="50" fill="orange"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render preserveAspectRatio");
         assert_eq!(pixmap.width(), 100);
         assert_eq!(pixmap.height(), 100);
@@ -1406,7 +1415,7 @@ mod tests {
             <use xlink:href="#myRect" x="50" y="50"/>
         </svg>"##;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render use element");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1418,7 +1427,7 @@ mod tests {
             <path d="M 10,10 L 50,50 L 90,10" fill="none" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render stroke styles");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1430,7 +1439,7 @@ mod tests {
             <path d="M 10,50 C 20,10 40,10 50,50 S 80,90 90,50" fill="none" stroke="green" stroke-width="2"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render smooth curve");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1442,7 +1451,7 @@ mod tests {
             <path d="M 10,50 A 40,40 0 1,1 90,50 A 40,40 0 1,1 10,50" fill="none" stroke="red" stroke-width="2"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render arc path");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1458,7 +1467,7 @@ mod tests {
             </g>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render nested transforms");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1470,7 +1479,7 @@ mod tests {
             <rect width="50" height="50" fill="red"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let result = render_sketch(svg, &options);
         // Zero-dimension SVG should fail (can't create valid pixmap)
         assert!(result.is_err());
@@ -1483,7 +1492,7 @@ mod tests {
             <path d="M 10,50 Q 50,10 90,50" fill="none" stroke="purple" stroke-width="2"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render quadratic bezier");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1495,7 +1504,7 @@ mod tests {
             <line x1="10" y1="50" x2="90" y2="50" stroke="black" stroke-width="2" stroke-dasharray="5,3"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render dashed stroke");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1511,7 +1520,7 @@ mod tests {
             <circle cx="75" cy="70" r="15" fill="orange"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render multiple paths");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1523,7 +1532,7 @@ mod tests {
             <path d="M 10,50 Q 30,10 50,50 T 90,50" fill="none" stroke="teal" stroke-width="2"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render smooth quadratic");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1536,7 +1545,7 @@ mod tests {
             <circle cx="70" cy="70" r="20" fill="blue" fill-opacity="0.7"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render opacity");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1554,7 +1563,7 @@ mod tests {
             <circle cx="50" cy="50" r="40" fill="url(#rg1)"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render radial gradient");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1567,7 +1576,7 @@ mod tests {
             <rect x="20" y="20" width="60" height="60" fill="none" stroke="blue" stroke-width="3" stroke-opacity="0.7"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render stroke opacity");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1579,7 +1588,7 @@ mod tests {
             <path d="M 10,50 A 40,20 0 1,1 90,50" fill="none" stroke="purple" stroke-width="2"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render elliptical arc");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1591,7 +1600,7 @@ mod tests {
             <path d="M 10,10 H 90 V 90 H 10 V 10 Z" fill="none" stroke="black" stroke-width="2"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render H/V commands");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1608,7 +1617,7 @@ mod tests {
             <line x1="10" y1="50" x2="80" y2="50" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
         </svg>"##;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render marker");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1625,7 +1634,7 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="blue" clip-path="url(#clip1)"/>
         </svg>"##;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render clipPath");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1638,7 +1647,7 @@ mod tests {
             <rect x="10" y="60" width="80" height="30" fill="green"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let (pixmap, _warnings) =
             render_sketch_with_warnings(svg, &options).expect("Failed to render with text");
         assert_eq!(pixmap.width(), 100);
@@ -1653,7 +1662,7 @@ mod tests {
             <rect x="5" y="5" width="90" height="90" fill="none" stroke="red"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let (pixmap, warnings) =
             render_sketch_with_warnings(svg, &options).expect("Failed to render with image");
         assert_eq!(pixmap.width(), 100);
@@ -1674,7 +1683,7 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="blue" mask="url(#mask1)"/>
         </svg>"##;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render mask");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1692,7 +1701,7 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="url(#pat1)"/>
         </svg>"##;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render pattern");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1709,7 +1718,7 @@ mod tests {
             <rect x="20" y="20" width="60" height="60" fill="green" filter="url(#blur1)"/>
         </svg>"##;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render filter");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1727,7 +1736,7 @@ mod tests {
             <use xlink:href="#sym1" x="60" y="60" width="30" height="30"/>
         </svg>"##;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render symbol");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1741,7 +1750,7 @@ mod tests {
             </switch>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render switch");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1756,7 +1765,7 @@ mod tests {
             <rect x="5" y="5" width="90" height="90" fill="none" stroke="black"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render with foreignObject");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1769,7 +1778,7 @@ mod tests {
             <circle cx="500" cy="500" r="300" fill="red"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render large SVG");
         assert_eq!(pixmap.width(), 1000);
         assert_eq!(pixmap.height(), 1000);
@@ -1783,7 +1792,7 @@ mod tests {
             <circle cx="50" cy="50" r="30" fill="yellow"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render negative coords");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1796,7 +1805,7 @@ mod tests {
             <path d="m 60,60 c 10,-20 30,-20 40,0" fill="none" stroke="red" stroke-width="2"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render relative commands");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1808,7 +1817,7 @@ mod tests {
             <path d="M 10,90 L 50,10 L 90,90" fill="none" stroke="black" stroke-width="10" stroke-linejoin="miter" stroke-miterlimit="10"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render miterlimit");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1820,7 +1829,7 @@ mod tests {
             <path d="M 25,10 L 10,80 L 90,30 L 10,30 L 90,80 Z" fill="purple" fill-rule="evenodd"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render evenodd fill");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1833,7 +1842,7 @@ mod tests {
             <rect x="60" y="60" width="20" height="20" fill="blue" transform="skewY(15)"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render skew transform");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1845,7 +1854,7 @@ mod tests {
             <rect x="0" y="0" width="20" height="20" fill="green" transform="matrix(1.5, 0.5, -0.5, 1.5, 30, 30)"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render matrix transform");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1857,7 +1866,7 @@ mod tests {
             <rect x="30" y="30" width="20" height="20" fill="orange" transform="translate(50,50) rotate(45) scale(1.5)"/>
         </svg>"#;
 
-        let options = SketchOptions::default();
+        let options = test_options();
         let pixmap = render_sketch(svg, &options).expect("Failed to render combined transform");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1874,6 +1883,7 @@ mod tests {
         let options = SketchOptions {
             deduplicate: true,
             dedup_epsilon: 0.1,
+            dpi: 96.0,
             ..Default::default()
         };
         let pixmap = render_sketch(svg, &options).expect("Failed to render with dedup");
@@ -1888,7 +1898,7 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="red"/>
         </svg>"#;
 
-        let options = SketchOptions { deduplicate: false, ..Default::default() };
+        let options = SketchOptions { deduplicate: false, dpi: 96.0, ..Default::default() };
         let pixmap = render_sketch(svg, &options).expect("Failed to render without dedup");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1904,6 +1914,7 @@ mod tests {
         let options = SketchOptions {
             deduplicate: true,
             dedup_epsilon: 0.1,
+            dpi: 96.0,
             ..Default::default()
         };
         let (svg_out, _warnings) = render_to_svg(svg, &options).expect("Failed SVG output");
@@ -1922,6 +1933,7 @@ mod tests {
         let options = SketchOptions {
             deduplicate: true,
             dedup_epsilon: 0.1,
+            dpi: 96.0,
             ..Default::default()
         };
         let pixmap = render_sketch(svg, &options).expect("Failed to render unique paths");
@@ -1936,6 +1948,7 @@ mod tests {
 
         let options = SketchOptions {
             color_mode: ColorMode::Grayscale,
+            dpi: 96.0,
             ..Default::default()
         };
         let pixmap = render_sketch(svg, &options).expect("Failed to render grayscale");
@@ -1948,7 +1961,7 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="blue"/>
         </svg>"#;
 
-        let options = SketchOptions { color_mode: ColorMode::Sepia, ..Default::default() };
+        let options = SketchOptions { color_mode: ColorMode::Sepia, dpi: 96.0, ..Default::default() };
         let pixmap = render_sketch(svg, &options).expect("Failed to render sepia");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1959,7 +1972,7 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="green"/>
         </svg>"#;
 
-        let options = SketchOptions { noise: 0.5, ..Default::default() };
+        let options = SketchOptions { noise: 0.5, dpi: 96.0, ..Default::default() };
         let pixmap = render_sketch(svg, &options).expect("Failed to render with noise");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1972,6 +1985,7 @@ mod tests {
 
         let options = SketchOptions {
             edge_roughen: 0.5,
+            dpi: 96.0,
             ..Default::default()
         };
         let pixmap = render_sketch(svg, &options).expect("Failed to render with edge roughening");
@@ -1989,6 +2003,7 @@ mod tests {
                 shadow: [26, 26, 46],    // #1a1a2e
                 highlight: [237, 242, 244], // #edf2f4
             },
+            dpi: 96.0,
             ..Default::default()
         };
         let pixmap = render_sketch(svg, &options).expect("Failed to render duotone");
@@ -2018,6 +2033,7 @@ mod tests {
 
         let options = SketchOptions {
             color_mode: ColorMode::Invert,
+            dpi: 96.0,
             ..Default::default()
         };
         let pixmap = render_sketch(svg, &options).expect("Failed to render inverted");
@@ -2033,6 +2049,7 @@ mod tests {
         let options = SketchOptions {
             color_mode: ColorMode::Sepia,
             noise: 0.3,
+            dpi: 96.0,
             ..Default::default()
         };
         let pixmap = render_sketch(svg, &options).expect("Failed to render combined effects");
@@ -2046,12 +2063,13 @@ mod tests {
         </svg>"#;
 
         // Default stroke_scale = 1.0
-        let options1 = SketchOptions::default();
+        let options1 = test_options();
         let pixmap1 = render_sketch(svg, &options1).expect("Failed to render with default stroke_scale");
 
         // Scaled stroke_scale = 2.0
         let options2 = SketchOptions {
             stroke_scale: 2.0,
+            dpi: 96.0,
             ..Default::default()
         };
         let pixmap2 = render_sketch(svg, &options2).expect("Failed to render with stroke_scale 2.0");

@@ -92,6 +92,10 @@ vruffr input.svg -o output.png --adaptive-strength 1.0 --reference-size 50
 | `--dedup-epsilon` | 0.1 | Tolerance for path deduplication |
 | `--color-mode` | color | Color mode: color, grayscale, sepia, invert |
 | `--noise` | 0.0 | Film grain intensity (0.0-1.0) |
+| `--edge-roughen` | 0.0 | Edge roughening intensity (0.0-1.0) |
+| `--duotone` | - | Duotone colors: "#shadow,#highlight" |
+| `--stroke-scale` | 1.0 | Stroke width multiplier |
+| `--dpi` | 150 | Output resolution (SVG assumes 96) |
 
 ## Library Usage
 

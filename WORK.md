@@ -32,6 +32,7 @@ cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 - **Phase 7**: Edge roughening (--edge-roughen)
 - **Phase 8**: Duotone mode (--duotone)
 - **Phase 9**: Stroke scaling (--stroke-scale)
+- **Phase 10**: DPI control (--dpi, default 150)
 
 ### Features
 
@@ -48,6 +49,7 @@ cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 | Edge roughen | `--edge-roughen` | 0.0-1.0 |
 | Duotone | `--duotone` | "#shadow,#highlight" |
 | Stroke scale | `--stroke-scale` | multiplier (e.g., 2.0) |
+| DPI | `--dpi` | pixels per inch (default: 150, SVG assumes 96) |
 
 ---
 
