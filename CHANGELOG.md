@@ -5,7 +5,24 @@ All notable changes to vruffr will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.4] - 2025-12-28
+
+### Added
+
+- **DPI control**: `--dpi` flag for output pixel density (default: 150)
+  - Higher resolution PNG outputs vs SVG's standard 96 DPI
+  - Effective scale = user_scale × (dpi / 96)
+  - Added to WASM and Python bindings
+
+- **Stroke scaling**: `--stroke-scale` multiplier for stroke widths
+  - Proportional thickness without overriding SVG values
+  - Default: 1.0 (no scaling)
+
+### Fixed
+
+- Clippy warning: use `unwrap_or_default()` instead of `unwrap_or(Vec::new())`
+
+## [2.0.3] - 2025-12-28
 
 ### Added
 
