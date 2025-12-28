@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Post-processing color modes**: `--color-mode` flag with options:
+  - `grayscale` / `mono` - ITU-R BT.601 luminance conversion
+  - `sepia` - Classic sepia tone matrix transform
+  - `invert` / `negative` - Color inversion
+
+- **Film grain effect**: `--noise` flag (0.0-1.0) for reproducible noise/grain
+
+- **Short hex color support**: `#RGB` and `#RGBA` formats now work
+  - `#fff` → white, `#f00` → red, `#0f0` → green
+  - `#f008` → semi-transparent red
+
+- **WASM bindings** (`wasm/`)
+  - `render_to_png_base64()`, `render_to_svg()`, `validate_svg()`
+  - All options exposed via JS object
+
+- **Python bindings** (`python/`)
+  - `render_to_png()`, `render_to_file()`, `render_to_svg()`, `validate_svg()`
+  - `SketchOptions` class with all parameters
+
+- **Project infrastructure**
+  - GitHub Actions: CI, release, docs workflows
+  - `build.sh` master script, `demo.sh` runner, `test.sh` quality checks
+  - MkDocs Material documentation scaffold
+
 - **Adaptive roughness scaling**: New `--adaptive-strength` and `--reference-size` CLI flags
   - Automatically scales roughness based on element size
   - Smaller elements get proportionally less roughness to prevent distortion

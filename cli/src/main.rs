@@ -109,7 +109,7 @@ struct Args {
     #[arg(long, default_value = "0.1")]
     dedup_epsilon: f32,
 
-    /// Color mode: color, grayscale/mono, sepia (default: color)
+    /// Color mode: color, grayscale, sepia, invert (default: color)
     #[arg(long, default_value = "color", value_name = "MODE")]
     color_mode: ColorMode,
 
