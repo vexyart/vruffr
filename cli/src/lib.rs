@@ -94,6 +94,8 @@ pub enum ColorMode {
     Grayscale,
     /// Sepia tone
     Sepia,
+    /// Invert colors (negative)
+    Invert,
 }
 
 impl std::str::FromStr for ColorMode {
@@ -104,8 +106,9 @@ impl std::str::FromStr for ColorMode {
             "color" | "full" | "none" => Ok(Self::Color),
             "grayscale" | "grey" | "gray" | "mono" | "monochrome" => Ok(Self::Grayscale),
             "sepia" | "vintage" => Ok(Self::Sepia),
+            "invert" | "negative" | "inverted" => Ok(Self::Invert),
             _ => Err(format!(
-                "Unknown color mode: {s}. Valid: color, grayscale, sepia"
+                "Unknown color mode: {s}. Valid: color, grayscale, sepia, invert"
             )),
         }
     }
@@ -309,6 +312,11 @@ fn apply_color_mode(pixmap: &mut Pixmap, mode: ColorMode) {
                 chunk[0] = new_r;
                 chunk[1] = new_g;
                 chunk[2] = new_b;
+            }
+            ColorMode::Invert => {
+                chunk[0] = 255 - chunk[0];
+                chunk[1] = 255 - chunk[1];
+                chunk[2] = 255 - chunk[2];
             }
             ColorMode::Color => {}
         }
@@ -1870,7 +1878,23 @@ mod tests {
         assert_eq!("gray".parse::<ColorMode>().unwrap(), ColorMode::Grayscale);
         assert_eq!("mono".parse::<ColorMode>().unwrap(), ColorMode::Grayscale);
         assert_eq!("sepia".parse::<ColorMode>().unwrap(), ColorMode::Sepia);
+        assert_eq!("invert".parse::<ColorMode>().unwrap(), ColorMode::Invert);
+        assert_eq!("negative".parse::<ColorMode>().unwrap(), ColorMode::Invert);
         assert!("invalid".parse::<ColorMode>().is_err());
+    }
+
+    #[test]
+    fn test_color_mode_invert() {
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="80" height="80" fill="white"/>
+        </svg>"#;
+
+        let options = SketchOptions {
+            color_mode: ColorMode::Invert,
+            ..Default::default()
+        };
+        let pixmap = render_sketch(svg, &options).expect("Failed to render inverted");
+        assert_eq!(pixmap.width(), 100);
     }
 
     #[test]

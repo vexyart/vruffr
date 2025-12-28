@@ -68,6 +68,7 @@ impl WasmOptions {
         let color_mode = match self.color_mode.as_deref() {
             Some("grayscale") | Some("gray") | Some("mono") => vruffr::ColorMode::Grayscale,
             Some("sepia") => vruffr::ColorMode::Sepia,
+            Some("invert") | Some("negative") => vruffr::ColorMode::Invert,
             _ => vruffr::ColorMode::Color,
         };
 

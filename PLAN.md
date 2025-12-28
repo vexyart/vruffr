@@ -196,32 +196,33 @@ Output (PNG / SVG / native surface)
 6. **DEPENDENCIES.md** - DONE (package justifications)
 7. **CHANGELOG.md** - DONE (initial entry)
 
-### Phase 5: Python & WASM - PARTIAL
+### Phase 5: Python & WASM - COMPLETE
 
 **Goal:** Language bindings for broader adoption.
 
 1. **Scaffolding** - COMPLETE
    - python/ directory with PyO3/maturin setup
    - wasm/ directory with wasm-bindgen setup
-   - Playground HTML page for WASM demo
 
-2. **Rendering Pipelines** - TODO
-   - Complete WASM render_to_svg implementation
-   - Complete Python render_to_png/svg implementation
-   - Fire-based Python CLI wrapper
+2. **Rendering Pipelines** - COMPLETE
+   - WASM: `render_to_png_base64`, `render_to_svg`, `validate_svg`
+   - Python: `render_to_png`, `render_to_file`, `render_to_svg`, `validate_svg`
+   - All options exposed: roughness, fill_style, color_mode, noise, etc.
 
-### Phase 6: Advanced Features (Future)
+### Phase 6: Advanced Features - PARTIAL
 
 **Goal:** Enhanced sketch effects.
 
-1. **Color manipulation**
-   - Monochrome modes (grayscale, sepia, duotone)
-   - Color palette restrictions
+1. **Color manipulation** - PARTIAL
+   - Grayscale mode - DONE
+   - Sepia mode - DONE
+   - Duotone mode - TODO (optional)
+   - Color palette restrictions - TODO (optional)
 
-2. **Post-processing filters**
-   - Paper texture overlay
-   - Noise/grain effects
-   - Edge roughening
+2. **Post-processing filters** - PARTIAL
+   - Noise/grain effects - DONE
+   - Paper texture overlay - TODO (optional)
+   - Edge roughening - TODO (optional)
 
 ## Key Parameters
 

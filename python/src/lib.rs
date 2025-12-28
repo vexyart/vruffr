@@ -122,6 +122,7 @@ impl SketchOptions {
         let color_mode = match self.color_mode.as_str() {
             "grayscale" | "gray" | "mono" => vruffr_lib::ColorMode::Grayscale,
             "sepia" => vruffr_lib::ColorMode::Sepia,
+            "invert" | "negative" => vruffr_lib::ColorMode::Invert,
             _ => vruffr_lib::ColorMode::Color,
         };
 

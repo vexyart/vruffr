@@ -90,7 +90,7 @@ vruffr input.svg -o output.png --adaptive-strength 1.0 --reference-size 50
 | `--reference-size` | 100 | Reference element size for adaptive scaling |
 | `--deduplicate` | false | Remove duplicate stacked paths |
 | `--dedup-epsilon` | 0.1 | Tolerance for path deduplication |
-| `--color-mode` | color | Color mode: color, grayscale, sepia |
+| `--color-mode` | color | Color mode: color, grayscale, sepia, invert |
 | `--noise` | 0.0 | Film grain intensity (0.0-1.0) |
 
 ## Library Usage

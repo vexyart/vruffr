@@ -2,7 +2,7 @@
 
 ## Current Status
 
-All infrastructure complete. Project ready for production use.
+All core phases complete. Project production-ready.
 
 ### Quick Commands
 
@@ -17,22 +17,27 @@ All infrastructure complete. Project ready for production use.
 
 ```
 ./test.sh quick
-# Format: OK (3 packages)
+# Format: OK
 # Clippy: OK (vruffr-cli)
-# Tests: 109 passing (9 + 23 + 62 + 4 + 8 + 2 + 1)
+# Tests: 114 passing (67 CLI + 47 other crates)
 ```
 
-### Completed
+### Completed Phases
 
-- **Phase 1: Foundation** - Panic fixes, cleanup
-- **Phase 1.5: Preprocessing** - Dedup, adaptive roughness
-- **Phase 3: CLI** - Full-featured CLI tool
-- **Phase 4: Documentation** - Complete docs
-- **Infrastructure** - CI/CD, build scripts, docs site
+- **Phase 1**: Foundation cleanup (panic fixes)
+- **Phase 1.5**: Preprocessing (dedup, adaptive roughness)
+- **Phase 3**: CLI Integration (full-featured)
+- **Phase 4**: Documentation (README, SPEC, API docs)
+- **Phase 5**: Full WASM/Python rendering pipelines
+- **Phase 6**: Color modes (grayscale, sepia), noise/grain
+- **Infrastructure**: CI/CD, build scripts, MkDocs
 
-### In Progress
+### New Features (Latest)
 
-- **Phase 5: Bindings** - WASM/Python scaffolds created, rendering pending
+- `--color-mode`: grayscale, sepia, color
+- `--noise`: film grain effect (0.0-1.0)
+- WASM: `render_to_png_base64`, `render_to_svg`
+- Python: `render_to_png`, `render_to_file`, `render_to_svg`
 
 ---
 
