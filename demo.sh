@@ -220,6 +220,32 @@ demo_real_world() {
         # SVG output
         $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-sketch.svg" --seed 42
         echo "  Created: $OUTPUT_DIR/sag-sketch.svg"
+        
+        # Adaptive roughness examples
+        log "  Adaptive roughness with sag.svg"
+        for strength in 0.5 1.0 2.0; do
+            $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-adaptive-${strength}.png" \
+                --roughness 2.0 --adaptive-strength "$strength" \
+                --reference-size 100 --seed 42
+            echo "    Created: $OUTPUT_DIR/sag-adaptive-${strength}.png (strength=$strength)"
+        done
+        
+        # Deduplication examples
+        log "  Deduplication with sag.svg"
+        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-dedup.png" \
+            --deduplicate --seed 42
+        echo "    Created: $OUTPUT_DIR/sag-dedup.png (with deduplication)"
+        
+        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-dedup-epsilon-0.5.png" \
+            --deduplicate --dedup-epsilon 0.5 --seed 42
+        echo "    Created: $OUTPUT_DIR/sag-dedup-epsilon-0.5.png (epsilon=0.5)"
+        
+        # Combined adaptive + deduplication
+        log "  Combined adaptive + deduplication with sag.svg"
+        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-adaptive-dedup.png" \
+            --roughness 2.0 --adaptive-strength 1.5 \
+            --reference-size 100 --deduplicate --seed 42
+        echo "    Created: $OUTPUT_DIR/sag-adaptive-dedup.png (adaptive + dedup)"
     else
         echo "  Warning: sag.svg not found (checked: ., examples/, examples)"
     fi
