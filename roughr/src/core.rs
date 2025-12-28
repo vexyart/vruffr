@@ -7,10 +7,12 @@ use rand::{random, Rng, SeedableRng};
 
 pub struct Space;
 
+#[allow(dead_code)]
 pub struct Config {
     options: Option<Options>,
 }
 
+#[allow(dead_code)]
 pub struct DrawingSurface {
     width: f32,
     height: f32,

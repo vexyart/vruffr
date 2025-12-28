@@ -38,16 +38,22 @@ cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
 # rough_tiny_skia: 9 passed
 # roughr: 23 passed (3 ignored)
 # vruffr-cli: 62 lib + 4 main + 1 doc = 67 passed
+# Total: 101 tests passing
+
+# Warnings: All suppressed with #[allow(dead_code)] for unused upstream code
+# cargo build -p roughr -p svg_path_ops shows 0 warnings
 
 # All test-data SVGs render without panics:
 ./target/release/vruffr extra/test-data/*.svg
-# sag-default.svg, sag-hachure.svg, sag-strokes.svg, sag.svg, tigr.svg, tigr1.svg
 # All rendered successfully with --deduplicate flag
+
+# rough_piet examples work on macOS (uses CoreGraphics, not Cairo)
+cargo run --example rectangle -p rough_piet  # Success
 ```
 
 ### Next Steps
 
-1. Phase 3 remaining: backend selection flag, SVGpatch output mode
+1. Phase 3 remaining: SVGpatch output mode (complex - preserves original SVG structure)
 2. Phase 2: Rename & Restructure (optional - large refactor)
 3. Phase 5: Python & WASM bindings (future)
 

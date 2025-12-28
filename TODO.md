@@ -2,7 +2,9 @@
 
 ## Immediate
 
-- [ ] We should be able to use / build / test / run Cairo on our macOS machine.
+- [x] We should be able to use / build / test / run Cairo on our macOS machine.
+  - On macOS, piet uses CoreGraphics (not Cairo). Examples run successfully.
+  - Cairo only needed for Linux builds.
 - [x] Read ./issues/102.md and into ./PLAN.md and ./TODO.md and ./SPEC.md incorporate all these things I postulate.
 
 ## Phase 1: Foundation Cleanup - COMPLETE
@@ -121,7 +123,7 @@
 - [x] Remove extra/src/ after CLI migration
 - [x] Clean up old skesvg artifacts from extra/
 - [x] Update .gitignore for new structure
-- [~] Run cargo clippy -- -D warnings (svg_path_ops has pre-existing lint issues)
+- [x] Run cargo clippy -- -D warnings (dead_code warnings suppressed with #[allow])
 - [x] Run cargo fmt --check
 - [x] Ensure all tests pass
 - [x] Tag initial vruffr release (v0.1.0)

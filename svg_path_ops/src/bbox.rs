@@ -137,6 +137,7 @@ impl BBox {
         self
     }
 
+    #[allow(dead_code)]
     fn add_point(&mut self, x: f64, y: f64) -> &mut Self {
         self.add_x(x).add_y(y)
     }
