@@ -41,7 +41,7 @@ cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
 | Noise | `--noise` | 0.0-1.0 |
 | Adaptive | `--adaptive-strength` | 0.0-2.0 |
 | Dedup | `--deduplicate` | flag |
-| Background | `--background` | transparent, white, black, #RGB, #RRGGBB |
+| Background | `--background` | transparent, white, black, #RGB, #RGBA, #RRGGBB, #RRGGBBAA |
 
 ---
 

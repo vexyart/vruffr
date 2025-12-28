@@ -56,7 +56,7 @@ struct Args {
     #[arg(long)]
     stroke_width: Option<f32>,
 
-    /// Background color: "transparent", "white", "black", or hex "#RRGGBB"/"#RRGGBBAA"
+    /// Background color: transparent, white, black, or hex (#RGB, #RGBA, #RRGGBB, #RRGGBBAA)
     #[arg(long, default_value = "white")]
     background: String,
 
