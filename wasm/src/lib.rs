@@ -45,6 +45,8 @@ pub struct WasmOptions {
     pub edge_roughen: Option<f32>,
     #[serde(default)]
     pub duotone: Option<String>,
+    #[serde(default)]
+    pub stroke_scale: Option<f32>,
 }
 
 fn default_roughness() -> f64 {
@@ -103,6 +105,7 @@ impl WasmOptions {
             color_mode,
             noise: self.noise.unwrap_or(0.0),
             edge_roughen: self.edge_roughen.unwrap_or(0.0),
+            stroke_scale: self.stroke_scale.unwrap_or(1.0),
             ..Default::default()
         }
     }

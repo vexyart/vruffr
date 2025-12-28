@@ -56,6 +56,10 @@ struct Args {
     #[arg(long)]
     stroke_width: Option<f32>,
 
+    /// Scale factor for stroke widths (e.g., 2.0 for thicker strokes)
+    #[arg(long, default_value = "1.0")]
+    stroke_scale: f32,
+
     /// Background color: transparent, white, black, or hex (#RGB, #RGBA, #RRGGBB, #RRGGBBAA)
     #[arg(long, default_value = "white")]
     background: String,
@@ -286,6 +290,7 @@ fn main() -> Result<()> {
         },
         noise: args.noise,
         edge_roughen: args.edge_roughen,
+        stroke_scale: args.stroke_scale,
     };
 
     let format = infer_format(&args.output, args.format);

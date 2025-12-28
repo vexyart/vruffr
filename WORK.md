@@ -44,6 +44,7 @@ cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 | Background | `--background` | transparent, white, black, #RGB, #RGBA, #RRGGBB, #RRGGBBAA |
 | Edge roughen | `--edge-roughen` | 0.0-1.0 |
 | Duotone | `--duotone` | "#shadow,#highlight" |
+| Stroke scale | `--stroke-scale` | multiplier (e.g., 2.0) |
 
 ---
 

@@ -187,6 +187,8 @@ pub struct SketchOptions {
     pub noise: f32,
     /// Edge roughening intensity (0.0 = none, 1.0 = heavy)
     pub edge_roughen: f32,
+    /// Scale factor for stroke widths (default: 1.0)
+    pub stroke_scale: f32,
 }
 
 impl Default for SketchOptions {
@@ -215,6 +217,7 @@ impl Default for SketchOptions {
             color_mode: ColorMode::default(),
             noise: 0.0,
             edge_roughen: 0.0,
+            stroke_scale: 1.0,
         }
     }
 }
@@ -554,7 +557,8 @@ fn render_path(path: &usvg::Path, options: &SketchOptions, pixmap: &mut PixmapMu
     if !options.no_stroke {
         if let Some(stroke) = path.stroke() {
             let stroke_color = extract_color(stroke.paint());
-            let stroke_width = options.stroke_width.unwrap_or_else(|| stroke.width().get());
+            let base_stroke_width = options.stroke_width.unwrap_or_else(|| stroke.width().get());
+            let stroke_width = base_stroke_width * options.stroke_scale;
 
             let stroke_options = OptionsBuilder::default()
                 .roughness(effective_roughness)
@@ -801,9 +805,10 @@ fn collect_raw_paths(
                 let (stroke_color, stroke_width) = if options.no_stroke {
                     (None, 1.0)
                 } else if let Some(stroke) = path.stroke() {
+                    let base_width = options.stroke_width.unwrap_or_else(|| stroke.width().get());
                     (
                         Some(extract_color(stroke.paint())),
-                        options.stroke_width.unwrap_or_else(|| stroke.width().get()),
+                        base_width * options.stroke_scale,
                     )
                 } else {
                     (None, 1.0)
@@ -951,7 +956,8 @@ fn collect_path_elements(path: &usvg::Path, options: &SketchOptions) -> Vec<Sket
     if !options.no_stroke {
         if let Some(stroke) = path.stroke() {
             let stroke_color = extract_color(stroke.paint());
-            let stroke_width = options.stroke_width.unwrap_or_else(|| stroke.width().get());
+            let base_stroke_width = options.stroke_width.unwrap_or_else(|| stroke.width().get());
+            let stroke_width = base_stroke_width * options.stroke_scale;
 
             let stroke_options = OptionsBuilder::default()
                 .roughness(effective_roughness)

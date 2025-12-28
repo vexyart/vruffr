@@ -44,6 +44,8 @@ pub struct SketchOptions {
     pub edge_roughen: f32,
     #[pyo3(get, set)]
     pub duotone: Option<String>,
+    #[pyo3(get, set)]
+    pub stroke_scale: f32,
 }
 
 #[pymethods]
@@ -67,7 +69,8 @@ impl SketchOptions {
         color_mode="color".to_string(),
         noise=0.0,
         edge_roughen=0.0,
-        duotone=None
+        duotone=None,
+        stroke_scale=1.0
     ))]
     #[allow(clippy::too_many_arguments)]
     fn new(
@@ -89,6 +92,7 @@ impl SketchOptions {
         noise: f32,
         edge_roughen: f32,
         duotone: Option<String>,
+        stroke_scale: f32,
     ) -> Self {
         SketchOptions {
             roughness,
@@ -109,6 +113,7 @@ impl SketchOptions {
             noise,
             edge_roughen,
             duotone,
+            stroke_scale,
         }
     }
 
@@ -162,6 +167,7 @@ impl SketchOptions {
             color_mode,
             noise: self.noise,
             edge_roughen: self.edge_roughen,
+            stroke_scale: self.stroke_scale,
             ..Default::default()
         }
     }
