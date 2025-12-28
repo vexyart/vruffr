@@ -20,12 +20,12 @@
 
 use anyhow::{Context, Result};
 use palette::Srgba;
-use vruffr_skia::{SkiaGenerator, SkiaOpset};
-use vruffr_core::core::{FillStyle, OpSetType, OptionsBuilder};
-use vruffr_core::dedup::{deduplicate_paths, PathSignature, StyledPath};
 use std::fmt::Write as FmtWrite;
 use std::sync::Arc;
 use tiny_skia::{Pixmap, PixmapMut};
+use vruffr_core::core::{FillStyle, OpSetType, OptionsBuilder};
+use vruffr_core::dedup::{deduplicate_paths, PathSignature, StyledPath};
+use vruffr_skia::{SkiaGenerator, SkiaOpset};
 
 /// Fill style for sketch rendering
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -468,7 +468,13 @@ pub fn render_sketch_with_warnings(
         }
     } else {
         // Original path: render each path as encountered
-        render_group(tree.root(), options, &mut pixmap.as_mut(), &mut warnings, effective_scale);
+        render_group(
+            tree.root(),
+            options,
+            &mut pixmap.as_mut(),
+            &mut warnings,
+            effective_scale,
+        );
     }
 
     // Post-processing: color mode (grayscale/sepia)
@@ -528,7 +534,12 @@ fn compute_effective_roughness(path: &usvg::Path, options: &SketchOptions) -> f3
     (options.roughness as f32) * scale
 }
 
-fn render_path(path: &usvg::Path, options: &SketchOptions, pixmap: &mut PixmapMut, render_scale: f32) {
+fn render_path(
+    path: &usvg::Path,
+    options: &SketchOptions,
+    pixmap: &mut PixmapMut,
+    render_scale: f32,
+) {
     let svg_path = path_to_svg_string(path);
     if svg_path.is_empty() {
         return;
@@ -584,7 +595,12 @@ fn render_path(path: &usvg::Path, options: &SketchOptions, pixmap: &mut PixmapMu
 }
 
 /// Render a RawPathInfo directly to pixmap (for dedup path)
-fn render_raw_path(info: &RawPathInfo, options: &SketchOptions, pixmap: &mut PixmapMut, render_scale: f32) {
+fn render_raw_path(
+    info: &RawPathInfo,
+    options: &SketchOptions,
+    pixmap: &mut PixmapMut,
+    render_scale: f32,
+) {
     // Handle fill
     if let Some(fill_color) = info.fill_color {
         let fill_options = OptionsBuilder::default()
@@ -737,7 +753,10 @@ fn skia_path_to_svg_string(path: &tiny_skia::Path) -> String {
 }
 
 /// Convert SkiaOpset to SketchElements
-fn opset_to_elements(set: &SkiaOpset<f64>, options: &vruffr_core::core::Options) -> Vec<SketchElement> {
+fn opset_to_elements(
+    set: &SkiaOpset<f64>,
+    options: &vruffr_core::core::Options,
+) -> Vec<SketchElement> {
     let path = match &set.ops {
         Some(p) => p,
         None => return vec![],
@@ -1123,10 +1142,7 @@ mod tests {
 
     /// Test helper: returns options with DPI=96 for 1:1 output dimensions
     fn test_options() -> SketchOptions {
-        SketchOptions {
-            dpi: 96.0,
-            ..Default::default()
-        }
+        SketchOptions { dpi: 96.0, ..Default::default() }
     }
 
     #[test]
@@ -1898,7 +1914,11 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="red"/>
         </svg>"#;
 
-        let options = SketchOptions { deduplicate: false, dpi: 96.0, ..Default::default() };
+        let options = SketchOptions {
+            deduplicate: false,
+            dpi: 96.0,
+            ..Default::default()
+        };
         let pixmap = render_sketch(svg, &options).expect("Failed to render without dedup");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1961,7 +1981,11 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="blue"/>
         </svg>"#;
 
-        let options = SketchOptions { color_mode: ColorMode::Sepia, dpi: 96.0, ..Default::default() };
+        let options = SketchOptions {
+            color_mode: ColorMode::Sepia,
+            dpi: 96.0,
+            ..Default::default()
+        };
         let pixmap = render_sketch(svg, &options).expect("Failed to render sepia");
         assert_eq!(pixmap.width(), 100);
     }
@@ -1983,11 +2007,7 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="blue"/>
         </svg>"#;
 
-        let options = SketchOptions {
-            edge_roughen: 0.5,
-            dpi: 96.0,
-            ..Default::default()
-        };
+        let options = SketchOptions { edge_roughen: 0.5, dpi: 96.0, ..Default::default() };
         let pixmap = render_sketch(svg, &options).expect("Failed to render with edge roughening");
         assert_eq!(pixmap.width(), 100);
     }
@@ -2000,7 +2020,7 @@ mod tests {
 
         let options = SketchOptions {
             color_mode: ColorMode::Duotone {
-                shadow: [26, 26, 46],    // #1a1a2e
+                shadow: [26, 26, 46],       // #1a1a2e
                 highlight: [237, 242, 244], // #edf2f4
             },
             dpi: 96.0,
@@ -2064,15 +2084,13 @@ mod tests {
 
         // Default stroke_scale = 1.0
         let options1 = test_options();
-        let pixmap1 = render_sketch(svg, &options1).expect("Failed to render with default stroke_scale");
+        let pixmap1 =
+            render_sketch(svg, &options1).expect("Failed to render with default stroke_scale");
 
         // Scaled stroke_scale = 2.0
-        let options2 = SketchOptions {
-            stroke_scale: 2.0,
-            dpi: 96.0,
-            ..Default::default()
-        };
-        let pixmap2 = render_sketch(svg, &options2).expect("Failed to render with stroke_scale 2.0");
+        let options2 = SketchOptions { stroke_scale: 2.0, dpi: 96.0, ..Default::default() };
+        let pixmap2 =
+            render_sketch(svg, &options2).expect("Failed to render with stroke_scale 2.0");
 
         // Both should render successfully
         assert_eq!(pixmap1.width(), 100);
