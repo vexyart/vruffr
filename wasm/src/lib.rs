@@ -41,6 +41,8 @@ pub struct WasmOptions {
     pub color_mode: Option<String>,
     #[serde(default)]
     pub noise: Option<f32>,
+    #[serde(default)]
+    pub edge_roughen: Option<f32>,
 }
 
 fn default_roughness() -> f64 {
@@ -90,6 +92,7 @@ impl WasmOptions {
             background,
             color_mode,
             noise: self.noise.unwrap_or(0.0),
+            edge_roughen: self.edge_roughen.unwrap_or(0.0),
             ..Default::default()
         }
     }

@@ -24,14 +24,14 @@
 - [x] Run cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 - [x] Verify CLI works
 
-## Phase 7: Edge Roughening Filter
+## Phase 7: Edge Roughening Filter - COMPLETE
 
-- [ ] Add `--edge-roughen` CLI flag (0.0-1.0)
-- [ ] Add edge_roughen field to RenderOptions
-- [ ] Implement apply_edge_roughening function in cli/src/lib.rs
-- [ ] Add edge_roughen to WASM bindings
-- [ ] Add edge_roughen to Python bindings
-- [ ] Add tests for edge roughening
+- [x] Add `--edge-roughen` CLI flag (0.0-1.0)
+- [x] Add edge_roughen field to SketchOptions
+- [x] Implement apply_edge_roughening function in cli/src/lib.rs
+- [x] Add edge_roughen to WASM bindings
+- [x] Add edge_roughen to Python bindings
+- [x] Add tests for edge roughening
 
 ## Phase 8: Duotone Mode
 

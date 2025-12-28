@@ -116,6 +116,10 @@ struct Args {
     /// Noise/grain intensity for film-like texture (0.0-1.0, default: 0.0)
     #[arg(long, default_value = "0.0")]
     noise: f32,
+
+    /// Edge roughening intensity for organic boundaries (0.0-1.0, default: 0.0)
+    #[arg(long, default_value = "0.0")]
+    edge_roughen: f32,
 }
 
 fn print_warnings(warnings: &vruffr::RenderWarnings) {
@@ -240,6 +244,7 @@ fn main() -> Result<()> {
         dedup_epsilon: args.dedup_epsilon,
         color_mode: args.color_mode,
         noise: args.noise,
+        edge_roughen: args.edge_roughen,
     };
 
     let format = infer_format(&args.output, args.format);

@@ -178,6 +178,8 @@ pub struct SketchOptions {
     pub color_mode: ColorMode,
     /// Noise/grain intensity (0.0 = none, 1.0 = heavy)
     pub noise: f32,
+    /// Edge roughening intensity (0.0 = none, 1.0 = heavy)
+    pub edge_roughen: f32,
 }
 
 impl Default for SketchOptions {
@@ -205,6 +207,7 @@ impl Default for SketchOptions {
             dedup_epsilon: 0.1,
             color_mode: ColorMode::default(),
             noise: 0.0,
+            edge_roughen: 0.0,
         }
     }
 }
@@ -343,6 +346,68 @@ fn apply_noise(pixmap: &mut Pixmap, intensity: f32, seed: u64) {
     }
 }
 
+/// Apply edge roughening effect to a pixmap
+/// Displaces pixels near edges to create a more organic, hand-drawn boundary
+fn apply_edge_roughening(pixmap: &mut Pixmap, intensity: f32, seed: u64) {
+    if intensity <= 0.0 {
+        return;
+    }
+    let intensity = intensity.clamp(0.0, 1.0);
+    let width = pixmap.width() as usize;
+    let height = pixmap.height() as usize;
+
+    // Copy original data for reading
+    let original: Vec<u8> = pixmap.data().to_vec();
+
+    // Maximum displacement in pixels (scaled by intensity)
+    let max_disp = (intensity * 3.0).ceil() as i32;
+
+    // LCG random state
+    let mut rng_state = seed.wrapping_mul(2862933555777941757).wrapping_add(3);
+
+    let data = pixmap.data_mut();
+
+    for y in 1..(height - 1) {
+        for x in 1..(width - 1) {
+            let idx = (y * width + x) * 4;
+
+            // Get alpha of current and neighbors
+            let alpha = original[idx + 3];
+            let alpha_left = original[((y * width + x - 1) * 4) + 3];
+            let alpha_right = original[((y * width + x + 1) * 4) + 3];
+            let alpha_up = original[(((y - 1) * width + x) * 4) + 3];
+            let alpha_down = original[(((y + 1) * width + x) * 4) + 3];
+
+            // Compute edge strength (how much alpha changes around this pixel)
+            let edge_h = (alpha as i16 - alpha_left as i16).abs()
+                + (alpha as i16 - alpha_right as i16).abs();
+            let edge_v =
+                (alpha as i16 - alpha_up as i16).abs() + (alpha as i16 - alpha_down as i16).abs();
+            let edge_strength = edge_h + edge_v;
+
+            // Only process if near an edge (threshold 30)
+            if edge_strength > 30 {
+                // Generate random displacement
+                rng_state = rng_state.wrapping_mul(2862933555777941757).wrapping_add(3);
+                let dx = ((rng_state >> 33) as i32 % (max_disp * 2 + 1)) - max_disp;
+                rng_state = rng_state.wrapping_mul(2862933555777941757).wrapping_add(3);
+                let dy = ((rng_state >> 33) as i32 % (max_disp * 2 + 1)) - max_disp;
+
+                // Compute source coordinates with bounds check
+                let src_x = (x as i32 + dx).clamp(0, width as i32 - 1) as usize;
+                let src_y = (y as i32 + dy).clamp(0, height as i32 - 1) as usize;
+                let src_idx = (src_y * width + src_x) * 4;
+
+                // Copy pixel from displaced source
+                data[idx] = original[src_idx];
+                data[idx + 1] = original[src_idx + 1];
+                data[idx + 2] = original[src_idx + 2];
+                data[idx + 3] = original[src_idx + 3];
+            }
+        }
+    }
+}
+
 /// Render an SVG string to a sketch-style PNG pixmap
 pub fn render_sketch(svg_data: &str, options: &SketchOptions) -> Result<Pixmap> {
     let (pixmap, _warnings) = render_sketch_with_warnings(svg_data, options)?;
@@ -385,6 +450,9 @@ pub fn render_sketch_with_warnings(
 
     // Post-processing: color mode (grayscale/sepia)
     apply_color_mode(&mut pixmap, options.color_mode);
+
+    // Post-processing: edge roughening (before noise for better effect)
+    apply_edge_roughening(&mut pixmap, options.edge_roughen, options.seed);
 
     // Post-processing: noise/grain
     apply_noise(&mut pixmap, options.noise, options.seed);
@@ -1865,6 +1933,20 @@ mod tests {
 
         let options = SketchOptions { noise: 0.5, ..Default::default() };
         let pixmap = render_sketch(svg, &options).expect("Failed to render with noise");
+        assert_eq!(pixmap.width(), 100);
+    }
+
+    #[test]
+    fn test_edge_roughen_effect() {
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="80" height="80" fill="blue"/>
+        </svg>"#;
+
+        let options = SketchOptions {
+            edge_roughen: 0.5,
+            ..Default::default()
+        };
+        let pixmap = render_sketch(svg, &options).expect("Failed to render with edge roughening");
         assert_eq!(pixmap.width(), 100);
     }
 
