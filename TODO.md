@@ -1,107 +1,8 @@
 # TODO.md - vruffr Task List
 
-## Immediate
+## Active Work
 
-- [x] We should be able to use / build / test / run Cairo on our macOS machine.
-  - On macOS, piet uses CoreGraphics (not Cairo). Examples run successfully.
-  - Cairo only needed for Linux builds.
-- [x] Read ./issues/102.md and into ./PLAN.md and ./TODO.md and ./SPEC.md incorporate all these things I postulate.
-
-## Phase 1: Foundation Cleanup - COMPLETE
-
-- [x] Fix rough_tiny_skia panic at line 281 (opset_to_shape unwrap)
-- [x] Change opset_to_shape to return Option<Path>
-- [x] Update SkiaOpset.ops field to Option<Path>
-- [x] Update draw() method to skip None paths
-- [x] Add tests for empty/degenerate paths in rough_tiny_skia
-- [x] Remove rough_iced from workspace members
-- [x] Remove rough_plotters_svg from workspace members
-- [x] Delete rough_iced directory
-- [x] Delete rough_plotters_svg directory
-- [x] Run cargo test --lib --tests to verify baseline
-
-## Phase 1.5: Preprocessing Features - COMPLETE
-
-### Duplicate Path Filtering - COMPLETE
-
-- [x] Create path signature struct (bbox, length, vertex_count, command_hash)
-- [x] Implement path signature computation function
-- [x] Implement path equivalence test with epsilon tolerance
-- [x] Create deduplication filter that groups paths by signature
-- [x] Implement stroke/fill merge strategy for duplicate groups
-- [x] Add deduplicate field to SketchOptions
-- [x] Add dedup_epsilon field to SketchOptions
-- [x] Add --deduplicate CLI flag
-- [x] Add --dedup-epsilon CLI flag
-- [x] Add unit tests for path signature computation
-- [x] Add unit tests for deduplication with various cases
-- [x] Test with SVGs containing known duplicate paths (covered by unit tests)
-- [x] Wire dedup into render pipeline (PNG and SVG output)
-
-### Adaptive Roughness - COMPLETE
-
-- [x] Add adaptive_strength field to Options (roughr/src/core.rs)
-- [x] Add reference_size field to Options (roughr/src/core.rs)
-- [x] Implement characteristic_size calculation (sqrt of bbox area)
-- [x] Implement adaptive scaling function (size_ratio ^ power)
-- [x] Integrate adaptive scaling into CLI (cli/src/lib.rs)
-- [x] Add --adaptive-strength CLI flag
-- [x] Add --reference-size CLI flag
-- [x] Add unit tests for adaptive scaling function (7 tests)
-- [x] Test with mixed-size SVG elements
-- [x] Document adaptive roughness in README
-
-## Phase 2: Rename & Restructure
-
-- [ ] Create crates/ directory structure
-- [ ] Rename roughr -> vruffr-core
-- [ ] Rename points_on_curve -> merge into vruffr-path
-- [ ] Rename svg_path_ops -> merge into vruffr-path
-- [ ] Rename rough_tiny_skia -> vruffr-skia
-- [ ] Rename rough_piet -> vruffr-piet
-- [ ] Rename rough_vello -> vruffr-vello
-- [ ] Update workspace Cargo.toml paths
-- [ ] Update all internal dependency references
-- [ ] Update all use statements across crates
-- [ ] Run cargo test --workspace to verify rename
-
-## Phase 3: Integrate CLI - COMPLETE (core features)
-
-- [x] Move extra/src/ to cli/
-- [x] Create cli/Cargo.toml with path dependencies
-- [x] Switch from crates.io to workspace path deps
-- [x] Rename CLI binary to vruffr
-- [x] Remove catch_unwind panic handlers from cli
-- [x] Add SVG output format flag
-- [x] Verify all test-data renders without panics
-- [x] Adapt extra/test-data.sh for new structure
-- [x] Adapt extra/build.sh for new structure
-- [x] Add CLI integration tests (8 tests)
-- [-] Add backend selection CLI flag (deferred - only one backend)
-- [-] Add SVGpatch output mode (deferred - complex, low priority)
-
-## Phase 4: Documentation
-
-- [x] Rewrite README.md for vruffr project
-- [x] Add installation instructions
-- [x] Add CLI usage examples
-- [x] Add library usage examples
-- [x] Write SPEC.md with technical specification
-- [x] Add Rust doc comments to all public APIs
-- [x] Create examples/ directory with working examples
-- [x] Update CLAUDE.md for new project structure
-- [x] Create DEPENDENCIES.md listing all deps with justification
-- [x] Create CHANGELOG.md with initial entry
-
-## Phase 5: Python & WASM
-
-### Scaffolding - COMPLETE
-
-- [x] Set up python/ directory with maturin/PyO3
-- [x] Set up wasm/ directory with wasm-pack
-- [x] Create browser demo/playground HTML page
-
-### Rendering Pipelines - IN PROGRESS
+### Phase 5: Python & WASM Rendering
 
 - [ ] Implement full WASM rendering pipeline
 - [ ] Implement full Python rendering pipeline
@@ -109,37 +10,33 @@
 - [ ] Add Python package tests
 - [ ] Add WASM integration tests
 
-## Phase 6: Advanced Features (Future)
+## Future Work
 
-### Color Manipulation
+### Phase 2: Rename & Restructure (Optional)
 
-- [ ] Add monochrome color mode
-- [ ] Add grayscale mode
+- [ ] Rename roughr -> vruffr-core
+- [ ] Rename rough_tiny_skia -> vruffr-skia
+- [ ] Create crates/ directory structure
+
+### Phase 6: Advanced Features
+
+#### Color Manipulation
+
+- [ ] Add monochrome/grayscale mode
 - [ ] Add sepia mode
 - [ ] Add duotone mode
 
-### Post-Processing Filters
+#### Post-Processing
 
-- [ ] Add paper texture overlay filter
-- [ ] Add noise/grain post-processing
+- [ ] Add paper texture overlay
+- [ ] Add noise/grain effects
 - [ ] Add edge roughening filter
-- [ ] Research and prototype additional sketch effects
 
-## Project Infrastructure - COMPLETE
+## Completed
 
-- [x] Create src_docs/ with MkDocs Material documentation
-- [x] Create GitHub Actions workflows (CI, Release, Docs)
-- [x] Create build.sh master script
-- [x] Create demo.sh with examples
-- [x] Consolidate examples/ folder
-- [x] Remove obsolete extra/ files
-
-## Cleanup & Polish
-
-- [x] Remove extra/src/ after CLI migration
-- [x] Clean up old skesvg artifacts from extra/
-- [x] Update .gitignore for new structure
-- [x] Run cargo clippy -- -D warnings (dead_code warnings suppressed with #[allow])
-- [x] Run cargo fmt --check
-- [x] Ensure all tests pass
-- [x] Tag initial vruffr release (v0.1.0)
+- [x] Phase 1: Foundation Cleanup (panic fixes, workspace cleanup)
+- [x] Phase 1.5: Preprocessing (dedup, adaptive roughness)
+- [x] Phase 3: CLI Integration (full-featured CLI)
+- [x] Phase 4: Documentation (README, SPEC, API docs)
+- [x] Phase 5: Scaffolding (WASM/Python scaffolds, playground)
+- [x] Project Infrastructure (CI/CD, build scripts, MkDocs)
