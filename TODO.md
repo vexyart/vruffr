@@ -2,7 +2,7 @@
 
 ## Active Work
 
-### Phase 6: Advanced Features (Remaining)
+### Phase 6: Advanced Features (Remaining - Optional)
 
 #### Post-Processing
 - [ ] Add paper texture overlay (optional)
@@ -24,5 +24,5 @@
 - [x] Phase 3: CLI Integration (full-featured CLI)
 - [x] Phase 4: Documentation (README, SPEC, API docs)
 - [x] Phase 5: Full WASM/Python rendering pipelines
-- [x] Phase 6: Color modes (grayscale, sepia), noise/grain effects
+- [x] Phase 6: Color modes (grayscale, sepia, invert), noise/grain effects
 - [x] Project Infrastructure (CI/CD, build scripts, MkDocs)

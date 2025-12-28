@@ -16,10 +16,8 @@ All core phases complete. Project production-ready.
 ### Test Summary
 
 ```
-./test.sh quick
-# Format: OK
-# Clippy: OK (vruffr-cli)
-# Tests: 114 passing (67 CLI + 47 other crates)
+cargo test -p vruffr-cli
+# 82 tests passing (68 lib + 5 main + 8 integration + 1 example)
 ```
 
 ### Completed Phases
@@ -29,15 +27,21 @@ All core phases complete. Project production-ready.
 - **Phase 3**: CLI Integration (full-featured)
 - **Phase 4**: Documentation (README, SPEC, API docs)
 - **Phase 5**: Full WASM/Python rendering pipelines
-- **Phase 6**: Color modes (grayscale, sepia), noise/grain
+- **Phase 6**: Color modes (grayscale, sepia, invert), noise/grain
 - **Infrastructure**: CI/CD, build scripts, MkDocs
 
-### New Features (Latest)
+### Features
 
-- `--color-mode`: grayscale, sepia, color
-- `--noise`: film grain effect (0.0-1.0)
-- WASM: `render_to_png_base64`, `render_to_svg`
-- Python: `render_to_png`, `render_to_file`, `render_to_svg`
+| Feature | CLI Flag | Values |
+|---------|----------|--------|
+| Roughness | `--roughness` | 0.0-10.0 |
+| Bowing | `--bowing` | 0.0-10.0 |
+| Fill style | `--fill-style` | hachure, crosshatch |
+| Color mode | `--color-mode` | color, grayscale, sepia, invert |
+| Noise | `--noise` | 0.0-1.0 |
+| Adaptive | `--adaptive-strength` | 0.0-2.0 |
+| Dedup | `--deduplicate` | flag |
+| Background | `--background` | transparent, white, black, #RGB, #RRGGBB |
 
 ---
 

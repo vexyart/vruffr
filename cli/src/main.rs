@@ -147,6 +147,21 @@ fn parse_background(s: &str) -> Result<Option<[u8; 4]>> {
         hex if hex.starts_with('#') => {
             let hex = &hex[1..];
             match hex.len() {
+                3 => {
+                    // #RGB -> #RRGGBB (each digit repeated)
+                    let r = u8::from_str_radix(&hex[0..1], 16)? * 17;
+                    let g = u8::from_str_radix(&hex[1..2], 16)? * 17;
+                    let b = u8::from_str_radix(&hex[2..3], 16)? * 17;
+                    Ok(Some([r, g, b, 255]))
+                }
+                4 => {
+                    // #RGBA -> #RRGGBBAA (each digit repeated)
+                    let r = u8::from_str_radix(&hex[0..1], 16)? * 17;
+                    let g = u8::from_str_radix(&hex[1..2], 16)? * 17;
+                    let b = u8::from_str_radix(&hex[2..3], 16)? * 17;
+                    let a = u8::from_str_radix(&hex[3..4], 16)? * 17;
+                    Ok(Some([r, g, b, a]))
+                }
                 6 => {
                     let r = u8::from_str_radix(&hex[0..2], 16)?;
                     let g = u8::from_str_radix(&hex[2..4], 16)?;
@@ -327,9 +342,23 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_background_short_hex() {
+        // #RGB -> #RRGGBB (each digit repeated: f -> ff, 0 -> 00)
+        assert_eq!(
+            parse_background("#fff").unwrap(),
+            Some([255, 255, 255, 255])
+        );
+        assert_eq!(parse_background("#f00").unwrap(), Some([255, 0, 0, 255]));
+        assert_eq!(parse_background("#0f0").unwrap(), Some([0, 255, 0, 255]));
+        assert_eq!(parse_background("#00f").unwrap(), Some([0, 0, 255, 255]));
+        // #RGBA -> #RRGGBBAA
+        assert_eq!(parse_background("#f008").unwrap(), Some([255, 0, 0, 136]));
+    }
+
+    #[test]
     fn test_parse_background_invalid() {
         assert!(parse_background("invalid").is_err());
-        assert!(parse_background("#fff").is_err()); // 3-char hex not supported
         assert!(parse_background("#fffff").is_err()); // 5-char hex invalid
+        assert!(parse_background("#ff").is_err()); // 2-char hex invalid
     }
 }
