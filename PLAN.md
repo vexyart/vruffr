@@ -216,6 +216,7 @@ Output (PNG / SVG / native surface)
 1. **Color manipulation** - PARTIAL
    - Grayscale mode - DONE
    - Sepia mode - DONE
+   - Invert mode - DONE
    - Duotone mode - TODO (optional)
    - Color palette restrictions - TODO (optional)
 
