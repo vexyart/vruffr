@@ -16,7 +16,7 @@ All core phases complete. Project production-ready.
 ### Test Summary
 
 ```
-cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
+cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 # 116 tests passing
 ```
 

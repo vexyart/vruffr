@@ -8,9 +8,9 @@ use palette::rgb::Rgba;
 use palette::Srgba;
 use piet::kurbo::{self, BezPath, PathEl, Point};
 use piet::{Color, LineJoin, RenderContext, StrokeStyle};
-use roughr::core::{Drawable, OpSet, OpSetType, OpType, Options};
-use roughr::generator::Generator;
-use roughr::PathSegment;
+use vruffr_core::core::{Drawable, OpSet, OpSetType, OpType, Options};
+use vruffr_core::generator::Generator;
+use vruffr_core::PathSegment;
 
 #[derive(Default)]
 pub struct KurboGenerator {

@@ -1,6 +1,6 @@
 use palette::Srgba;
-use rough_tiny_skia::SkiaGenerator;
-use roughr::core::{FillStyle, OptionsBuilder};
+use vruffr_skia::SkiaGenerator;
+use vruffr_core::core::{FillStyle, OptionsBuilder};
 use tiny_skia::*;
 
 const WIDTH: f32 = 192.0;

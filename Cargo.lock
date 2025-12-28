@@ -5073,20 +5073,9 @@ dependencies = [
  "piet-common 0.8.0",
  "rand",
  "rand_distr",
- "roughr",
  "svg_path_ops",
  "text2v",
-]
-
-[[package]]
-name = "rough_tiny_skia"
-version = "0.12.0"
-dependencies = [
- "euclid",
- "num-traits",
- "palette",
- "roughr",
- "tiny-skia",
+ "vruffr-core",
 ]
 
 [[package]]
@@ -5100,25 +5089,10 @@ dependencies = [
  "palette",
  "rand",
  "rand_distr",
- "roughr",
  "svg_path_ops",
  "vello",
+ "vruffr-core",
  "wgpu 22.1.0",
-]
-
-[[package]]
-name = "roughr"
-version = "0.12.0"
-dependencies = [
- "derive_builder",
- "euclid",
- "num-traits",
- "palette",
- "plotlib",
- "points_on_curve",
- "rand",
- "svg_path_ops",
- "svgtypes 0.11.0",
 ]
 
 [[package]]
@@ -6275,11 +6249,26 @@ dependencies = [
  "clap",
  "fontdb 0.23.0",
  "palette",
- "rough_tiny_skia",
- "roughr",
  "tempfile",
  "tiny-skia",
  "usvg",
+ "vruffr-core",
+ "vruffr-skia",
+]
+
+[[package]]
+name = "vruffr-core"
+version = "0.12.0"
+dependencies = [
+ "derive_builder",
+ "euclid",
+ "num-traits",
+ "palette",
+ "plotlib",
+ "points_on_curve",
+ "rand",
+ "svg_path_ops",
+ "svgtypes 0.11.0",
 ]
 
 [[package]]
@@ -6288,6 +6277,17 @@ version = "0.1.0"
 dependencies = [
  "pyo3",
  "vruffr-cli",
+]
+
+[[package]]
+name = "vruffr-skia"
+version = "0.12.0"
+dependencies = [
+ "euclid",
+ "num-traits",
+ "palette",
+ "tiny-skia",
+ "vruffr-core",
 ]
 
 [[package]]

@@ -5,8 +5,8 @@ use euclid::default::Point2D;
 use euclid::Trig;
 use num_traits::{Float, FromPrimitive};
 use palette::Srgba;
-use roughr::core::{Drawable, OpSet, OpSetType, OpType, Options};
-use roughr::generator::Generator;
+use vruffr_core::core::{Drawable, OpSet, OpSetType, OpType, Options};
+use vruffr_core::generator::Generator;
 use tiny_skia::{
     FillRule, LineCap, LineJoin, Paint, Path, PathBuilder, PixmapMut, Stroke, StrokeDash, Transform,
 };
@@ -409,22 +409,22 @@ impl SkiaGenerator {
     }
 }
 
-fn convert_line_cap_from_roughr_to_piet(roughr_line_cap: Option<roughr::core::LineCap>) -> LineCap {
+fn convert_line_cap_from_roughr_to_piet(roughr_line_cap: Option<vruffr_core::core::LineCap>) -> LineCap {
     match roughr_line_cap {
-        Some(roughr::core::LineCap::Butt) => LineCap::Butt,
-        Some(roughr::core::LineCap::Round) => LineCap::Round,
-        Some(roughr::core::LineCap::Square) => LineCap::Square,
+        Some(vruffr_core::core::LineCap::Butt) => LineCap::Butt,
+        Some(vruffr_core::core::LineCap::Round) => LineCap::Round,
+        Some(vruffr_core::core::LineCap::Square) => LineCap::Square,
         None => LineCap::Round,
     }
 }
 
 fn convert_line_join_from_roughr_to_piet(
-    roughr_line_join: Option<roughr::core::LineJoin>,
+    roughr_line_join: Option<vruffr_core::core::LineJoin>,
 ) -> LineJoin {
     match roughr_line_join {
-        Some(roughr::core::LineJoin::Miter { limit: _ }) => LineJoin::Miter,
-        Some(roughr::core::LineJoin::Round) => LineJoin::Round,
-        Some(roughr::core::LineJoin::Bevel) => LineJoin::Bevel,
+        Some(vruffr_core::core::LineJoin::Miter { limit: _ }) => LineJoin::Miter,
+        Some(vruffr_core::core::LineJoin::Round) => LineJoin::Round,
+        Some(vruffr_core::core::LineJoin::Bevel) => LineJoin::Bevel,
         None => LineJoin::Miter,
     }
 }
@@ -432,7 +432,7 @@ fn convert_line_join_from_roughr_to_piet(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use roughr::core::{Op, OpSet, OpSetType, OpType, OptionsBuilder};
+    use vruffr_core::core::{Op, OpSet, OpSetType, OpType, OptionsBuilder};
 
     /// Test that empty OpSet returns None instead of panicking
     #[test]
@@ -536,7 +536,7 @@ mod tests {
     #[test]
     fn test_skia_generator_with_fill() {
         use palette::Srgba;
-        use roughr::core::FillStyle;
+        use vruffr_core::core::FillStyle;
 
         let options = OptionsBuilder::default()
             .fill(Srgba::new(0.0, 0.0, 1.0, 1.0))

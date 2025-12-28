@@ -1,5 +1,5 @@
 [package]
-name = "roughr"
+name = "vruffr-core"
 version = "0.12.0"
 edition = "2021"
 authors = ["orhanbalci@gmail.com <orhanbalci@gmail.com>"]

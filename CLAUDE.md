@@ -7,8 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```
 vruffr/
 ├── cli/                 # CLI tool (vruffr binary)
-├── roughr/              # Core sketch primitives
-├── rough_tiny_skia/     # tiny-skia rendering backend
+├── roughr/              # vruffr-core: Core sketch primitives
+├── rough_tiny_skia/     # vruffr-skia: tiny-skia rendering backend
 ├── rough_piet/          # piet rendering backend
 ├── rough_vello/         # vello GPU backend
 ├── points_on_curve/     # Bezier curve utilities
@@ -24,14 +24,14 @@ cargo build --release
 ./target/release/vruffr input.svg -o output.png
 
 # Run tests
-cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
+cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 
 # Format and lint
 cargo fmt
-cargo clippy -p roughr -p rough_tiny_skia -p vruffr-cli -- -D warnings
+cargo clippy -p vruffr-core -p vruffr-skia -p vruffr-cli -- -D warnings
 
 # Full quality check
-cargo fmt --check && cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
+cargo fmt --check && cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 ```
 
 Note: `svg_path_ops` has pre-existing clippy warnings from the original fork.
@@ -41,8 +41,8 @@ Note: `svg_path_ops` has pre-existing clippy warnings from the original fork.
 | Crate | Purpose | Entry Point |
 |-------|---------|-------------|
 | `vruffr-cli` | CLI binary and library | `cli/src/main.rs` |
-| `roughr` | Core primitives, dedup module | `roughr/src/lib.rs` |
-| `rough_tiny_skia` | Rendering to PNG via tiny-skia | `rough_tiny_skia/src/lib.rs` |
+| `vruffr-core` | Core primitives, dedup module | `roughr/src/lib.rs` |
+| `vruffr-skia` | Rendering to PNG via tiny-skia | `rough_tiny_skia/src/lib.rs` |
 
 ## Testing Strategy
 

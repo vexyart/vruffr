@@ -1,28 +1,44 @@
 # TODO.md - vruffr Task List
 
-## Active Work
+## Phase 2: Crate Renaming - COMPLETE
 
-### Phase 6: Advanced Features (Remaining - Optional)
+### 2.1 Rename roughr -> vruffr-core
+- [x] Update roughr/Cargo.toml name field
+- [x] Update rough_tiny_skia/Cargo.toml dependency
+- [x] Update rough_piet/Cargo.toml dependency
+- [x] Update rough_vello/Cargo.toml dependency
+- [x] Update cli/Cargo.toml dependency
+- [x] Update all `use roughr::` -> `use vruffr_core::`
 
-#### Post-Processing
-- [ ] Add paper texture overlay (optional)
-- [ ] Add edge roughening filter (optional)
-- [ ] Add duotone mode (optional)
+### 2.2 Rename rough_tiny_skia -> vruffr-skia
+- [x] Update rough_tiny_skia/Cargo.toml name field
+- [x] Update cli/Cargo.toml dependency
+- [x] Update all `use rough_tiny_skia::` -> `use vruffr_skia::`
 
-## Future Work
+### 2.3 Update Documentation
+- [x] Update CLAUDE.md references
+- [x] Update WORK.md references
 
-### Phase 2: Rename & Restructure (Optional)
+### 2.4 Verification
+- [x] Run cargo build --workspace
+- [x] Run cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
+- [x] Verify CLI works
 
-- [ ] Rename roughr -> vruffr-core
-- [ ] Rename rough_tiny_skia -> vruffr-skia
-- [ ] Create crates/ directory structure
+## Phase 7: Edge Roughening Filter
 
-## Completed
+- [ ] Add `--edge-roughen` CLI flag (0.0-1.0)
+- [ ] Add edge_roughen field to RenderOptions
+- [ ] Implement apply_edge_roughening function in cli/src/lib.rs
+- [ ] Add edge_roughen to WASM bindings
+- [ ] Add edge_roughen to Python bindings
+- [ ] Add tests for edge roughening
 
-- [x] Phase 1: Foundation Cleanup (panic fixes, workspace cleanup)
-- [x] Phase 1.5: Preprocessing (dedup, adaptive roughness)
-- [x] Phase 3: CLI Integration (full-featured CLI)
-- [x] Phase 4: Documentation (README, SPEC, API docs)
-- [x] Phase 5: Full WASM/Python rendering pipelines
-- [x] Phase 6: Color modes (grayscale, sepia, invert), noise/grain effects
-- [x] Project Infrastructure (CI/CD, build scripts, MkDocs)
+## Phase 8: Duotone Mode
+
+- [ ] Add `--duotone` CLI flag (shadow,highlight hex colors)
+- [ ] Add ColorMode::Duotone variant
+- [ ] Implement duotone color mapping in apply_color_mode
+- [ ] Parse duotone colors from CLI argument
+- [ ] Add duotone to WASM bindings
+- [ ] Add duotone to Python bindings
+- [ ] Add tests for duotone mode

@@ -19,9 +19,9 @@
 
 use anyhow::{Context, Result};
 use palette::Srgba;
-use rough_tiny_skia::{SkiaGenerator, SkiaOpset};
-use roughr::core::{FillStyle, OpSetType, OptionsBuilder};
-use roughr::dedup::{deduplicate_paths, PathSignature, StyledPath};
+use vruffr_skia::{SkiaGenerator, SkiaOpset};
+use vruffr_core::core::{FillStyle, OpSetType, OptionsBuilder};
+use vruffr_core::dedup::{deduplicate_paths, PathSignature, StyledPath};
 use std::fmt::Write as FmtWrite;
 use std::sync::Arc;
 use tiny_skia::{Pixmap, PixmapMut};
@@ -644,7 +644,7 @@ fn skia_path_to_svg_string(path: &tiny_skia::Path) -> String {
 }
 
 /// Convert SkiaOpset to SketchElements
-fn opset_to_elements(set: &SkiaOpset<f64>, options: &roughr::core::Options) -> Vec<SketchElement> {
+fn opset_to_elements(set: &SkiaOpset<f64>, options: &vruffr_core::core::Options) -> Vec<SketchElement> {
     let path = match &set.ops {
         Some(p) => p,
         None => return vec![],
