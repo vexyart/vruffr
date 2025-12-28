@@ -1,37 +1,47 @@
 # vruffr
 
+[![CI](https://github.com/vexyart/vruffr/actions/workflows/ci.yml/badge.svg)](https://github.com/vexyart/vruffr/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Transform SVG graphics into hand-drawn sketch-style output with wobbly lines, crosshatch fills, and artistic imperfection.
 
-## Installation
+## Quick Install
 
 ```bash
-cargo install --path cli
-```
-
-Or build from source:
-
-```bash
+# Build from source
+git clone https://github.com/vexyart/vruffr.git
+cd vruffr
 cargo build --release
-./target/release/vruffr input.svg -o output.png
+./target/release/vruffr --help
 ```
 
-## CLI Usage
+## Quick Start
 
 ```bash
-# Basic usage
+# Convert SVG to sketchy PNG
 vruffr input.svg -o output.png
 
-# Adjust roughness (0-10, default: 1.0)
-vruffr input.svg -o output.png --roughness 2.5
+# Increase roughness for more hand-drawn look
+vruffr input.svg -o rough.png --roughness 2.5
 
-# Change fill style
-vruffr input.svg -o output.png --fill-style hachure
+# Use hachure fill instead of crosshatch
+vruffr input.svg -o hatch.png --fill-style hachure
+```
 
-# Scale output
-vruffr input.svg -o output.png --scale 2.0
+## More Examples
 
-# Adaptive roughness (size-dependent)
-vruffr input.svg -o output.png --adaptive-strength 1.0
+```bash
+# Scale output 2x
+vruffr input.svg -o large.png --scale 2.0
+
+# Transparent background
+vruffr input.svg -o transparent.png --background transparent
+
+# Reproducible output with seed
+vruffr input.svg -o v1.png --seed 12345
+
+# Validate without rendering
+vruffr input.svg -o /dev/null --dry-run
 ```
 
 ## Adaptive Roughness
