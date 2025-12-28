@@ -27,6 +27,7 @@
 14. Updated .gitignore for workspace structure
 15. Adapted extra scripts for vruffr
 16. Added doc comments to all public APIs
+17. Tagged v0.1.0 initial release
 
 ### Test Status
 
@@ -44,9 +45,9 @@ cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
 
 ### Next Steps
 
-1. Add Rust doc comments to public APIs (Phase 4)
-2. Tag initial vruffr release (Cleanup & Polish)
-3. Consider Phase 2 rename (optional - large refactor)
+1. Phase 2: Rename & Restructure (optional - large refactor)
+2. Phase 3 remaining: SVG output format, backend selection
+3. Phase 5: Python & WASM bindings (future)
 
 ---
 
