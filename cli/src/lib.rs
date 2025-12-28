@@ -189,6 +189,8 @@ pub struct SvgInfo {
     pub width: u32,
     /// Height of the SVG in pixels
     pub height: u32,
+    /// Number of path elements in the SVG
+    pub path_count: usize,
     /// Warnings about unsupported elements
     pub warnings: RenderWarnings,
 }
@@ -222,27 +224,29 @@ pub fn validate_svg(svg_data: &str) -> Result<SvgInfo> {
     let height = svg_size.height() as u32;
 
     let mut warnings = RenderWarnings::default();
-    check_warnings(tree.root(), &mut warnings);
+    let path_count = count_and_check(tree.root(), &mut warnings);
 
-    Ok(SvgInfo { width, height, warnings })
+    Ok(SvgInfo { width, height, path_count, warnings })
 }
 
-fn check_warnings(group: &usvg::Group, warnings: &mut RenderWarnings) {
+fn count_and_check(group: &usvg::Group, warnings: &mut RenderWarnings) -> usize {
+    let mut count = 0;
     for node in group.children() {
         match node {
-            usvg::Node::Group(g) => check_warnings(g, warnings),
+            usvg::Node::Group(g) => count += count_and_check(g, warnings),
             usvg::Node::Image(_) => warnings.has_images = true,
             usvg::Node::Text(text) => {
                 // Only warn if text couldn't be flattened (no fonts available)
                 if text.flattened().children().is_empty() {
                     warnings.has_text = true;
                 } else {
-                    check_warnings(text.flattened(), warnings);
+                    count += count_and_check(text.flattened(), warnings);
                 }
             }
-            usvg::Node::Path(_) => {}
+            usvg::Node::Path(_) => count += 1,
         }
     }
+    count
 }
 
 /// Render an SVG string to a sketch-style PNG pixmap
@@ -1042,6 +1046,7 @@ mod tests {
 
         assert_eq!(info.width, 300);
         assert_eq!(info.height, 200);
+        assert_eq!(info.path_count, 1);
         assert!(!info.warnings.has_text);
         assert!(!info.warnings.has_images);
     }

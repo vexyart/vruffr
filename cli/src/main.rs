@@ -28,8 +28,8 @@ struct Args {
     #[arg(short = 'b', long, default_value = "1.0")]
     bowing: f64,
 
-    /// Fill style: hachure, crosshatch
-    #[arg(long, default_value = "crosshatch")]
+    /// Fill style for shape interiors [hachure, crosshatch]
+    #[arg(long, default_value = "crosshatch", value_name = "STYLE")]
     fill_style: SketchFillStyle,
 
     /// Random seed for reproducibility
@@ -184,10 +184,11 @@ fn main() -> Result<()> {
                 eprintln!("Warning: SVG contains embedded images which are not rendered");
             }
             eprintln!(
-                "Valid SVG: {} ({}x{})",
+                "Valid SVG: {} ({}x{}, {} paths)",
                 args.input.display(),
                 info.width,
-                info.height
+                info.height,
+                info.path_count
             );
         }
         return Ok(());
