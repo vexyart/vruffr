@@ -1,0 +1,56 @@
+# this_file: .github/workflows/docs.yml
+name: Deploy Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src_docs/**'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install MkDocs
+        run: |
+          pip install mkdocs-material mkdocs-minify-plugin
+
+      - name: Build docs
+        run: |
+          cd src_docs
+          mkdocs build -d ../docs
+
+      - name: Copy playground
+        run: |
+          cp src_docs/md/playground.html docs/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

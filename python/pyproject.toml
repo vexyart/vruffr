@@ -1,0 +1,30 @@
+# this_file: python/pyproject.toml
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "vruffr"
+version = "0.1.0"
+description = "Convert SVG to hand-drawn sketch-style output"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Rust",
+]
+
+[project.urls]
+Homepage = "https://github.com/vexyart/vruffr"
+Repository = "https://github.com/vexyart/vruffr"
+
+[tool.maturin]
+features = ["pyo3/extension-module"]

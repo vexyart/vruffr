@@ -15,13 +15,26 @@ target/
 # macOS
 .DS_Store
 
-# Extra directories to ignore
+# Reference code (read-only, not part of project)
 extra/ext/
 extra/ref/
 extra/target/
 issues/
 
+# Build outputs
+docs/
+examples/output/
+wasm/pkg/
+python/target/
+
 # IDE
 .idea/
 .vscode/
 *.swp
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+*.whl

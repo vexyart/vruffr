@@ -1,0 +1,75 @@
+# this_file: src_docs/mkdocs.yml
+site_name: vruffr
+site_description: Convert SVG to hand-drawn sketch-style output
+site_url: https://vexyart.github.io/vruffr/
+repo_url: https://github.com/vexyart/vruffr
+repo_name: vexyart/vruffr
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - CLI Reference: getting-started/cli.md
+  - Guides:
+    - Sketch Options: guides/options.md
+    - Fill Styles: guides/fill-styles.md
+    - Advanced Usage: guides/advanced.md
+  - Reference:
+    - Library API: reference/api.md
+    - Architecture: reference/architecture.md
+  - Playground: playground.html
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/vexyart/vruffr
