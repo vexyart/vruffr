@@ -159,7 +159,7 @@ Output (PNG / SVG / native surface)
    - `use` statements
    - Documentation
 
-### Phase 3: Integrate CLI - IN PROGRESS
+### Phase 3: Integrate CLI - COMPLETE (core features)
 
 **Goal:** Make vruffr the main CLI using local workspace crates.
 
@@ -172,11 +172,12 @@ Output (PNG / SVG / native surface)
    - Panic handlers removed from render_path() and collect_path_elements()
    - Clean code now that Option<Path> handles degenerate paths
 
-3. **Expand CLI features** - PARTIAL
+3. **Expand CLI features** - DONE (core)
    - All SketchOptions exposed as flags (DONE)
    - SVG output mode (plain SVG) - DONE
-   - SVG patch mode (embed into original) - TODO
-   - Backend selection flag - TODO
+   - CLI integration tests (8 tests) - DONE
+   - SVG patch mode (embed into original) - DEFERRED (complex, low priority)
+   - Backend selection flag - DEFERRED (only one backend currently)
 
 ### Phase 4: Documentation - COMPLETE
 

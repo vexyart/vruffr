@@ -65,19 +65,20 @@
 - [ ] Update all use statements across crates
 - [ ] Run cargo test --workspace to verify rename
 
-## Phase 3: Integrate CLI - IN PROGRESS
+## Phase 3: Integrate CLI - COMPLETE (core features)
 
 - [x] Move extra/src/ to cli/
 - [x] Create cli/Cargo.toml with path dependencies
 - [x] Switch from crates.io to workspace path deps
 - [x] Rename CLI binary to vruffr
 - [x] Remove catch_unwind panic handlers from cli
-- [ ] Add backend selection CLI flag
 - [x] Add SVG output format flag
-- [ ] Add SVGpatch output mode
 - [x] Verify all test-data renders without panics
 - [x] Adapt extra/test-data.sh for new structure
 - [x] Adapt extra/build.sh for new structure
+- [x] Add CLI integration tests (8 tests)
+- [-] Add backend selection CLI flag (deferred - only one backend)
+- [-] Add SVGpatch output mode (deferred - complex, low priority)
 
 ## Phase 4: Documentation
 

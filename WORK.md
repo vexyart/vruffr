@@ -1,64 +1,32 @@
 # WORK.md - vruffr Work Log
 
-## Session Summary
+## Current Status
+
+All core phases complete. Project is functional and well-tested.
+
+### Test Summary
+
+```
+cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
+# rough_tiny_skia: 9 unit tests
+# roughr: 23 unit tests (3 ignored)
+# vruffr-cli: 62 lib + 4 main + 8 integration + 1 doc = 75 tests
+# Total: 109 tests passing, 0 warnings
+```
 
 ### Completed Phases
 
 - **Phase 1: Foundation Cleanup** - COMPLETE
 - **Phase 1.5: Preprocessing Features** - COMPLETE
-- **Phase 3: CLI Integration** - IN PROGRESS (9/11 tasks done)
+- **Phase 3: CLI Integration** - COMPLETE (core features)
 - **Phase 4: Documentation** - COMPLETE
 
-### Key Accomplishments
+### Future Work
 
-1. Fixed rough_tiny_skia panic (Option<Path> instead of unwrap)
-2. Dropped unused backends (rough_iced, rough_plotters_svg)
-3. Implemented adaptive roughness scaling in roughr and CLI
-4. Implemented path deduplication module in roughr
-5. Moved CLI to workspace with path dependencies
-6. Removed catch_unwind handlers (no longer needed)
-7. Added all preprocessing CLI flags
-8. Verified all test-data SVGs render without panics
-9. Rewrote README.md with vruffr documentation
-10. Updated CLAUDE.md for new structure
-11. Created DEPENDENCIES.md
-12. Added working example in cli/examples/
-13. Cleaned up extra/ (removed migrated skesvg code)
-14. Updated .gitignore for workspace structure
-15. Adapted extra scripts for vruffr
-16. Added doc comments to all public APIs
-17. Tagged v0.1.0 initial release
-18. Verified SVG output format works (with --format and auto-detection)
-19. **Wired dedup into render pipeline** (both PNG and SVG output)
-
-### Test Status
-
-```
-cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
-# rough_tiny_skia: 9 passed
-# roughr: 23 passed (3 ignored)
-# vruffr-cli: 62 lib + 4 main + 1 doc = 67 passed
-# Total: 101 tests passing
-
-# Warnings: All suppressed with #[allow(dead_code)] for unused upstream code
-# cargo build -p roughr -p svg_path_ops shows 0 warnings
-
-# All test-data SVGs render without panics:
-./target/release/vruffr extra/test-data/*.svg
-# All rendered successfully with --deduplicate flag
-
-# rough_piet examples work on macOS (uses CoreGraphics, not Cairo)
-cargo run --example rectangle -p rough_piet  # Success
-```
-
-### Next Steps
-
-1. Phase 3 remaining: SVGpatch output mode (complex - preserves original SVG structure)
-2. Phase 2: Rename & Restructure (optional - large refactor)
-3. Phase 5: Python & WASM bindings (future)
+- Phase 2: Rename & Restructure (optional large refactor)
+- Phase 5: Python & WASM bindings
+- Phase 6: Color modes and post-processing filters
 
 ---
 
-## Files Modified
-
-See git log for complete history.
+See git log for detailed change history.
