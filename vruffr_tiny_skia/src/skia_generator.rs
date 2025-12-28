@@ -102,7 +102,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                             .options
                             .stroke_line_dash
                             .clone()
-                            .unwrap_or(Vec::new())
+                            .unwrap_or_default()
                             .iter()
                             .map(|&a| a as f32)
                             .collect();
@@ -201,7 +201,7 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                             .options
                             .fill_line_dash
                             .clone()
-                            .unwrap_or(Vec::new())
+                            .unwrap_or_default()
                             .iter()
                             .map(|&a| a as f32)
                             .collect();
