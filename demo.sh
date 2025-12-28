@@ -8,6 +8,7 @@
 #   roughness   - Roughness levels
 #   adaptive    - Adaptive roughness demo
 #   batch       - Batch processing demo
+#   realworld   - Real-world SVG conversions (sag.svg, tiger.svg)
 #   clean       - Remove output files
 
 set -euo pipefail
@@ -175,6 +176,91 @@ EOF
     done
 }
 
+demo_real_world() {
+    log "Real-world SVG conversions (sag.svg, tiger.svg)"
+
+    # Find sag.svg and tiger.svg in common locations
+    local sag_svg=""
+    local tiger_svg=""
+    
+    for loc in "." "$EXAMPLES_DIR" "examples"; do
+        [[ -f "$loc/sag.svg" ]] && sag_svg="$loc/sag.svg"
+        [[ -f "$loc/tiger.svg" ]] && tiger_svg="$loc/tiger.svg"
+    done
+
+    # Convert sag.svg variants
+    if [[ -n "$sag_svg" && -f "$sag_svg" ]]; then
+        log "Converting sag.svg"
+        
+        # Default conversion
+        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-default.png" --seed 42
+        echo "  Created: $OUTPUT_DIR/sag-default.png"
+        
+        # Different roughness levels
+        for r in 0.5 1.5 2.5; do
+            $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-rough-${r}.png" \
+                --roughness "$r" --seed 42
+            echo "  Created: $OUTPUT_DIR/sag-rough-${r}.png"
+        done
+        
+        # Different fill styles
+        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-crosshatch.png" \
+            --fill-style crosshatch --seed 42
+        echo "  Created: $OUTPUT_DIR/sag-crosshatch.png"
+        
+        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-hachure.png" \
+            --fill-style hachure --seed 42
+        echo "  Created: $OUTPUT_DIR/sag-hachure.png"
+        
+        # Transparent background
+        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-transparent.png" \
+            --background transparent --seed 42
+        echo "  Created: $OUTPUT_DIR/sag-transparent.png"
+        
+        # SVG output
+        $VRUFFR "$sag_svg" -o "$OUTPUT_DIR/sag-sketch.svg" --seed 42
+        echo "  Created: $OUTPUT_DIR/sag-sketch.svg"
+    else
+        echo "  Warning: sag.svg not found (checked: ., examples/, examples)"
+    fi
+
+    # Convert tiger.svg variants
+    if [[ -n "$tiger_svg" && -f "$tiger_svg" ]]; then
+        log "Converting tiger.svg"
+        
+        # Default conversion
+        $VRUFFR "$tiger_svg" -o "$OUTPUT_DIR/tiger-default.png" --seed 42
+        echo "  Created: $OUTPUT_DIR/tiger-default.png"
+        
+        # Different roughness levels
+        for r in 0.5 1.5 2.5; do
+            $VRUFFR "$tiger_svg" -o "$OUTPUT_DIR/tiger-rough-${r}.png" \
+                --roughness "$r" --seed 42
+            echo "  Created: $OUTPUT_DIR/tiger-rough-${r}.png"
+        done
+        
+        # Different fill styles
+        $VRUFFR "$tiger_svg" -o "$OUTPUT_DIR/tiger-crosshatch.png" \
+            --fill-style crosshatch --seed 42
+        echo "  Created: $OUTPUT_DIR/tiger-crosshatch.png"
+        
+        $VRUFFR "$tiger_svg" -o "$OUTPUT_DIR/tiger-hachure.png" \
+            --fill-style hachure --seed 42
+        echo "  Created: $OUTPUT_DIR/tiger-hachure.png"
+        
+        # Transparent background
+        $VRUFFR "$tiger_svg" -o "$OUTPUT_DIR/tiger-transparent.png" \
+            --background transparent --seed 42
+        echo "  Created: $OUTPUT_DIR/tiger-transparent.png"
+        
+        # SVG output
+        $VRUFFR "$tiger_svg" -o "$OUTPUT_DIR/tiger-sketch.svg" --seed 42
+        echo "  Created: $OUTPUT_DIR/tiger-sketch.svg"
+    else
+        echo "  Warning: tiger.svg not found (checked: ., examples/, examples)"
+    fi
+}
+
 demo_clean() {
     log "Cleaning output files"
     rm -rf "$OUTPUT_DIR"
@@ -188,6 +274,7 @@ demo_all() {
     demo_roughness
     demo_adaptive
     demo_batch
+    demo_real_world
     echo ""
     log "All demos complete! Output in: $OUTPUT_DIR/"
     ls -la "$OUTPUT_DIR/" | head -20
@@ -200,10 +287,11 @@ case "${1:-all}" in
     roughness) demo_roughness ;;
     adaptive)  demo_adaptive ;;
     batch)     demo_batch ;;
+    realworld) demo_real_world ;;
     clean)     demo_clean ;;
     all)       demo_all ;;
     *)
-        echo "Usage: $0 [basic|styles|roughness|adaptive|batch|clean|all]"
+        echo "Usage: $0 [basic|styles|roughness|adaptive|batch|realworld|clean|all]"
         exit 1
         ;;
 esac

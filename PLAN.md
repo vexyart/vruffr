@@ -60,8 +60,12 @@ vruffr/
 - `--duotone "#shadow,#highlight"`
 - Luminance-based color mapping
 
+### Phase 9: Stroke Scaling - COMPLETE
+- `--stroke-scale` multiplier for stroke widths
+- Proportional thickness without overriding SVG values
+
 ## Success Criteria - ALL MET
 
-- 118 tests passing
+- 119 tests passing
 - All crates use vruffr-* naming
 - All features work in CLI, WASM, and Python bindings

@@ -2030,4 +2030,26 @@ mod tests {
         let pixmap = render_sketch(svg, &options).expect("Failed to render combined effects");
         assert_eq!(pixmap.width(), 100);
     }
+
+    #[test]
+    fn test_stroke_scale() {
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="80" height="80" fill="none" stroke="black" stroke-width="2"/>
+        </svg>"#;
+
+        // Default stroke_scale = 1.0
+        let options1 = SketchOptions::default();
+        let pixmap1 = render_sketch(svg, &options1).expect("Failed to render with default stroke_scale");
+
+        // Scaled stroke_scale = 2.0
+        let options2 = SketchOptions {
+            stroke_scale: 2.0,
+            ..Default::default()
+        };
+        let pixmap2 = render_sketch(svg, &options2).expect("Failed to render with stroke_scale 2.0");
+
+        // Both should render successfully
+        assert_eq!(pixmap1.width(), 100);
+        assert_eq!(pixmap2.width(), 100);
+    }
 }

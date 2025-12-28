@@ -17,7 +17,7 @@ All core phases complete. Project production-ready.
 
 ```
 cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
-# 118 tests passing
+# 119 tests passing
 ```
 
 ### Completed Phases
