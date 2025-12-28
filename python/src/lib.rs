@@ -42,6 +42,8 @@ pub struct SketchOptions {
     pub noise: f32,
     #[pyo3(get, set)]
     pub edge_roughen: f32,
+    #[pyo3(get, set)]
+    pub duotone: Option<String>,
 }
 
 #[pymethods]
@@ -64,7 +66,8 @@ impl SketchOptions {
         background=None,
         color_mode="color".to_string(),
         noise=0.0,
-        edge_roughen=0.0
+        edge_roughen=0.0,
+        duotone=None
     ))]
     #[allow(clippy::too_many_arguments)]
     fn new(
@@ -85,6 +88,7 @@ impl SketchOptions {
         color_mode: String,
         noise: f32,
         edge_roughen: f32,
+        duotone: Option<String>,
     ) -> Self {
         SketchOptions {
             roughness,
@@ -104,6 +108,7 @@ impl SketchOptions {
             color_mode,
             noise,
             edge_roughen,
+            duotone,
         }
     }
 
@@ -124,11 +129,19 @@ impl SketchOptions {
 
         let background = self.background.as_ref().and_then(|bg| parse_color(bg));
 
-        let color_mode = match self.color_mode.as_str() {
-            "grayscale" | "gray" | "mono" => vruffr_lib::ColorMode::Grayscale,
-            "sepia" => vruffr_lib::ColorMode::Sepia,
-            "invert" | "negative" => vruffr_lib::ColorMode::Invert,
-            _ => vruffr_lib::ColorMode::Color,
+        let color_mode = if let Some(ref duotone_str) = self.duotone {
+            if let Some((shadow, highlight)) = parse_duotone(duotone_str) {
+                vruffr_lib::ColorMode::Duotone { shadow, highlight }
+            } else {
+                vruffr_lib::ColorMode::Color
+            }
+        } else {
+            match self.color_mode.as_str() {
+                "grayscale" | "gray" | "mono" => vruffr_lib::ColorMode::Grayscale,
+                "sepia" => vruffr_lib::ColorMode::Sepia,
+                "invert" | "negative" => vruffr_lib::ColorMode::Invert,
+                _ => vruffr_lib::ColorMode::Color,
+            }
         };
 
         vruffr_lib::SketchOptions {
@@ -152,6 +165,37 @@ impl SketchOptions {
             ..Default::default()
         }
     }
+}
+
+/// Parse duotone colors from "shadow,highlight" format
+fn parse_duotone(s: &str) -> Option<([u8; 3], [u8; 3])> {
+    let parts: Vec<&str> = s.split(',').collect();
+    if parts.len() != 2 {
+        return None;
+    }
+
+    fn parse_hex_rgb(hex: &str) -> Option<[u8; 3]> {
+        let hex = hex.trim().strip_prefix('#').unwrap_or(hex);
+        match hex.len() {
+            3 => {
+                let r = u8::from_str_radix(&hex[0..1], 16).ok()? * 17;
+                let g = u8::from_str_radix(&hex[1..2], 16).ok()? * 17;
+                let b = u8::from_str_radix(&hex[2..3], 16).ok()? * 17;
+                Some([r, g, b])
+            }
+            6 => {
+                let r = u8::from_str_radix(&hex[0..2], 16).ok()?;
+                let g = u8::from_str_radix(&hex[2..4], 16).ok()?;
+                let b = u8::from_str_radix(&hex[4..6], 16).ok()?;
+                Some([r, g, b])
+            }
+            _ => None,
+        }
+    }
+
+    let shadow = parse_hex_rgb(parts[0])?;
+    let highlight = parse_hex_rgb(parts[1])?;
+    Some((shadow, highlight))
 }
 
 /// Parse a color string (#RRGGBB, #RGB, or named colors)

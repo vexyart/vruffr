@@ -85,7 +85,7 @@ impl std::str::FromStr for OutputFormat {
 }
 
 /// Color mode for post-processing
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub enum ColorMode {
     /// Full color (default)
     #[default]
@@ -96,6 +96,13 @@ pub enum ColorMode {
     Sepia,
     /// Invert colors (negative)
     Invert,
+    /// Duotone: map luminance to gradient between two colors
+    Duotone {
+        /// Shadow color (dark tones)
+        shadow: [u8; 3],
+        /// Highlight color (light tones)
+        highlight: [u8; 3],
+    },
 }
 
 impl std::str::FromStr for ColorMode {
@@ -320,6 +327,13 @@ fn apply_color_mode(pixmap: &mut Pixmap, mode: ColorMode) {
                 chunk[0] = 255 - chunk[0];
                 chunk[1] = 255 - chunk[1];
                 chunk[2] = 255 - chunk[2];
+            }
+            ColorMode::Duotone { shadow, highlight } => {
+                // Map luminance to gradient between shadow and highlight colors
+                let t = lum / 255.0;
+                chunk[0] = (shadow[0] as f32 + t * (highlight[0] as f32 - shadow[0] as f32)) as u8;
+                chunk[1] = (shadow[1] as f32 + t * (highlight[1] as f32 - shadow[1] as f32)) as u8;
+                chunk[2] = (shadow[2] as f32 + t * (highlight[2] as f32 - shadow[2] as f32)) as u8;
             }
             ColorMode::Color => {}
         }
@@ -1947,6 +1961,23 @@ mod tests {
             ..Default::default()
         };
         let pixmap = render_sketch(svg, &options).expect("Failed to render with edge roughening");
+        assert_eq!(pixmap.width(), 100);
+    }
+
+    #[test]
+    fn test_duotone_mode() {
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="80" height="80" fill="blue"/>
+        </svg>"#;
+
+        let options = SketchOptions {
+            color_mode: ColorMode::Duotone {
+                shadow: [26, 26, 46],    // #1a1a2e
+                highlight: [237, 242, 244], // #edf2f4
+            },
+            ..Default::default()
+        };
+        let pixmap = render_sketch(svg, &options).expect("Failed to render duotone");
         assert_eq!(pixmap.width(), 100);
     }
 

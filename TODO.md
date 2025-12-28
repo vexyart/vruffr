@@ -33,12 +33,12 @@
 - [x] Add edge_roughen to Python bindings
 - [x] Add tests for edge roughening
 
-## Phase 8: Duotone Mode
+## Phase 8: Duotone Mode - COMPLETE
 
-- [ ] Add `--duotone` CLI flag (shadow,highlight hex colors)
-- [ ] Add ColorMode::Duotone variant
-- [ ] Implement duotone color mapping in apply_color_mode
-- [ ] Parse duotone colors from CLI argument
-- [ ] Add duotone to WASM bindings
-- [ ] Add duotone to Python bindings
-- [ ] Add tests for duotone mode
+- [x] Add `--duotone` CLI flag (shadow,highlight hex colors)
+- [x] Add ColorMode::Duotone variant
+- [x] Implement duotone color mapping in apply_color_mode
+- [x] Parse duotone colors from CLI argument
+- [x] Add duotone to WASM bindings
+- [x] Add duotone to Python bindings
+- [x] Add tests for duotone mode

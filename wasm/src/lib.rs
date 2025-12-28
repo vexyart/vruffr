@@ -43,6 +43,8 @@ pub struct WasmOptions {
     pub noise: Option<f32>,
     #[serde(default)]
     pub edge_roughen: Option<f32>,
+    #[serde(default)]
+    pub duotone: Option<String>,
 }
 
 fn default_roughness() -> f64 {
@@ -67,11 +69,19 @@ impl WasmOptions {
             .as_ref()
             .map(|bg| parse_color(bg).unwrap_or([255, 255, 255, 255]));
 
-        let color_mode = match self.color_mode.as_deref() {
-            Some("grayscale") | Some("gray") | Some("mono") => vruffr::ColorMode::Grayscale,
-            Some("sepia") => vruffr::ColorMode::Sepia,
-            Some("invert") | Some("negative") => vruffr::ColorMode::Invert,
-            _ => vruffr::ColorMode::Color,
+        let color_mode = if let Some(ref duotone_str) = self.duotone {
+            if let Some((shadow, highlight)) = parse_duotone(duotone_str) {
+                vruffr::ColorMode::Duotone { shadow, highlight }
+            } else {
+                vruffr::ColorMode::Color
+            }
+        } else {
+            match self.color_mode.as_deref() {
+                Some("grayscale") | Some("gray") | Some("mono") => vruffr::ColorMode::Grayscale,
+                Some("sepia") => vruffr::ColorMode::Sepia,
+                Some("invert") | Some("negative") => vruffr::ColorMode::Invert,
+                _ => vruffr::ColorMode::Color,
+            }
         };
 
         vruffr::SketchOptions {
@@ -96,6 +106,37 @@ impl WasmOptions {
             ..Default::default()
         }
     }
+}
+
+/// Parse duotone colors from "shadow,highlight" format
+fn parse_duotone(s: &str) -> Option<([u8; 3], [u8; 3])> {
+    let parts: Vec<&str> = s.split(',').collect();
+    if parts.len() != 2 {
+        return None;
+    }
+
+    fn parse_hex_rgb(hex: &str) -> Option<[u8; 3]> {
+        let hex = hex.trim().strip_prefix('#').unwrap_or(hex);
+        match hex.len() {
+            3 => {
+                let r = u8::from_str_radix(&hex[0..1], 16).ok()? * 17;
+                let g = u8::from_str_radix(&hex[1..2], 16).ok()? * 17;
+                let b = u8::from_str_radix(&hex[2..3], 16).ok()? * 17;
+                Some([r, g, b])
+            }
+            6 => {
+                let r = u8::from_str_radix(&hex[0..2], 16).ok()?;
+                let g = u8::from_str_radix(&hex[2..4], 16).ok()?;
+                let b = u8::from_str_radix(&hex[4..6], 16).ok()?;
+                Some([r, g, b])
+            }
+            _ => None,
+        }
+    }
+
+    let shadow = parse_hex_rgb(parts[0])?;
+    let highlight = parse_hex_rgb(parts[1])?;
+    Some((shadow, highlight))
 }
 
 /// Parse a color string (#RRGGBB, #RGB, or named colors)

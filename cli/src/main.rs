@@ -120,6 +120,11 @@ struct Args {
     /// Edge roughening intensity for organic boundaries (0.0-1.0, default: 0.0)
     #[arg(long, default_value = "0.0")]
     edge_roughen: f32,
+
+    /// Duotone colors: "shadow,highlight" as hex (e.g., "#1a1a2e,#edf2f4")
+    /// Overrides --color-mode when set
+    #[arg(long)]
+    duotone: Option<String>,
 }
 
 fn print_warnings(warnings: &vruffr::RenderWarnings) {
@@ -186,6 +191,37 @@ fn parse_background(s: &str) -> Result<Option<[u8; 4]>> {
     }
 }
 
+/// Parse duotone colors from "shadow,highlight" format (e.g., "#1a1a2e,#edf2f4")
+fn parse_duotone(s: &str) -> Result<([u8; 3], [u8; 3])> {
+    let parts: Vec<&str> = s.split(',').collect();
+    if parts.len() != 2 {
+        anyhow::bail!("Duotone requires two colors: shadow,highlight (e.g., \"#1a1a2e,#edf2f4\")");
+    }
+
+    fn parse_hex_rgb(hex: &str) -> Result<[u8; 3]> {
+        let hex = hex.trim().strip_prefix('#').unwrap_or(hex);
+        match hex.len() {
+            3 => {
+                let r = u8::from_str_radix(&hex[0..1], 16)? * 17;
+                let g = u8::from_str_radix(&hex[1..2], 16)? * 17;
+                let b = u8::from_str_radix(&hex[2..3], 16)? * 17;
+                Ok([r, g, b])
+            }
+            6 => {
+                let r = u8::from_str_radix(&hex[0..2], 16)?;
+                let g = u8::from_str_radix(&hex[2..4], 16)?;
+                let b = u8::from_str_radix(&hex[4..6], 16)?;
+                Ok([r, g, b])
+            }
+            _ => anyhow::bail!("Invalid hex color: {hex}"),
+        }
+    }
+
+    let shadow = parse_hex_rgb(parts[0])?;
+    let highlight = parse_hex_rgb(parts[1])?;
+    Ok((shadow, highlight))
+}
+
 fn main() -> Result<()> {
     let args = Args::parse();
 
@@ -242,7 +278,12 @@ fn main() -> Result<()> {
         reference_size: args.reference_size,
         deduplicate: args.deduplicate,
         dedup_epsilon: args.dedup_epsilon,
-        color_mode: args.color_mode,
+        color_mode: if let Some(ref duotone_str) = args.duotone {
+            let (shadow, highlight) = parse_duotone(duotone_str)?;
+            ColorMode::Duotone { shadow, highlight }
+        } else {
+            args.color_mode
+        },
         noise: args.noise,
         edge_roughen: args.edge_roughen,
     };
