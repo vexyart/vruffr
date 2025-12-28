@@ -84,6 +84,33 @@ impl std::str::FromStr for OutputFormat {
     }
 }
 
+/// Color mode for post-processing
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum ColorMode {
+    /// Full color (default)
+    #[default]
+    Color,
+    /// Grayscale (luminance-based)
+    Grayscale,
+    /// Sepia tone
+    Sepia,
+}
+
+impl std::str::FromStr for ColorMode {
+    type Err = String;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "color" | "full" | "none" => Ok(Self::Color),
+            "grayscale" | "grey" | "gray" | "mono" | "monochrome" => Ok(Self::Grayscale),
+            "sepia" | "vintage" => Ok(Self::Sepia),
+            _ => Err(format!(
+                "Unknown color mode: {s}. Valid: color, grayscale, sepia"
+            )),
+        }
+    }
+}
+
 /// A single sketch path element with its styling
 #[derive(Debug, Clone)]
 pub struct SketchElement {
@@ -144,6 +171,10 @@ pub struct SketchOptions {
     pub deduplicate: bool,
     /// Tolerance in pixels for path deduplication matching
     pub dedup_epsilon: f32,
+    /// Color mode post-processing (color, grayscale, sepia)
+    pub color_mode: ColorMode,
+    /// Noise/grain intensity (0.0 = none, 1.0 = heavy)
+    pub noise: f32,
 }
 
 impl Default for SketchOptions {
@@ -169,6 +200,8 @@ impl Default for SketchOptions {
             reference_size: 100.0,
             deduplicate: false,
             dedup_epsilon: 0.1,
+            color_mode: ColorMode::default(),
+            noise: 0.0,
         }
     }
 }
@@ -249,6 +282,59 @@ fn count_and_check(group: &usvg::Group, warnings: &mut RenderWarnings) -> usize 
     count
 }
 
+/// Apply color mode transformation to a pixmap
+fn apply_color_mode(pixmap: &mut Pixmap, mode: ColorMode) {
+    if mode == ColorMode::Color {
+        return;
+    }
+    let data = pixmap.data_mut();
+    for chunk in data.chunks_exact_mut(4) {
+        let r = chunk[0] as f32;
+        let g = chunk[1] as f32;
+        let b = chunk[2] as f32;
+        // Luminance calculation (ITU-R BT.601)
+        let lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        match mode {
+            ColorMode::Grayscale => {
+                let v = lum as u8;
+                chunk[0] = v;
+                chunk[1] = v;
+                chunk[2] = v;
+            }
+            ColorMode::Sepia => {
+                // Sepia tone matrix
+                let new_r = (0.393 * r + 0.769 * g + 0.189 * b).min(255.0) as u8;
+                let new_g = (0.349 * r + 0.686 * g + 0.168 * b).min(255.0) as u8;
+                let new_b = (0.272 * r + 0.534 * g + 0.131 * b).min(255.0) as u8;
+                chunk[0] = new_r;
+                chunk[1] = new_g;
+                chunk[2] = new_b;
+            }
+            ColorMode::Color => {}
+        }
+    }
+}
+
+/// Apply noise/grain effect to a pixmap
+fn apply_noise(pixmap: &mut Pixmap, intensity: f32, seed: u64) {
+    if intensity <= 0.0 {
+        return;
+    }
+    let intensity = intensity.clamp(0.0, 1.0);
+    let max_noise = (intensity * 50.0) as i16; // Max noise range
+    let data = pixmap.data_mut();
+    let mut rng_state = seed.wrapping_mul(6364136223846793005).wrapping_add(1);
+    for chunk in data.chunks_exact_mut(4) {
+        // Simple LCG for reproducible noise
+        rng_state = rng_state.wrapping_mul(6364136223846793005).wrapping_add(1);
+        let noise = ((rng_state >> 33) as i16 % (max_noise * 2 + 1)) - max_noise;
+        // Apply to RGB, preserve alpha
+        chunk[0] = (chunk[0] as i16 + noise).clamp(0, 255) as u8;
+        chunk[1] = (chunk[1] as i16 + noise).clamp(0, 255) as u8;
+        chunk[2] = (chunk[2] as i16 + noise).clamp(0, 255) as u8;
+    }
+}
+
 /// Render an SVG string to a sketch-style PNG pixmap
 pub fn render_sketch(svg_data: &str, options: &SketchOptions) -> Result<Pixmap> {
     let (pixmap, _warnings) = render_sketch_with_warnings(svg_data, options)?;
@@ -288,6 +374,12 @@ pub fn render_sketch_with_warnings(
         // Original path: render each path as encountered
         render_group(tree.root(), options, &mut pixmap.as_mut(), &mut warnings);
     }
+
+    // Post-processing: color mode (grayscale/sepia)
+    apply_color_mode(&mut pixmap, options.color_mode);
+
+    // Post-processing: noise/grain
+    apply_noise(&mut pixmap, options.noise, options.seed);
 
     Ok((pixmap, warnings))
 }
@@ -1729,6 +1821,70 @@ mod tests {
             ..Default::default()
         };
         let pixmap = render_sketch(svg, &options).expect("Failed to render unique paths");
+        assert_eq!(pixmap.width(), 100);
+    }
+
+    #[test]
+    fn test_color_mode_grayscale() {
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="80" height="80" fill="red"/>
+        </svg>"#;
+
+        let options = SketchOptions {
+            color_mode: ColorMode::Grayscale,
+            ..Default::default()
+        };
+        let pixmap = render_sketch(svg, &options).expect("Failed to render grayscale");
+        assert_eq!(pixmap.width(), 100);
+    }
+
+    #[test]
+    fn test_color_mode_sepia() {
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="80" height="80" fill="blue"/>
+        </svg>"#;
+
+        let options = SketchOptions { color_mode: ColorMode::Sepia, ..Default::default() };
+        let pixmap = render_sketch(svg, &options).expect("Failed to render sepia");
+        assert_eq!(pixmap.width(), 100);
+    }
+
+    #[test]
+    fn test_noise_effect() {
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="80" height="80" fill="green"/>
+        </svg>"#;
+
+        let options = SketchOptions { noise: 0.5, ..Default::default() };
+        let pixmap = render_sketch(svg, &options).expect("Failed to render with noise");
+        assert_eq!(pixmap.width(), 100);
+    }
+
+    #[test]
+    fn test_color_mode_from_str() {
+        assert_eq!("color".parse::<ColorMode>().unwrap(), ColorMode::Color);
+        assert_eq!(
+            "grayscale".parse::<ColorMode>().unwrap(),
+            ColorMode::Grayscale
+        );
+        assert_eq!("gray".parse::<ColorMode>().unwrap(), ColorMode::Grayscale);
+        assert_eq!("mono".parse::<ColorMode>().unwrap(), ColorMode::Grayscale);
+        assert_eq!("sepia".parse::<ColorMode>().unwrap(), ColorMode::Sepia);
+        assert!("invalid".parse::<ColorMode>().is_err());
+    }
+
+    #[test]
+    fn test_combined_post_processing() {
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="80" height="80" fill="purple"/>
+        </svg>"#;
+
+        let options = SketchOptions {
+            color_mode: ColorMode::Sepia,
+            noise: 0.3,
+            ..Default::default()
+        };
+        let pixmap = render_sketch(svg, &options).expect("Failed to render combined effects");
         assert_eq!(pixmap.width(), 100);
     }
 }

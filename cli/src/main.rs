@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use std::io::Read;
 use std::path::PathBuf;
-use vruffr::{OutputFormat, SketchFillStyle};
+use vruffr::{ColorMode, OutputFormat, SketchFillStyle};
 
 #[derive(Parser, Debug)]
 #[command(name = "vruffr")]
@@ -108,6 +108,14 @@ struct Args {
     /// Tolerance in pixels for path deduplication matching (default: 0.1)
     #[arg(long, default_value = "0.1")]
     dedup_epsilon: f32,
+
+    /// Color mode: color, grayscale/mono, sepia (default: color)
+    #[arg(long, default_value = "color", value_name = "MODE")]
+    color_mode: ColorMode,
+
+    /// Noise/grain intensity for film-like texture (0.0-1.0, default: 0.0)
+    #[arg(long, default_value = "0.0")]
+    noise: f32,
 }
 
 fn print_warnings(warnings: &vruffr::RenderWarnings) {
@@ -215,6 +223,8 @@ fn main() -> Result<()> {
         reference_size: args.reference_size,
         deduplicate: args.deduplicate,
         dedup_epsilon: args.dedup_epsilon,
+        color_mode: args.color_mode,
+        noise: args.noise,
     };
 
     let format = infer_format(&args.output, args.format);

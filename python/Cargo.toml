@@ -12,8 +12,5 @@ name = "vruffr"
 crate-type = ["cdylib"]
 
 [dependencies]
-roughr = { path = "../roughr" }
-rough_tiny_skia = { path = "../rough_tiny_skia" }
+vruffr-lib = { path = "../cli", package = "vruffr-cli" }
 pyo3 = { version = "0.22", features = ["extension-module"] }
-usvg = "0.45"
-tiny-skia = "0.11"

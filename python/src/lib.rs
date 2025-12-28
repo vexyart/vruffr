@@ -20,12 +20,50 @@ pub struct SketchOptions {
     pub hachure_angle: f32,
     #[pyo3(get, set)]
     pub hachure_gap: f32,
+    #[pyo3(get, set)]
+    pub fill_weight: f32,
+    #[pyo3(get, set)]
+    pub scale: f32,
+    #[pyo3(get, set)]
+    pub adaptive_strength: f32,
+    #[pyo3(get, set)]
+    pub reference_size: f32,
+    #[pyo3(get, set)]
+    pub deduplicate: bool,
+    #[pyo3(get, set)]
+    pub no_fill: bool,
+    #[pyo3(get, set)]
+    pub no_stroke: bool,
+    #[pyo3(get, set)]
+    pub background: Option<String>,
+    #[pyo3(get, set)]
+    pub color_mode: String,
+    #[pyo3(get, set)]
+    pub noise: f32,
 }
 
 #[pymethods]
 impl SketchOptions {
     #[new]
-    #[pyo3(signature = (roughness=1.0, bowing=1.0, seed=42, fill_style="crosshatch".to_string(), hachure_angle=-41.0, hachure_gap=4.0))]
+    #[pyo3(signature = (
+        roughness=1.0,
+        bowing=1.0,
+        seed=42,
+        fill_style="crosshatch".to_string(),
+        hachure_angle=-41.0,
+        hachure_gap=4.0,
+        fill_weight=0.5,
+        scale=1.0,
+        adaptive_strength=0.0,
+        reference_size=100.0,
+        deduplicate=false,
+        no_fill=false,
+        no_stroke=false,
+        background=None,
+        color_mode="color".to_string(),
+        noise=0.0
+    ))]
+    #[allow(clippy::too_many_arguments)]
     fn new(
         roughness: f64,
         bowing: f64,
@@ -33,6 +71,16 @@ impl SketchOptions {
         fill_style: String,
         hachure_angle: f32,
         hachure_gap: f32,
+        fill_weight: f32,
+        scale: f32,
+        adaptive_strength: f32,
+        reference_size: f32,
+        deduplicate: bool,
+        no_fill: bool,
+        no_stroke: bool,
+        background: Option<String>,
+        color_mode: String,
+        noise: f32,
     ) -> Self {
         SketchOptions {
             roughness,
@@ -41,8 +89,90 @@ impl SketchOptions {
             fill_style,
             hachure_angle,
             hachure_gap,
+            fill_weight,
+            scale,
+            adaptive_strength,
+            reference_size,
+            deduplicate,
+            no_fill,
+            no_stroke,
+            background,
+            color_mode,
+            noise,
         }
     }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "SketchOptions(roughness={}, bowing={}, seed={}, fill_style='{}')",
+            self.roughness, self.bowing, self.seed, self.fill_style
+        )
+    }
+}
+
+impl SketchOptions {
+    fn to_vruffr_options(&self) -> vruffr_lib::SketchOptions {
+        let fill_style = match self.fill_style.as_str() {
+            "hachure" => vruffr_lib::SketchFillStyle::Hachure,
+            _ => vruffr_lib::SketchFillStyle::CrossHatch,
+        };
+
+        let background = self.background.as_ref().and_then(|bg| parse_color(bg));
+
+        let color_mode = match self.color_mode.as_str() {
+            "grayscale" | "gray" | "mono" => vruffr_lib::ColorMode::Grayscale,
+            "sepia" => vruffr_lib::ColorMode::Sepia,
+            _ => vruffr_lib::ColorMode::Color,
+        };
+
+        vruffr_lib::SketchOptions {
+            roughness: self.roughness,
+            bowing: self.bowing,
+            seed: self.seed,
+            fill_style,
+            hachure_angle: self.hachure_angle,
+            hachure_gap: self.hachure_gap,
+            fill_weight: self.fill_weight,
+            scale: self.scale,
+            adaptive_strength: self.adaptive_strength,
+            reference_size: self.reference_size,
+            deduplicate: self.deduplicate,
+            no_fill: self.no_fill,
+            no_stroke: self.no_stroke,
+            background,
+            color_mode,
+            noise: self.noise,
+            ..Default::default()
+        }
+    }
+}
+
+/// Parse a color string (#RRGGBB, #RGB, or named colors)
+fn parse_color(s: &str) -> Option<[u8; 4]> {
+    let s = s.trim();
+    if s == "transparent" {
+        return None;
+    }
+    if s == "white" {
+        return Some([255, 255, 255, 255]);
+    }
+    if s == "black" {
+        return Some([0, 0, 0, 255]);
+    }
+    if let Some(hex) = s.strip_prefix('#') {
+        if hex.len() == 6 {
+            let r = u8::from_str_radix(&hex[0..2], 16).ok()?;
+            let g = u8::from_str_radix(&hex[2..4], 16).ok()?;
+            let b = u8::from_str_radix(&hex[4..6], 16).ok()?;
+            return Some([r, g, b, 255]);
+        } else if hex.len() == 3 {
+            let r = u8::from_str_radix(&hex[0..1], 16).ok()? * 17;
+            let g = u8::from_str_radix(&hex[1..2], 16).ok()? * 17;
+            let b = u8::from_str_radix(&hex[2..3], 16).ok()? * 17;
+            return Some([r, g, b, 255]);
+        }
+    }
+    Some([255, 255, 255, 255])
 }
 
 /// Render SVG to sketch-style PNG bytes
@@ -53,81 +183,67 @@ fn render_to_png<'py>(
     svg_data: &str,
     options: Option<&SketchOptions>,
 ) -> PyResult<Bound<'py, PyBytes>> {
-    let opts = options.cloned().unwrap_or_else(|| SketchOptions::new(
-        1.0, 1.0, 42, "crosshatch".to_string(), -41.0, 4.0
-    ));
+    let opts = options.map(|o| o.to_vruffr_options()).unwrap_or_default();
 
-    let fill_style = match opts.fill_style.as_str() {
-        "hachure" => roughr::core::FillStyle::Hachure,
-        _ => roughr::core::FillStyle::CrossHatch,
-    };
+    let pixmap = vruffr_lib::render_sketch(svg_data, &opts).map_err(|e| {
+        PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Render error: {}", e))
+    })?;
 
-    // Parse SVG
-    let tree = usvg::Tree::from_str(svg_data, &usvg::Options::default())
-        .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("SVG parse error: {}", e)))?;
+    let png_data = pixmap.encode_png().map_err(|e| {
+        PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("PNG encode error: {}", e))
+    })?;
 
-    let size = tree.size();
-    let width = size.width() as u32;
-    let height = size.height() as u32;
+    Ok(PyBytes::new_bound(py, &png_data))
+}
 
-    // Create pixmap
-    let mut pixmap = tiny_skia::Pixmap::new(width, height)
-        .ok_or_else(|| PyErr::new::<pyo3::exceptions::PyValueError, _>("Failed to create pixmap"))?;
+/// Save SVG to sketch-style PNG file
+#[pyfunction]
+#[pyo3(signature = (svg_data, output_path, options=None))]
+fn render_to_file(
+    svg_data: &str,
+    output_path: &str,
+    options: Option<&SketchOptions>,
+) -> PyResult<()> {
+    let opts = options.map(|o| o.to_vruffr_options()).unwrap_or_default();
 
-    // Fill with white background
-    pixmap.fill(tiny_skia::Color::WHITE);
+    let pixmap = vruffr_lib::render_sketch(svg_data, &opts).map_err(|e| {
+        PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Render error: {}", e))
+    })?;
 
-    // TODO: Implement full rendering pipeline
-    // For now, return a placeholder PNG
+    pixmap
+        .save_png(output_path)
+        .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("Save error: {}", e)))?;
 
-    let png_data = pixmap.encode_png()
-        .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("PNG encode error: {}", e)))?;
-
-    Ok(PyBytes::new(py, &png_data))
+    Ok(())
 }
 
 /// Render SVG to sketch-style SVG string
 #[pyfunction]
 #[pyo3(signature = (svg_data, options=None))]
 fn render_to_svg(svg_data: &str, options: Option<&SketchOptions>) -> PyResult<String> {
-    let opts = options.cloned().unwrap_or_else(|| SketchOptions::new(
-        1.0, 1.0, 42, "crosshatch".to_string(), -41.0, 4.0
-    ));
+    let opts = options.map(|o| o.to_vruffr_options()).unwrap_or_default();
 
-    // Parse SVG
-    let tree = usvg::Tree::from_str(svg_data, &usvg::Options::default())
-        .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("SVG parse error: {}", e)))?;
+    let (svg_out, _warnings) = vruffr_lib::render_to_svg(svg_data, &opts).map_err(|e| {
+        PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Render error: {}", e))
+    })?;
 
-    let size = tree.size();
-
-    // TODO: Implement full rendering pipeline
-    let svg_output = format!(
-        r#"<svg viewBox="0 0 {} {}" xmlns="http://www.w3.org/2000/svg">
-  <!-- vruffr Python sketch output -->
-  <!-- roughness: {}, bowing: {}, seed: {} -->
-  <text x="10" y="30" font-size="16" fill="#666">
-    Python rendering not yet implemented.
-    Use CLI for full functionality.
-  </text>
-</svg>"#,
-        size.width() as u32,
-        size.height() as u32,
-        opts.roughness,
-        opts.bowing,
-        opts.seed
-    );
-
-    Ok(svg_output)
+    Ok(svg_out)
 }
 
 /// Validate SVG without rendering
 #[pyfunction]
-fn validate_svg(svg_data: &str) -> PyResult<(u32, u32, bool)> {
-    let tree = usvg::Tree::from_str(svg_data, &usvg::Options::default())
-        .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("SVG parse error: {}", e)))?;
+fn validate_svg(svg_data: &str) -> PyResult<(u32, u32, usize, bool, bool)> {
+    let info = vruffr_lib::validate_svg(svg_data).map_err(|e| {
+        PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("SVG parse error: {}", e))
+    })?;
 
-    let size = tree.size();
-    Ok((size.width() as u32, size.height() as u32, true))
+    Ok((
+        info.width,
+        info.height,
+        info.path_count,
+        info.warnings.has_text,
+        info.warnings.has_images,
+    ))
 }
 
 /// Get vruffr version
@@ -141,6 +257,7 @@ fn version() -> String {
 fn vruffr(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<SketchOptions>()?;
     m.add_function(wrap_pyfunction!(render_to_png, m)?)?;
+    m.add_function(wrap_pyfunction!(render_to_file, m)?)?;
     m.add_function(wrap_pyfunction!(render_to_svg, m)?)?;
     m.add_function(wrap_pyfunction!(validate_svg, m)?)?;
     m.add_function(wrap_pyfunction!(version, m)?)?;

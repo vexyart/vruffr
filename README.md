@@ -42,6 +42,12 @@ vruffr input.svg -o v1.png --seed 12345
 
 # Validate without rendering
 vruffr input.svg -o /dev/null --dry-run
+
+# Vintage look: sepia + film grain
+vruffr input.svg -o vintage.png --color-mode sepia --noise 0.2
+
+# Grayscale/monochrome
+vruffr input.svg -o mono.png --color-mode grayscale
 ```
 
 ## Adaptive Roughness
@@ -84,6 +90,8 @@ vruffr input.svg -o output.png --adaptive-strength 1.0 --reference-size 50
 | `--reference-size` | 100 | Reference element size for adaptive scaling |
 | `--deduplicate` | false | Remove duplicate stacked paths |
 | `--dedup-epsilon` | 0.1 | Tolerance for path deduplication |
+| `--color-mode` | color | Color mode: color, grayscale, sepia |
+| `--noise` | 0.0 | Film grain intensity (0.0-1.0) |
 
 ## Library Usage
 
