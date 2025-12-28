@@ -8,10 +8,10 @@ Transform SVG graphics into hand-drawn sketch-style output with wobbly lines, cr
 
 ```
 vruffr/
-├── roughr/              # vruffr-core: Core sketch primitives
-├── rough_tiny_skia/     # vruffr-skia: tiny-skia backend
-├── rough_piet/          # piet backends
-├── rough_vello/         # vello backend
+├── vruffr_core/         # vruffr-core: Core sketch primitives
+├── vruffr_tiny_skia/    # vruffr-skia: tiny-skia backend
+├── vruffr_piet/         # piet backend
+├── vruffr_vello/        # vello GPU backend
 ├── cli/                 # Rust CLI tool (vruffr binary)
 ├── python/              # Python bindings (PyO3/maturin)
 ├── wasm/                # WASM bindings (wasm-bindgen)
@@ -30,9 +30,11 @@ vruffr/
 - Path deduplication (`--deduplicate`)
 - Adaptive roughness (`--adaptive-strength`)
 
-### Phase 2: Crate Renaming - COMPLETE
-- `roughr` → `vruffr-core`
-- `rough_tiny_skia` → `vruffr-skia`
+### Phase 2: Crate & Directory Renaming - COMPLETE
+- `roughr/` → `vruffr_core/` (crate: vruffr-core)
+- `rough_tiny_skia/` → `vruffr_tiny_skia/` (crate: vruffr-skia)
+- `rough_piet/` → `vruffr_piet/`
+- `rough_vello/` → `vruffr_vello/`
 
 ### Phase 3: CLI Integration - COMPLETE
 - Full-featured CLI with all options

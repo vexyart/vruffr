@@ -44,8 +44,8 @@ cargo build
 | Directory | Purpose |
 |-----------|---------|
 | `cli/` | CLI tool and main library |
-| `roughr/` | Core sketch primitives |
-| `rough_tiny_skia/` | CPU rendering backend |
+| `vruffr_core/` | Core sketch primitives |
+| `vruffr_tiny_skia/` | CPU rendering backend |
 | `examples/` | Example SVGs and code |
 | `src_docs/` | MkDocs documentation |
 

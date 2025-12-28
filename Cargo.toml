@@ -1,11 +1,11 @@
 [workspace]
 members = [
-    "roughr",
-    "rough_piet",
+    "vruffr_core",
+    "vruffr_piet",
     "points_on_curve",
     "svg_path_ops",
-    "rough_tiny_skia",
-    "rough_vello",
+    "vruffr_tiny_skia",
+    "vruffr_vello",
     "cli",
     "wasm",
     "python",

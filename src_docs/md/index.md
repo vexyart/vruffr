@@ -50,10 +50,10 @@ vruffr input.svg -o output.png --roughness 2.0 --fill-style hachure
 
 ```
 vruffr/
-├── roughr/           # Core sketch primitives
-├── rough_tiny_skia/  # CPU rendering backend
-├── cli/              # Command-line interface
-└── wasm/             # Browser playground (coming)
+├── vruffr_core/       # Core sketch primitives
+├── vruffr_tiny_skia/  # CPU rendering backend
+├── cli/               # Command-line interface
+└── wasm/              # Browser playground (coming)
 ```
 
 ## Next Steps

@@ -10,8 +10,8 @@ keywords = ["svg", "sketch", "roughjs", "hand-drawn"]
 categories = ["graphics", "command-line-utilities"]
 
 [dependencies]
-vruffr-core = { path = "../roughr" }
-vruffr-skia = { path = "../rough_tiny_skia" }
+vruffr-core = { path = "../vruffr_core" }
+vruffr-skia = { path = "../vruffr_tiny_skia" }
 usvg = { version = "0.45", features = ["text", "system-fonts"] }
 fontdb = "0.23"
 tiny-skia = "0.11"

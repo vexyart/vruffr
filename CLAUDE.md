@@ -7,10 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```
 vruffr/
 ├── cli/                 # CLI tool (vruffr binary)
-├── roughr/              # vruffr-core: Core sketch primitives
-├── rough_tiny_skia/     # vruffr-skia: tiny-skia rendering backend
-├── rough_piet/          # piet rendering backend
-├── rough_vello/         # vello GPU backend
+├── vruffr_core/         # vruffr-core: Core sketch primitives
+├── vruffr_tiny_skia/    # vruffr-skia: tiny-skia rendering backend
+├── vruffr_piet/         # piet rendering backend
+├── vruffr_vello/        # vello GPU backend
 ├── points_on_curve/     # Bezier curve utilities
 ├── svg_path_ops/        # SVG path manipulation
 └── extra/               # Reference code (read-only)
@@ -41,8 +41,8 @@ Note: `svg_path_ops` has pre-existing clippy warnings from the original fork.
 | Crate | Purpose | Entry Point |
 |-------|---------|-------------|
 | `vruffr-cli` | CLI binary and library | `cli/src/main.rs` |
-| `vruffr-core` | Core primitives, dedup module | `roughr/src/lib.rs` |
-| `vruffr-skia` | Rendering to PNG via tiny-skia | `rough_tiny_skia/src/lib.rs` |
+| `vruffr-core` | Core primitives, dedup module | `vruffr_core/src/lib.rs` |
+| `vruffr-skia` | Rendering to PNG via tiny-skia | `vruffr_tiny_skia/src/lib.rs` |
 
 ## Testing Strategy
 
