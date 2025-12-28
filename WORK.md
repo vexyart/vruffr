@@ -46,8 +46,8 @@ cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
 
 ### Next Steps
 
-1. Phase 2: Rename & Restructure (optional - large refactor)
-2. Phase 3 remaining: SVG output format, backend selection
+1. Phase 3 remaining: backend selection flag, SVGpatch output mode
+2. Phase 2: Rename & Restructure (optional - large refactor)
 3. Phase 5: Python & WASM bindings (future)
 
 ---

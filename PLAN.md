@@ -174,7 +174,8 @@ Output (PNG / SVG / native surface)
 
 3. **Expand CLI features** - PARTIAL
    - All SketchOptions exposed as flags (DONE)
-   - SVG output mode (plain SVG, patch original) - TODO
+   - SVG output mode (plain SVG) - DONE
+   - SVG patch mode (embed into original) - TODO
    - Backend selection flag - TODO
 
 ### Phase 4: Documentation - COMPLETE
