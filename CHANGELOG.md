@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Film grain effect**: `--noise` flag (0.0-1.0) for reproducible noise/grain
 
+- **Edge roughening**: `--edge-roughen` flag (0.0-1.0) for organic boundaries
+  - Detects edges via alpha gradient
+  - Applies random pixel displacement near edges
+  - LCG random for reproducibility
+
+- **Duotone color mode**: `--duotone "#shadow,#highlight"` flag
+  - Maps luminance to gradient between two colors
+  - Uses ITU-R BT.601 luminance calculation
+  - Supports short hex (#RGB) and long hex (#RRGGBB)
+
 - **Short hex color support**: `#RGB` and `#RGBA` formats now work
   - `#fff` → white, `#f00` → red, `#0f0` → green
   - `#f008` → semi-transparent red
@@ -67,6 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Workspace now includes cli crate
 - roughr Options struct has new fields: `adaptive_strength`, `reference_size`
+- **Crate renaming**: `roughr` → `vruffr-core`, `rough_tiny_skia` → `vruffr-skia`
 
 ## [0.12.0] - Previous Release
 
