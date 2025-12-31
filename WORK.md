@@ -4,6 +4,14 @@
 
 All core phases complete. Project production-ready.
 
+### Recent Work (2025-12-31)
+
+- Updated all crate metadata for crates.io publication readiness
+- Aligned versions to 2.0.4 across all crates
+- Fixed repository/homepage URLs to point to vexyart/vruffr
+- Added rust-version = "1.70" for MSRV
+- Fixed README crate names table
+
 ### Quick Commands
 
 ```bash

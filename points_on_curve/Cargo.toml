@@ -2,14 +2,15 @@
 name = "points_on_curve"
 version = "0.7.0"
 edition = "2021"
-authors = ["orhanbalci@gmail.com <orhanbalci@gmail.com>"]
-description = "Points on Bezier Curves"
-repository = "https://github.com/orhanbalci/rough-rs.git"
-homepage = "https://github.com/orhanbalci"
-keywords = ["graphics", "bezier"]
-categories = ["graphics"]
+authors = ["Orhan Balci <orhanbalci@gmail.com>", "VexyArt <vexyart@proton.me>"]
+description = "Calculate points along Bezier curves"
+repository = "https://github.com/vexyart/vruffr"
+homepage = "https://github.com/vexyart/vruffr"
+keywords = ["graphics", "bezier", "curves"]
+categories = ["graphics", "algorithms"]
 license = "MIT"
 readme = "README.md"
+rust-version = "1.70"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

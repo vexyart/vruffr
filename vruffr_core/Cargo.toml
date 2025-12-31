@@ -1,15 +1,16 @@
 [package]
 name = "vruffr-core"
-version = "0.12.0"
+version = "2.0.4"
 edition = "2021"
-authors = ["orhanbalci@gmail.com <orhanbalci@gmail.com>"]
-description = "Generate Hand Sketched 2D Drawings"
-repository = "https://github.com/orhanbalci/rough-rs.git"
-homepage = "https://github.com/orhanbalci"
-keywords = ["graphics", "bezier", "sketch", "2D"]
-categories = ["graphics"]
+authors = ["VexyArt <vexyart@proton.me>"]
+description = "Core sketch primitives for hand-drawn style rendering (Rough.js port)"
+repository = "https://github.com/vexyart/vruffr"
+homepage = "https://github.com/vexyart/vruffr"
+keywords = ["graphics", "sketch", "hand-drawn", "roughjs"]
+categories = ["graphics", "rendering"]
 license = "MIT"
 readme = "README.md"
+rust-version = "1.70"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

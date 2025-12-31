@@ -1,9 +1,11 @@
 # this_file: wasm/Cargo.toml
 [package]
 name = "vruffr-wasm"
-version = "0.1.0"
+version = "2.0.4"
 edition = "2021"
+authors = ["VexyArt <vexyart@proton.me>"]
 description = "WASM bindings for vruffr sketch renderer"
+repository = "https://github.com/vexyart/vruffr"
 license = "MIT"
 publish = false
 

@@ -5063,39 +5063,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rough_piet"
-version = "0.13.0"
-dependencies = [
- "euclid",
- "num-traits",
- "palette",
- "piet 0.8.0",
- "piet-common 0.8.0",
- "rand",
- "rand_distr",
- "svg_path_ops",
- "text2v",
- "vruffr-core",
-]
-
-[[package]]
-name = "rough_vello"
-version = "0.13.0"
-dependencies = [
- "bevy",
- "bevy_vello",
- "euclid",
- "num-traits",
- "palette",
- "rand",
- "rand_distr",
- "svg_path_ops",
- "vello",
- "vruffr-core",
- "wgpu 22.1.0",
-]
-
-[[package]]
 name = "roxmltree"
 version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6243,7 +6210,7 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "vruffr-cli"
-version = "0.1.0"
+version = "2.0.4"
 dependencies = [
  "anyhow",
  "clap",
@@ -6258,7 +6225,7 @@ dependencies = [
 
 [[package]]
 name = "vruffr-core"
-version = "0.12.0"
+version = "2.0.4"
 dependencies = [
  "derive_builder",
  "euclid",
@@ -6272,8 +6239,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "vruffr-piet"
+version = "2.0.4"
+dependencies = [
+ "euclid",
+ "num-traits",
+ "palette",
+ "piet 0.8.0",
+ "piet-common 0.8.0",
+ "rand",
+ "rand_distr",
+ "svg_path_ops",
+ "text2v",
+ "vruffr-core",
+]
+
+[[package]]
 name = "vruffr-python"
-version = "0.1.0"
+version = "2.0.4"
 dependencies = [
  "pyo3",
  "vruffr-cli",
@@ -6281,7 +6264,7 @@ dependencies = [
 
 [[package]]
 name = "vruffr-skia"
-version = "0.12.0"
+version = "2.0.4"
 dependencies = [
  "euclid",
  "num-traits",
@@ -6291,8 +6274,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "vruffr-vello"
+version = "2.0.4"
+dependencies = [
+ "bevy",
+ "bevy_vello",
+ "euclid",
+ "num-traits",
+ "palette",
+ "rand",
+ "rand_distr",
+ "svg_path_ops",
+ "vello",
+ "vruffr-core",
+ "wgpu 22.1.0",
+]
+
+[[package]]
 name = "vruffr-wasm"
-version = "0.1.0"
+version = "2.0.4"
 dependencies = [
  "base64 0.22.1",
  "js-sys",

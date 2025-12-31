@@ -1,13 +1,16 @@
 [package]
 name = "vruffr-cli"
-version = "0.1.0"
+version = "2.0.4"
 edition = "2021"
-rust-version = "1.82"
-description = "Convert SVG to hand-drawn sketch-style PNG"
+rust-version = "1.70"
+authors = ["VexyArt <vexyart@proton.me>"]
+description = "CLI tool to convert SVG to hand-drawn sketch-style PNG"
 license = "MIT"
 repository = "https://github.com/vexyart/vruffr"
+homepage = "https://github.com/vexyart/vruffr"
 keywords = ["svg", "sketch", "roughjs", "hand-drawn"]
 categories = ["graphics", "command-line-utilities"]
+readme = "../README.md"
 
 [dependencies]
 vruffr-core = { path = "../vruffr_core" }
