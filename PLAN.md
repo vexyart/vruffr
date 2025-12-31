@@ -75,6 +75,6 @@ vruffr/
 
 ## Success Criteria - ALL MET
 
-- 119+ tests passing
+- 72+ unit tests, 8 integration tests passing
 - All crates use vruffr-* naming
 - All features work in CLI, WASM, and Python bindings

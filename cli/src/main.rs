@@ -8,6 +8,12 @@ use vruffr::{ColorMode, OutputFormat, SketchFillStyle};
 #[command(name = "vruffr")]
 #[command(about = "Convert SVG to hand-drawn sketch-style output (SVG or PNG)")]
 #[command(version)]
+#[command(after_help = "EXAMPLES:
+    vruffr input.svg -o output.png
+    vruffr input.svg -o sketch.png --roughness 2.5
+    vruffr input.svg -o vintage.png --color-mode sepia --noise 0.2
+    vruffr input.svg -o paper.png --paper-texture 0.4 --edge-roughen 0.3
+    cat input.svg | vruffr - -o output.png")]
 struct Args {
     /// Input SVG file (use "-" for stdin)
     input: PathBuf,
