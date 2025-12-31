@@ -7,12 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.6] - 2025-12-31
 
+### Security
+
+- Updated pyo3 from 0.22 to 0.24 to fix RUSTSEC-2025-0020 (buffer overflow risk)
+
 ### Changed
 
 - Fixed clippy warnings in vruffr-core: `impl Display` replaces `impl ToString`, derive `Default` for `LineCap`
 - Fixed redundant field initialization patterns (`ops: ops` → `ops`)
 - Added crate-level clippy allows for legacy Rough.js port patterns in vruffr-core and vruffr-skia
 - Moved WASM profile settings to workspace root Cargo.toml (eliminates cargo warning)
+- Updated Python bindings to use pyo3 0.24 API (`PyBytes::new` instead of deprecated `new_bound`)
 
 ## [2.0.5] - 2025-12-31
 

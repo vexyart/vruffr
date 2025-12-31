@@ -16,4 +16,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 vruffr-lib = { path = "../cli", package = "vruffr-cli" }
-pyo3 = { version = "0.22", features = ["extension-module"] }
+pyo3 = { version = "0.24", features = ["extension-module"] }

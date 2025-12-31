@@ -262,7 +262,7 @@ fn render_to_png<'py>(
         PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("PNG encode error: {}", e))
     })?;
 
-    Ok(PyBytes::new_bound(py, &png_data))
+    Ok(PyBytes::new(py, &png_data))
 }
 
 /// Save SVG to sketch-style PNG file
