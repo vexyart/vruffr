@@ -29,31 +29,27 @@ pub enum FillStyle {
     ZigZagLine,
 }
 
-impl ToString for FillStyle {
-    fn to_string(&self) -> String {
-        match self {
-            FillStyle::Solid => "Solid".into(),
-            FillStyle::Hachure => "Hachure".into(),
-            FillStyle::ZigZag => "ZigZag".into(),
-            FillStyle::CrossHatch => "CrossHatch".into(),
-            FillStyle::Dots => "Dots".into(),
-            FillStyle::Dashed => "Dashed".into(),
-            FillStyle::ZigZagLine => "ZigZagLine".into(),
-        }
+impl std::fmt::Display for FillStyle {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let name = match self {
+            FillStyle::Solid => "Solid",
+            FillStyle::Hachure => "Hachure",
+            FillStyle::ZigZag => "ZigZag",
+            FillStyle::CrossHatch => "CrossHatch",
+            FillStyle::Dots => "Dots",
+            FillStyle::Dashed => "Dashed",
+            FillStyle::ZigZagLine => "ZigZagLine",
+        };
+        write!(f, "{}", name)
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
 pub enum LineCap {
+    #[default]
     Butt,
     Round,
     Square,
-}
-
-impl Default for LineCap {
-    fn default() -> Self {
-        LineCap::Butt
-    }
 }
 
 /// Options for angled joins in strokes.

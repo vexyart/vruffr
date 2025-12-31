@@ -218,7 +218,7 @@ where
         let ops = ScanlineHachureFiller::render_lines(lines, o);
         OpSet {
             op_set_type: crate::core::OpSetType::FillSketch,
-            ops: ops,
+            ops,
             size: None,
             path: None,
         }

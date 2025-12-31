@@ -2102,7 +2102,11 @@ mod tests {
             <rect x="10" y="10" width="80" height="80" fill="beige"/>
         </svg>"#;
 
-        let options = SketchOptions { paper_texture: 0.5, dpi: 96.0, ..Default::default() };
+        let options = SketchOptions {
+            paper_texture: 0.5,
+            dpi: 96.0,
+            ..Default::default()
+        };
         let pixmap = render_sketch(svg, &options).expect("Failed to render with paper texture");
         assert_eq!(pixmap.width(), 100);
     }

@@ -3,6 +3,21 @@
 // Ensures that `pub` means published in the public API.
 // This property is useful for reasoning about breaking API changes.
 #![deny(unreachable_pub)]
+// Suppress clippy warnings from original Rough.js port patterns
+#![allow(clippy::too_many_arguments)]
+#![allow(clippy::type_complexity)]
+#![allow(clippy::collapsible_else_if)]
+#![allow(clippy::collapsible_if)]
+#![allow(clippy::needless_range_loop)]
+#![allow(clippy::comparison_chain)]
+#![allow(clippy::manual_range_contains)]
+#![allow(clippy::unnecessary_cast)]
+#![allow(clippy::option_map_or_none)]
+#![allow(clippy::unnecessary_map_or)]
+#![allow(clippy::extra_unused_lifetimes)]
+#![allow(clippy::needless_return)]
+#![allow(clippy::ptr_arg)]
+#![allow(clippy::new_without_default)]
 
 //!
 //! This crate is a rustlang port of [Rough.js](https://github.com/rough-stuff/rough) npm package written by

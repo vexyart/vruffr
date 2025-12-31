@@ -223,7 +223,7 @@ pub fn linear_path<F: Float + Trig + FromPrimitive>(
         }
         OpSet {
             op_set_type: OpSetType::Path,
-            ops: ops,
+            ops,
             path: None,
             size: None,
         }
