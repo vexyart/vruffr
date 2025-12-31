@@ -5,6 +5,22 @@ All notable changes to vruffr will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.5] - 2025-12-31
+
+### Added
+
+- **Paper texture overlay**: `--paper-texture` flag (0.0-1.0)
+  - Multi-octave procedural noise for organic paper-like surface
+  - Smoothstep interpolation for natural blending
+  - Available in CLI, WASM, and Python bindings
+
+- **CLI help examples**: Added usage examples to `--help` output
+
+### Changed
+
+- Suppressed clippy warnings in forked svg_path_ops code via crate-level allows
+- Updated all crate metadata for crates.io publication readiness
+
 ## [2.0.4] - 2025-12-28
 
 ### Added
