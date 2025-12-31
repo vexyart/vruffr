@@ -2,15 +2,12 @@
 
 ## Current Status
 
-All phases complete. Project production-ready.
+v2.0.6 production-ready. All phases complete.
 
 ### Quick Commands
 
 ```bash
-./test.sh quick    # Format, clippy, tests
-./test.sh full     # + build, example, validation
-./demo.sh all      # Generate example outputs
-./build.sh release # Build release binary
+cargo fmt --check && cargo clippy -p vruffr-core -p vruffr-skia -p vruffr-cli -- -D warnings && cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 ```
 
 ### Test Summary
