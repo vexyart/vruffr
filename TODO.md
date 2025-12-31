@@ -4,5 +4,5 @@ All planned phases complete. Project is production-ready.
 
 ## Future Ideas (Optional)
 
-- [ ] Paper texture overlay
+- [x] Paper texture overlay
 - [~] Publish to crates.io (metadata updated, ready for `cargo publish`)

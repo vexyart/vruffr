@@ -130,6 +130,10 @@ struct Args {
     #[arg(long, default_value = "0.0")]
     edge_roughen: f32,
 
+    /// Paper texture intensity for organic paper-like surface (0.0-1.0, default: 0.0)
+    #[arg(long, default_value = "0.0")]
+    paper_texture: f32,
+
     /// Duotone colors: "shadow,highlight" as hex (e.g., "#1a1a2e,#edf2f4")
     /// Overrides --color-mode when set
     #[arg(long)]
@@ -297,6 +301,7 @@ fn main() -> Result<()> {
         edge_roughen: args.edge_roughen,
         stroke_scale: args.stroke_scale,
         dpi: args.dpi,
+        paper_texture: args.paper_texture,
     };
 
     let format = infer_format(&args.output, args.format);

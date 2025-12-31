@@ -48,6 +48,8 @@ pub struct SketchOptions {
     pub stroke_scale: f32,
     #[pyo3(get, set)]
     pub dpi: f32,
+    #[pyo3(get, set)]
+    pub paper_texture: f32,
 }
 
 #[pymethods]
@@ -73,7 +75,8 @@ impl SketchOptions {
         edge_roughen=0.0,
         duotone=None,
         stroke_scale=1.0,
-        dpi=150.0
+        dpi=150.0,
+        paper_texture=0.0
     ))]
     #[allow(clippy::too_many_arguments)]
     fn new(
@@ -97,6 +100,7 @@ impl SketchOptions {
         duotone: Option<String>,
         stroke_scale: f32,
         dpi: f32,
+        paper_texture: f32,
     ) -> Self {
         SketchOptions {
             roughness,
@@ -119,6 +123,7 @@ impl SketchOptions {
             duotone,
             stroke_scale,
             dpi,
+            paper_texture,
         }
     }
 
@@ -174,6 +179,7 @@ impl SketchOptions {
             edge_roughen: self.edge_roughen,
             stroke_scale: self.stroke_scale,
             dpi: self.dpi,
+            paper_texture: self.paper_texture,
             ..Default::default()
         }
     }

@@ -96,6 +96,7 @@ vruffr input.svg -o output.png --adaptive-strength 1.0 --reference-size 50
 | `--duotone` | - | Duotone colors: "#shadow,#highlight" |
 | `--stroke-scale` | 1.0 | Stroke width multiplier |
 | `--dpi` | 150 | Output resolution (SVG assumes 96) |
+| `--paper-texture` | 0.0 | Paper texture intensity (0.0-1.0) |
 
 ## Library Usage
 

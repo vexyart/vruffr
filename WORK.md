@@ -11,6 +11,10 @@ All core phases complete. Project production-ready.
 - Fixed repository/homepage URLs to point to vexyart/vruffr
 - Added rust-version = "1.70" for MSRV
 - Fixed README crate names table
+- **Added paper texture overlay** (`--paper-texture` flag, 0.0-1.0)
+  - Multi-octave procedural noise for organic paper-like surface
+  - Uses smoothstep interpolation for natural blending
+  - Exposed in CLI, WASM, and Python bindings
 
 ### Quick Commands
 
@@ -58,6 +62,7 @@ cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 | Duotone | `--duotone` | "#shadow,#highlight" |
 | Stroke scale | `--stroke-scale` | multiplier (e.g., 2.0) |
 | DPI | `--dpi` | pixels per inch (default: 150, SVG assumes 96) |
+| Paper texture | `--paper-texture` | 0.0-1.0 |
 
 ---
 

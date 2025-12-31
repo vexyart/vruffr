@@ -192,6 +192,8 @@ pub struct SketchOptions {
     pub stroke_scale: f32,
     /// Output resolution in pixels per inch (default: 150, SVG assumes 96)
     pub dpi: f32,
+    /// Paper texture intensity (0.0 = none, 1.0 = heavy)
+    pub paper_texture: f32,
 }
 
 impl Default for SketchOptions {
@@ -222,6 +224,7 @@ impl Default for SketchOptions {
             edge_roughen: 0.0,
             stroke_scale: 1.0,
             dpi: 150.0,
+            paper_texture: 0.0,
         }
     }
 }
@@ -429,6 +432,84 @@ fn apply_edge_roughening(pixmap: &mut Pixmap, intensity: f32, seed: u64) {
     }
 }
 
+/// Apply paper texture overlay effect
+/// Creates a subtle, organic paper-like surface using Perlin-style noise
+fn apply_paper_texture(pixmap: &mut Pixmap, intensity: f32, seed: u64) {
+    if intensity <= 0.0 {
+        return;
+    }
+    let intensity = intensity.clamp(0.0, 1.0);
+    let width = pixmap.width() as usize;
+    let height = pixmap.height() as usize;
+    let data = pixmap.data_mut();
+
+    // Use multiple octaves of noise for paper-like texture
+    // Scale factors for different noise frequencies
+    let scale1 = 0.02; // Large-scale fiber patterns
+    let scale2 = 0.08; // Medium grain
+    let scale3 = 0.25; // Fine texture
+
+    // Initialize hash-based noise (simple but effective for textures)
+    let hash = |x: i32, y: i32, s: u64| -> f32 {
+        let n = (x.wrapping_mul(374761393) as u64)
+            .wrapping_add((y.wrapping_mul(668265263)) as u64)
+            .wrapping_add(s.wrapping_mul(1013904223));
+        let n = n.wrapping_mul(n).wrapping_mul(60493).wrapping_mul(n);
+        ((n >> 13) & 0x7fff) as f32 / 32767.0
+    };
+
+    // Smooth noise interpolation
+    let smooth_noise = |x: f32, y: f32, scale: f32, s: u64| -> f32 {
+        let sx = x * scale;
+        let sy = y * scale;
+        let x0 = sx.floor() as i32;
+        let y0 = sy.floor() as i32;
+        let fx = sx - sx.floor();
+        let fy = sy - sy.floor();
+
+        // Bilinear interpolation of corner values
+        let v00 = hash(x0, y0, s);
+        let v10 = hash(x0 + 1, y0, s);
+        let v01 = hash(x0, y0 + 1, s);
+        let v11 = hash(x0 + 1, y0 + 1, s);
+
+        // Smoothstep for better blending
+        let fx = fx * fx * (3.0 - 2.0 * fx);
+        let fy = fy * fy * (3.0 - 2.0 * fy);
+
+        let v0 = v00 + fx * (v10 - v00);
+        let v1 = v01 + fx * (v11 - v01);
+        v0 + fy * (v1 - v0)
+    };
+
+    for y in 0..height {
+        for x in 0..width {
+            let idx = (y * width + x) * 4;
+
+            // Combine multiple octaves of noise
+            let n1 = smooth_noise(x as f32, y as f32, scale1, seed);
+            let n2 = smooth_noise(x as f32, y as f32, scale2, seed.wrapping_add(1000));
+            let n3 = smooth_noise(x as f32, y as f32, scale3, seed.wrapping_add(2000));
+
+            // Weight octaves (larger patterns more prominent)
+            let noise = n1 * 0.5 + n2 * 0.35 + n3 * 0.15;
+
+            // Center around 0, scale by intensity
+            // Paper texture is subtle: lighter/darker patches
+            let adjustment = ((noise - 0.5) * 2.0 * intensity * 25.0) as i16;
+
+            // Apply to RGB (multiply blend for natural paper look)
+            let r = data[idx] as i16;
+            let g = data[idx + 1] as i16;
+            let b = data[idx + 2] as i16;
+
+            data[idx] = (r + adjustment).clamp(0, 255) as u8;
+            data[idx + 1] = (g + adjustment).clamp(0, 255) as u8;
+            data[idx + 2] = (b + adjustment).clamp(0, 255) as u8;
+        }
+    }
+}
+
 /// Render an SVG string to a sketch-style PNG pixmap
 pub fn render_sketch(svg_data: &str, options: &SketchOptions) -> Result<Pixmap> {
     let (pixmap, _warnings) = render_sketch_with_warnings(svg_data, options)?;
@@ -482,6 +563,9 @@ pub fn render_sketch_with_warnings(
 
     // Post-processing: edge roughening (before noise for better effect)
     apply_edge_roughening(&mut pixmap, options.edge_roughen, options.seed);
+
+    // Post-processing: paper texture (after edge roughening, before noise)
+    apply_paper_texture(&mut pixmap, options.paper_texture, options.seed);
 
     // Post-processing: noise/grain
     apply_noise(&mut pixmap, options.noise, options.seed);
@@ -2009,6 +2093,17 @@ mod tests {
 
         let options = SketchOptions { edge_roughen: 0.5, dpi: 96.0, ..Default::default() };
         let pixmap = render_sketch(svg, &options).expect("Failed to render with edge roughening");
+        assert_eq!(pixmap.width(), 100);
+    }
+
+    #[test]
+    fn test_paper_texture_effect() {
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <rect x="10" y="10" width="80" height="80" fill="beige"/>
+        </svg>"#;
+
+        let options = SketchOptions { paper_texture: 0.5, dpi: 96.0, ..Default::default() };
+        let pixmap = render_sketch(svg, &options).expect("Failed to render with paper texture");
         assert_eq!(pixmap.width(), 100);
     }
 

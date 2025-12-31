@@ -49,6 +49,8 @@ pub struct WasmOptions {
     pub stroke_scale: Option<f32>,
     #[serde(default)]
     pub dpi: Option<f32>,
+    #[serde(default)]
+    pub paper_texture: Option<f32>,
 }
 
 fn default_roughness() -> f64 {
@@ -109,6 +111,7 @@ impl WasmOptions {
             edge_roughen: self.edge_roughen.unwrap_or(0.0),
             stroke_scale: self.stroke_scale.unwrap_or(1.0),
             dpi: self.dpi.unwrap_or(150.0),
+            paper_texture: self.paper_texture.unwrap_or(0.0),
             ..Default::default()
         }
     }
