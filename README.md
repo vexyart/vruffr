@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/vexyart/vruffr/actions/workflows/ci.yml/badge.svg)](https://github.com/vexyart/vruffr/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![MSRV: 1.70](https://img.shields.io/badge/MSRV-1.70-blue.svg)](https://blog.rust-lang.org/2023/06/01/Rust-1.70.0.html)
 
 Transform SVG graphics into hand-drawn sketch-style output with wobbly lines, crosshatch fills, and artistic imperfection.
 
