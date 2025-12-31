@@ -6,12 +6,12 @@ use euclid::Trig;
 use num_traits::{Float, FromPrimitive};
 use palette::rgb::Rgba;
 use palette::Srgba;
-use vruffr_core::core::{Drawable, OpSet, OpSetType, OpType, Options};
-use vruffr_core::generator::Generator;
-use vruffr_core::PathSegment;
 use vello::kurbo::{Affine, BezPath, Cap, Join, PathEl, Point, Stroke};
 use vello::peniko::{Brush, Color, Fill};
 use vello::Scene;
+use vruffr_core::core::{Drawable, OpSet, OpSetType, OpType, Options};
+use vruffr_core::generator::Generator;
+use vruffr_core::PathSegment;
 
 #[derive(Default)]
 pub struct VelloGenerator {

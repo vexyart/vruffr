@@ -1,7 +1,7 @@
 use palette::Srgba;
-use vruffr_skia::SkiaGenerator;
-use vruffr_core::core::{FillStyle, OptionsBuilder};
 use tiny_skia::*;
+use vruffr_core::core::{FillStyle, OptionsBuilder};
+use vruffr_skia::SkiaGenerator;
 
 const WIDTH: f32 = 192.0;
 const HEIGHT: f32 = 108.0;

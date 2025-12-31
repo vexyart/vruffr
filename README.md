@@ -116,10 +116,10 @@ pixmap.save_png("output.png")?;
 
 | Crate | Description |
 |-------|-------------|
-| `roughr` | Core sketch primitives (Rough.js port) |
-| `rough_tiny_skia` | tiny-skia rendering backend |
-| `rough_piet` | piet rendering backend |
-| `rough_vello` | vello GPU rendering backend |
+| `vruffr-core` | Core sketch primitives (Rough.js port) |
+| `vruffr-skia` | tiny-skia rendering backend |
+| `vruffr-piet` | piet rendering backend |
+| `vruffr-vello` | vello GPU rendering backend |
 | `points_on_curve` | Bezier curve utilities |
 | `svg_path_ops` | SVG path manipulation |
 

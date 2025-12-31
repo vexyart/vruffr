@@ -5,11 +5,11 @@ use euclid::default::Point2D;
 use euclid::Trig;
 use num_traits::{Float, FromPrimitive};
 use palette::Srgba;
-use vruffr_core::core::{Drawable, OpSet, OpSetType, OpType, Options};
-use vruffr_core::generator::Generator;
 use tiny_skia::{
     FillRule, LineCap, LineJoin, Paint, Path, PathBuilder, PixmapMut, Stroke, StrokeDash, Transform,
 };
+use vruffr_core::core::{Drawable, OpSet, OpSetType, OpType, Options};
+use vruffr_core::generator::Generator;
 
 #[derive(Default)]
 pub struct SkiaGenerator {
@@ -170,22 +170,10 @@ impl<F: Float + Trig> SkiaDrawable<F> {
                     paint.anti_alias = true;
                     match self.shape.as_str() {
                         "curve" | "polygon" | "path" => {
-                            ctx.fill_path(
-                                path,
-                                &paint,
-                                FillRule::EvenOdd,
-                                transform,
-                                None,
-                            );
+                            ctx.fill_path(path, &paint, FillRule::EvenOdd, transform, None);
                         }
                         _ => {
-                            ctx.fill_path(
-                                path,
-                                &paint,
-                                FillRule::Winding,
-                                transform,
-                                None,
-                            );
+                            ctx.fill_path(path, &paint, FillRule::Winding, transform, None);
                         }
                     }
                 }
@@ -420,7 +408,9 @@ impl SkiaGenerator {
     }
 }
 
-fn convert_line_cap_from_roughr_to_piet(roughr_line_cap: Option<vruffr_core::core::LineCap>) -> LineCap {
+fn convert_line_cap_from_roughr_to_piet(
+    roughr_line_cap: Option<vruffr_core::core::LineCap>,
+) -> LineCap {
     match roughr_line_cap {
         Some(vruffr_core::core::LineCap::Butt) => LineCap::Butt,
         Some(vruffr_core::core::LineCap::Round) => LineCap::Round,
