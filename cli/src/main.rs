@@ -348,8 +348,7 @@ fn main() -> Result<()> {
             }
         }
         OutputFormat::Svg => {
-            // For now, SVG format acts same as SvgPlain
-            // TODO: Embed sketch paths back into original SVG structure
+            // Note: SVG output creates standalone sketch paths, not embedded in original structure
             let (svg_output, warnings) =
                 vruffr::render_to_svg(&svg_data, &options).context("Failed to render sketch")?;
 

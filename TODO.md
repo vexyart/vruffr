@@ -1,6 +1,6 @@
 # TODO.md - vruffr Task List
 
-All planned phases complete. Project is production-ready at v2.0.5.
+All planned phases complete. Project is production-ready at v2.0.6.
 
 ## Future Ideas (Optional)
 
