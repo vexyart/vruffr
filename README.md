@@ -48,6 +48,12 @@ vruffr input.svg -o vintage.png --color-mode sepia --noise 0.2
 
 # Grayscale/monochrome
 vruffr input.svg -o mono.png --color-mode grayscale
+
+# Paper sketch: texture + edge roughening
+vruffr input.svg -o paper.png --paper-texture 0.4 --edge-roughen 0.3
+
+# Duotone poster style
+vruffr input.svg -o poster.png --duotone "#1a1a2e,#edf2f4"
 ```
 
 ## Adaptive Roughness

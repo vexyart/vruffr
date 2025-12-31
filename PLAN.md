@@ -68,6 +68,11 @@ vruffr/
 - `--dpi` flag for output pixel density (default: 150)
 - Higher resolution PNG outputs vs SVG's standard 96 DPI
 
+### Phase 11: Paper Texture - COMPLETE
+- `--paper-texture` flag (0.0-1.0)
+- Multi-octave procedural noise for organic paper-like surface
+- Smoothstep interpolation for natural blending
+
 ## Success Criteria - ALL MET
 
 - 119+ tests passing
