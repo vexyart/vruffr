@@ -5,6 +5,15 @@ All notable changes to vruffr will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.6] - 2025-12-31
+
+### Changed
+
+- Fixed clippy warnings in vruffr-core: `impl Display` replaces `impl ToString`, derive `Default` for `LineCap`
+- Fixed redundant field initialization patterns (`ops: ops` → `ops`)
+- Added crate-level clippy allows for legacy Rough.js port patterns in vruffr-core and vruffr-skia
+- Moved WASM profile settings to workspace root Cargo.toml (eliminates cargo warning)
+
 ## [2.0.5] - 2025-12-31
 
 ### Added

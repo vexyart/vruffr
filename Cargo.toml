@@ -15,3 +15,7 @@ resolver = "2"
 [profile.release]
 lto = true
 codegen-units = 1
+
+# WASM-specific optimizations (applied to vruffr-wasm builds)
+[profile.release.package.vruffr-wasm]
+opt-level = "s"

@@ -1,7 +1,7 @@
 # this_file: wasm/Cargo.toml
 [package]
 name = "vruffr-wasm"
-version = "2.0.5"
+version = "2.0.6"
 edition = "2021"
 authors = ["VexyArt <vexyart@proton.me>"]
 description = "WASM bindings for vruffr sketch renderer"
@@ -21,6 +21,4 @@ js-sys = "0.3"
 web-sys = { version = "0.3", features = ["console"] }
 base64 = "0.22"
 
-[profile.release]
-opt-level = "s"
-lto = true
+# Note: Release profile is in workspace root Cargo.toml

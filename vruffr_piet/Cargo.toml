@@ -1,6 +1,6 @@
 [package]
 name = "vruffr-piet"
-version = "2.0.5"
+version = "2.0.6"
 edition = "2021"
 authors = ["Orhan Balci <orhanbalci@gmail.com>", "VexyArt <vexyart@proton.me>"]
 description = "Piet rendering backend for vruffr hand-drawn style graphics"
@@ -13,7 +13,7 @@ readme = "README.md"
 rust-version = "1.70"
 
 [dependencies]
-vruffr-core = { path = "../vruffr_core", version = "2.0.5" }
+vruffr-core = { path = "../vruffr_core", version = "2.0.6" }
 num-traits = "0.2"
 euclid = "0.22"
 piet = "0.8"
