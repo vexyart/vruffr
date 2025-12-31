@@ -1,6 +1,6 @@
 [package]
 name = "vruffr-core"
-version = "2.0.4"
+version = "2.0.5"
 edition = "2021"
 authors = ["VexyArt <vexyart@proton.me>"]
 description = "Core sketch primitives for hand-drawn style rendering (Rough.js port)"

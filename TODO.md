@@ -1,8 +1,8 @@
 # TODO.md - vruffr Task List
 
-All planned phases complete. Project is production-ready.
+All planned phases complete. Project is production-ready at v2.0.5.
 
 ## Future Ideas (Optional)
 
 - [x] Paper texture overlay
-- [~] Publish to crates.io (metadata updated, ready for `cargo publish`)
+- [x] Crates.io metadata (versions aligned, ready for `cargo publish`)

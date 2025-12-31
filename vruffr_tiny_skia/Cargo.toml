@@ -1,6 +1,6 @@
 [package]
 name = "vruffr-skia"
-version = "2.0.4"
+version = "2.0.5"
 edition = "2021"
 authors = ["VexyArt <vexyart@proton.me>"]
 description = "tiny-skia rendering backend for vruffr hand-drawn style graphics"
@@ -14,7 +14,7 @@ rust-version = "1.70"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-vruffr-core = { path = "../vruffr_core", version = "2.0.4" }
+vruffr-core = { path = "../vruffr_core", version = "2.0.5" }
 num-traits = "0.2"
 euclid = "0.22"
 palette = "0.7"
