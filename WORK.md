@@ -14,7 +14,7 @@ cargo fmt --check && cargo clippy -p vruffr-core -p vruffr-skia -p vruffr-cli --
 
 ```
 cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
-# 72+ tests passing
+# 120 tests passing
 ```
 
 ---
