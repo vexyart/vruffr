@@ -1,4 +1,4 @@
-# PLAN.md - vruffr Project Plan
+# TASKS.md - vruffr Project Plan
 
 ## Scope
 

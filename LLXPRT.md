@@ -54,7 +54,7 @@ Per project guidelines (from IDEA.md):
    - Minimize `unsafe` code
 3. **Testing:** ≥80% coverage target, focus on edge cases
 4. **File Size:** Functions ≤20 lines, files ≤200 lines where possible
-5. **Documentation:** Update WORK.md, PLAN.md, TODO.md, CHANGELOG.md, DEPENDENCIES.md
+5. **Documentation:** Update WORK.md, TASKS.md, TODO.md, CHANGELOG.md, DEPENDENCIES.md
 
 ## Common Patterns
 
@@ -89,7 +89,7 @@ Key version constraints from vello_svg:
 
 Required files per development guidelines:
 - **README.md**: Purpose, installation, usage (≤200 lines)
-- **PLAN.md**: Architecture decisions, future goals
+- **TASKS.md**: Architecture decisions, future goals
 - **TODO.md**: Flat checklist with status markers `[ ]` `[~]` `[x]` `[-]` `[!]`
 - **WORK.md**: Work log with reasoning, test results, next steps
 - **CHANGELOG.md**: Release notes

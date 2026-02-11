@@ -81,5 +81,5 @@ fn opset_to_shape(&self, o: &OpSet<F>) -> Option<Path> {
 ## Reference Materials
 
 - `extra/` contains skesvg reference code (read-only, don't modify)
-- `PLAN.md` has architecture decisions and phase roadmap
+- `TASKS.md` has architecture decisions and phase roadmap
 - `SPEC.md` has technical specification
