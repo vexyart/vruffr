@@ -19,9 +19,31 @@
 #![allow(clippy::ptr_arg)]
 #![allow(clippy::new_without_default)]
 
+//! vruffr-core: hand-drawn sketch primitives for Rust.
 //!
-//! This crate is a rustlang port of [Rough.js](https://github.com/rough-stuff/rough) npm package written by
-//! [@pshihn](https://github.com/pshihn).
+//! A Rust port of [Rough.js](https://github.com/rough-stuff/rough) by
+//! [@pshihn](https://github.com/pshihn). Generates rough drawing primitives —
+//! lines, curves, arcs, polygons, circles, ellipses, and SVG paths — that look
+//! like hand-drawn sketches with configurable roughness and fill styles.
+//!
+//! This crate produces geometry only. To render it to pixels you need a drawing
+//! backend. This workspace provides:
+//! - `vruffr-skia` — renders to PNG via `tiny-skia` (recommended)
+//! - `vruffr-piet` — renders via the `piet` abstraction layer
+//! - `vruffr-vello` — GPU rendering via `vello`
+//!
+//! # Coordinate types
+//!
+//! All geometry uses [`euclid::Point2D`] so the caller controls the unit type.
+//!
+//! # Options
+//!
+//! Build an [`Options`] via [`OptionsBuilder`], then construct a generator with
+//! your chosen backend. Key parameters:
+//! - `roughness` — how wobbly lines appear (0.0 = straight, 3.0 = very rough)
+//! - `fill_style` — `Hachure`, `Crosshatch`, `Solid`, `Zigzag`, `Dots`
+//! - `fill_weight` — stroke weight of fill lines
+//! - `seed` — optional u64 for reproducible output
 //!
 //! This package exposes functions to generate rough drawing primitives which looks like hand drawn sketches.
 //! This is the core create of operations to create rough drawings. It exposes its own primitive drawing types for lines
