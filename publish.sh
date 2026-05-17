@@ -13,7 +13,7 @@ echo "==> Running install..."
 "$SCRIPT_DIR/install.sh"
 
 echo "==> Bumping version with gitnextver..."
-uvx gitnextver@latest
+uvx gitnextver
 
 echo "==> Publishing to crates.io..."
 cargo publish -p vruffr-cli
