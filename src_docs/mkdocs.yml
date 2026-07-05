@@ -7,6 +7,8 @@ repo_name: vexyart/vruffr
 
 theme:
   name: material
+  logo: assets/icon.png
+  favicon: assets/icon.png
   palette:
     - scheme: default
       primary: deep purple

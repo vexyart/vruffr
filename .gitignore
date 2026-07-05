@@ -21,8 +21,12 @@ extra/ref/
 extra/target/
 issues/
 
-# Build outputs
-docs/
+# Build outputs (mkdocs renders src_docs/ into docs/). The project icon is a
+# committed source asset, so keep it tracked while ignoring the rest of docs/.
+docs/*
+!docs/assets/
+docs/assets/*
+!docs/assets/icon.png
 examples/output/
 wasm/pkg/
 python/target/

@@ -78,10 +78,9 @@ impl<F: Float + Trig> VelloDrawable<F> {
 
                     // Set dash pattern if available
                     if let Some(ref dash_pattern) = self.options.stroke_line_dash {
-                        let dash_pattern_f64: Vec<f64> =
-                            dash_pattern.iter().map(|&x| x as f64).collect();
+                        let dash_pattern_f64: Vec<f64> = dash_pattern.to_vec();
                         stroke = stroke.with_dashes(
-                            self.options.stroke_line_dash_offset.unwrap_or(0.0) as f64,
+                            self.options.stroke_line_dash_offset.unwrap_or(0.0),
                             dash_pattern_f64,
                         );
                     }
@@ -123,10 +122,9 @@ impl<F: Float + Trig> VelloDrawable<F> {
 
                     // Set dash pattern if available
                     if let Some(ref dash_pattern) = self.options.fill_line_dash {
-                        let dash_pattern_f64: Vec<f64> =
-                            dash_pattern.iter().map(|&x| x as f64).collect();
+                        let dash_pattern_f64: Vec<f64> = dash_pattern.to_vec();
                         stroke = stroke.with_dashes(
-                            self.options.fill_line_dash_offset.unwrap_or(0.0) as f64,
+                            self.options.fill_line_dash_offset.unwrap_or(0.0),
                             dash_pattern_f64,
                         );
                     }
@@ -244,6 +242,7 @@ impl VelloGenerator {
         drawable.to_vello_drawable()
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn arc<F: Trig + Float + FromPrimitive>(
         &self,
         x: F,
@@ -308,22 +307,24 @@ impl VelloGenerator {
     }
 }
 
-fn convert_line_cap_from_roughr_to_vello(roughr_line_cap: Option<roughr::core::LineCap>) -> Cap {
+fn convert_line_cap_from_roughr_to_vello(
+    roughr_line_cap: Option<vruffr_core::core::LineCap>,
+) -> Cap {
     match roughr_line_cap {
-        Some(roughr::core::LineCap::Butt) => Cap::Butt,
-        Some(roughr::core::LineCap::Round) => Cap::Round,
-        Some(roughr::core::LineCap::Square) => Cap::Square,
+        Some(vruffr_core::core::LineCap::Butt) => Cap::Butt,
+        Some(vruffr_core::core::LineCap::Round) => Cap::Round,
+        Some(vruffr_core::core::LineCap::Square) => Cap::Square,
         None => Cap::Butt,
     }
 }
 
 fn convert_line_join_from_roughr_to_vello(
-    roughr_line_join: Option<roughr::core::LineJoin>,
+    roughr_line_join: Option<vruffr_core::core::LineJoin>,
 ) -> Join {
     match roughr_line_join {
-        Some(roughr::core::LineJoin::Miter { limit: _ }) => Join::Miter, // Kurbo doesn't store limit in enum
-        Some(roughr::core::LineJoin::Round) => Join::Round,
-        Some(roughr::core::LineJoin::Bevel) => Join::Bevel,
+        Some(vruffr_core::core::LineJoin::Miter { limit: _ }) => Join::Miter, // Kurbo doesn't store limit in enum
+        Some(vruffr_core::core::LineJoin::Round) => Join::Round,
+        Some(vruffr_core::core::LineJoin::Bevel) => Join::Bevel,
         None => Join::Miter,
     }
 }

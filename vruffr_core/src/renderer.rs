@@ -6,8 +6,8 @@ use num_traits::{Float, FloatConst, FromPrimitive};
 use svg_path_ops::{absolutize, normalize};
 use svgtypes::{PathParser, PathSegment};
 
-use super::core::{Options, _c};
-use crate::core::{FillStyle, Op, OpSet, OpSetType, OpType, _cc};
+use super::core::{_c, Options};
+use crate::core::{_cc, FillStyle, Op, OpSet, OpSetType, OpType};
 use crate::filler::get_filler;
 use crate::filler::FillerType::{
     DashedFiller, DotFiller, HatchFiller, ScanLineHachure, ZigZagFiller, ZigZagLineFiller,
@@ -1228,7 +1228,7 @@ mod test {
     use plotlib::style::{PointMarker, PointStyle};
     use plotlib::view::ContinuousView;
 
-    use super::{EllipseParams, _compute_ellipse_points, _curve};
+    use super::{_compute_ellipse_points, _curve, EllipseParams};
     use crate::core::{Op, OpSet, OpSetType, OpType, Options, OptionsBuilder};
 
     fn get_default_options() -> Options {

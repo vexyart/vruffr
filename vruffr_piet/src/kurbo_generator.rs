@@ -75,7 +75,7 @@ impl<F: Float + Trig> KurboDrawable<F> {
                     ctx.save().expect("Failed to save render context");
                     if self.options.stroke_line_dash.is_some() {
                         let stroke_line_dash =
-                            self.options.stroke_line_dash.clone().unwrap_or(Vec::new());
+                            self.options.stroke_line_dash.clone().unwrap_or_default();
                         let mut ss = StrokeStyle::new();
                         ss.set_dash_pattern(stroke_line_dash.as_slice());
                         ss.set_dash_offset(self.options.stroke_line_dash_offset.unwrap_or(1.0f64));
@@ -289,6 +289,7 @@ impl KurboGenerator {
         drawable.to_kurbo_drawable()
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn arc<F: Trig + Float + FromPrimitive>(
         &self,
         x: F,
@@ -354,23 +355,23 @@ impl KurboGenerator {
 }
 
 fn convert_line_cap_from_roughr_to_piet(
-    roughr_line_cap: Option<roughr::core::LineCap>,
+    roughr_line_cap: Option<vruffr_core::core::LineCap>,
 ) -> piet::LineCap {
     match roughr_line_cap {
-        Some(roughr::core::LineCap::Butt) => piet::LineCap::Butt,
-        Some(roughr::core::LineCap::Round) => piet::LineCap::Round,
-        Some(roughr::core::LineCap::Square) => piet::LineCap::Square,
+        Some(vruffr_core::core::LineCap::Butt) => piet::LineCap::Butt,
+        Some(vruffr_core::core::LineCap::Round) => piet::LineCap::Round,
+        Some(vruffr_core::core::LineCap::Square) => piet::LineCap::Square,
         None => piet::LineCap::Butt,
     }
 }
 
 fn convert_line_join_from_roughr_to_piet(
-    roughr_line_join: Option<roughr::core::LineJoin>,
+    roughr_line_join: Option<vruffr_core::core::LineJoin>,
 ) -> LineJoin {
     match roughr_line_join {
-        Some(roughr::core::LineJoin::Miter { limit }) => LineJoin::Miter { limit },
-        Some(roughr::core::LineJoin::Round) => LineJoin::Round,
-        Some(roughr::core::LineJoin::Bevel) => LineJoin::Bevel,
+        Some(vruffr_core::core::LineJoin::Miter { limit }) => LineJoin::Miter { limit },
+        Some(vruffr_core::core::LineJoin::Round) => LineJoin::Round,
+        Some(vruffr_core::core::LineJoin::Bevel) => LineJoin::Bevel,
         None => LineJoin::Miter { limit: LineJoin::DEFAULT_MITER_LIMIT },
     }
 }

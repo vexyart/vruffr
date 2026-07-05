@@ -5,6 +5,34 @@ All notable changes to vruffr will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.7] - 2026-07-05
+
+### Fixed
+
+- **CI was broken:** the clippy, test, and docs jobs referenced crate names that
+  no longer exist (`roughr`, `rough_tiny_skia`) after the rename to
+  `vruffr-core` / `vruffr-skia`. Every gated job would have failed with
+  "package ID specification did not match any packages". Renamed to the real
+  packages and widened the clippy/check gate to `--workspace --lib`.
+- **piet and vello backends did not compile:** both still referenced
+  `roughr::core::LineCap` / `LineJoin` (leftover from the rough-rs fork) despite
+  depending on `vruffr-core`. Repointed to `vruffr_core::core::*` and cleared the
+  residual clippy lints (`unwrap_or_default`, `unnecessary_cast`, `map_clone`,
+  `too_many_arguments`). All four rendering backends now build warning-free.
+- Corrected stale crate names (`roughr`, `rough_piet`, `rough_vello`) throughout
+  the architecture reference docs.
+
+### Changed
+
+- Normalized formatting across the workspace with stable `rustfmt` so
+  `cargo fmt --all --check` passes in CI (the tree was previously formatted with
+  nightly-only options that CI's stable toolchain does not apply).
+
+### Added
+
+- Project icon at `docs/assets/icon.png` (sourced from `src_docs/md/assets/`),
+  wired in as the MkDocs logo and favicon.
+
 ## [2.0.6] - 2025-12-31
 
 ### Security

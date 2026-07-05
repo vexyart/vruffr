@@ -26,7 +26,7 @@ Optional preprocessing steps:
 - **Deduplication**: Removes stacked duplicate paths
 - **Path signature**: Computes bbox, length, vertex count, hash
 
-### 3. Sketch (roughr)
+### 3. Sketch (vruffr-core)
 
 Each path is transformed into sketch-style operations:
 
@@ -37,7 +37,7 @@ Each path is transformed into sketch-style operations:
 Core types:
 
 ```rust
-// roughr::core
+// vruffr_core::core
 pub struct Options {
     pub roughness: f64,
     pub bowing: f64,
@@ -45,16 +45,16 @@ pub struct Options {
     // ...
 }
 
-// roughr::generator
+// vruffr_core::generator
 pub struct Generator { /* ... */ }
 ```
 
-### 4. Render (rough_tiny_skia)
+### 4. Render (vruffr-skia)
 
 Sketch operations are rendered to pixels using `tiny-skia`:
 
 ```rust
-// rough_tiny_skia
+// vruffr-skia
 pub fn draw(canvas: &mut Pixmap, drawable: &Drawable, paint: &Paint)
 ```
 
@@ -69,9 +69,9 @@ Results are written as:
 
 ```
 vruffr-cli
-    ├── roughr (core primitives)
+    ├── vruffr-core (core primitives)
     │   └── points_on_curve
-    ├── rough_tiny_skia (rendering)
+    ├── vruffr-skia (rendering)
     │   └── tiny-skia
     ├── svg_path_ops
     ├── usvg (SVG parsing)
@@ -130,13 +130,13 @@ pub trait Drawable {
 
 Existing backends:
 
-- `rough_tiny_skia`: CPU rasterization
-- `rough_piet`: Cross-platform 2D (uses CoreGraphics on macOS)
-- `rough_vello`: GPU-accelerated (experimental)
+- `vruffr-skia`: CPU rasterization
+- `vruffr-piet`: Cross-platform 2D (uses CoreGraphics on macOS)
+- `vruffr-vello`: GPU-accelerated (experimental)
 
 ### Adding Fill Styles
 
-Extend `SketchFillStyle` and implement in `roughr::filler`:
+Extend `SketchFillStyle` and implement in `vruffr_core::filler`:
 
 ```rust
 pub enum SketchFillStyle {

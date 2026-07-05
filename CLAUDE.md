@@ -26,15 +26,19 @@ cargo build --release
 # Run tests
 cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 
-# Format and lint
+# Format and lint (all crate libs must be warning-free)
 cargo fmt
-cargo clippy -p vruffr-core -p vruffr-skia -p vruffr-cli -- -D warnings
+cargo clippy --workspace --lib -- -D warnings
+cargo clippy -p vruffr-cli --all-targets -- -D warnings
 
 # Full quality check
-cargo fmt --check && cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
+cargo fmt --check && cargo clippy --workspace --lib -- -D warnings && cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
 ```
 
-Note: `svg_path_ops` has pre-existing clippy warnings from the original fork.
+Note: CI lints every crate's library with `--workspace --lib` to avoid the
+system dependencies (Cairo, GPU) that only the piet/vello dev-dependencies and
+examples pull in. Run tests with `-p vruffr-core -p vruffr-skia -p vruffr-cli`
+for the same reason (120 tests, doctests included).
 
 ## Key Crates
 
