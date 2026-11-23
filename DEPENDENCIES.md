@@ -49,6 +49,9 @@ Dependencies used in vruffr with justification.
 
 ## Dev Dependencies
 
+The documentation build uses the `fly-january==0.1.1` MkDocs theme and
+`mkdocs-minify-plugin` for HTML minification.
+
 | Dependency | Version | Purpose |
 |------------|---------|---------|
 | `tempfile` | 3.x | Temporary files in tests |

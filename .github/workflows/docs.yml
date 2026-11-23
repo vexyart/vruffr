@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'src_docs/**'
+      - 'build.sh'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 
@@ -24,22 +25,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install MkDocs
-        run: |
-          pip install mkdocs-material mkdocs-minify-plugin
+      - uses: astral-sh/setup-uv@v7
 
       - name: Build docs
-        run: |
-          cd src_docs
-          mkdocs build -d ../docs
-
-      - name: Copy playground
-        run: |
-          cp src_docs/md/playground.html docs/
+        run: ./build.sh docs
 
       - uses: actions/upload-pages-artifact@v3
         with:

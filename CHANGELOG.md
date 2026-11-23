@@ -5,6 +5,17 @@ All notable changes to vruffr will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Site now uses the fly-january 0.1.1 theme (chrome: none).
+
+### Fixed
+
+- Updated the crate names in `./test.sh` and `./build.sh test` so the local
+  test commands select the same packages as CI.
+
 ## [2.0.7] - 2026-07-05
 
 ### Fixed

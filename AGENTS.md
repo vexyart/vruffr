@@ -29,6 +29,12 @@ cargo run -- input.svg output.png
 cargo fmt --check && cargo clippy -- -D warnings && cargo test
 ```
 
+### Documentation site
+
+Run `./build.sh docs` to build `src_docs/mkdocs.yml` in strict mode with
+`uvx` and Python 3.13. Edit pages in `src_docs/md/`. Keep
+`extra.fly.chrome: none` for this unofficial site.
+
 ### Working with External Dependencies
 
 External libraries in `ext/` are git submodules or vendored code:

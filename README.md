@@ -131,6 +131,11 @@ pixmap.save_png("output.png")?;
 | `points_on_curve` | Bezier curve utilities |
 | `svg_path_ops` | SVG path manipulation |
 
+## Documentation
+
+With `uv` installed, run `./build.sh docs` to build the site in strict mode.
+The output is in `docs/`. The site uses fly-january 0.1.1 with the vruffr icon.
+
 ## License
 
 MIT License - see [LICENSE](LICENSE).

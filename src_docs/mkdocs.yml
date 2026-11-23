@@ -2,11 +2,13 @@
 site_name: vruffr
 site_description: Convert SVG to hand-drawn sketch-style output
 site_url: https://vexyart.github.io/vruffr/
+docs_dir: md
+site_dir: ../docs
 repo_url: https://github.com/vexyart/vruffr
-repo_name: vexyart/vruffr
+repo_name: vruffr
 
 theme:
-  name: material
+  name: fly-january
   logo: assets/icon.png
   favicon: assets/icon.png
   palette:
@@ -35,6 +37,7 @@ theme:
 
 plugins:
   - search
+  - fly
   - minify:
       minify_html: true
 
@@ -72,6 +75,8 @@ nav:
   - Playground: playground.html
 
 extra:
+  fly:
+    chrome: none
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/vexyart/vruffr

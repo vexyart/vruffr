@@ -15,13 +15,13 @@ fail() { echo -e "${RED}FAIL:${NC} $1" >&2; exit 1; }
 
 quick_check() {
     log "Format check (vruffr packages only)"
-    cargo fmt -p roughr -p rough_tiny_skia -p vruffr-cli --check || fail "cargo fmt --check failed"
+    cargo fmt -p vruffr-core -p vruffr-skia -p vruffr-cli --check || fail "cargo fmt --check failed"
 
     log "Clippy (CLI only - upstream crates have pre-existing warnings)"
     cargo clippy -p vruffr-cli --no-deps -- -D warnings || fail "clippy failed"
 
     log "Tests"
-    cargo test -p roughr -p rough_tiny_skia -p vruffr-cli --quiet || fail "tests failed"
+    cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli --quiet || fail "tests failed"
 
     echo ""
     log "All checks passed!"

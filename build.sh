@@ -62,14 +62,8 @@ cmd_universal() {
 
 cmd_docs() {
     log "Building documentation"
-    if ! command -v mkdocs &> /dev/null; then
-        warn "mkdocs not found. Installing..."
-        pip install mkdocs-material mkdocs-minify-plugin
-    fi
-    cd src_docs
-    mkdocs build -d ../docs
-    cd ..
-    cp src_docs/md/playground.html docs/
+    uvx --python 3.13 --with fly-january==0.1.1 --with mkdocs-minify-plugin \
+        mkdocs build --strict --config-file src_docs/mkdocs.yml
     log "Docs built: docs/"
 }
 
@@ -108,8 +102,8 @@ cmd_python() {
 cmd_test() {
     log "Running tests"
     cargo fmt --check
-    cargo clippy -p roughr -p rough_tiny_skia -p vruffr-cli -- -D warnings
-    cargo test -p roughr -p rough_tiny_skia -p vruffr-cli
+    cargo clippy -p vruffr-core -p vruffr-skia -p vruffr-cli -- -D warnings
+    cargo test -p vruffr-core -p vruffr-skia -p vruffr-cli
     log "All tests passed!"
 }
 
@@ -123,10 +117,10 @@ cmd_clean() {
 cmd_all() {
     cmd_release
     cmd_test
-    if command -v mkdocs &> /dev/null; then
+    if command -v uvx &> /dev/null; then
         cmd_docs
     else
-        warn "Skipping docs (mkdocs not installed)"
+        warn "Skipping docs (uvx not installed)"
     fi
 }
 
