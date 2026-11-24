@@ -62,7 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Paper texture overlay**: `--paper-texture` flag (0.0-1.0)
+- Added the `--paper-texture` overlay (0.0–1.0) in `3897501`, covered by `test_paper_texture_effect`.
   - Multi-octave procedural noise for organic paper-like surface
   - Smoothstep interpolation for natural blending
   - Available in CLI, WASM, and Python bindings
@@ -72,7 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Suppressed clippy warnings in forked svg_path_ops code via crate-level allows
-- Updated all crate metadata for crates.io publication readiness
+- Updated crates.io metadata in `92a1df7` and aligned the vruffr crate versions in `f7fa7d4`.
 
 ## [2.0.4] - 2025-12-28
 
