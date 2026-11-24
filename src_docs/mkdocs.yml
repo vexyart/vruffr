@@ -8,7 +8,7 @@ repo_url: https://github.com/vexyart/vruffr
 repo_name: vruffr
 
 theme:
-  name: fly-january
+  name: fly-january-remote
   logo: assets/icon.png
   favicon: assets/icon.png
   palette:

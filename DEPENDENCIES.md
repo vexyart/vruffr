@@ -49,7 +49,7 @@ Dependencies used in vruffr with justification.
 
 ## Dev Dependencies
 
-The documentation build uses the fly-january 0.3.0 or later MkDocs theme and
+The documentation build uses fly-january 0.4.0 or later (remote theme assets) and
 `mkdocs-minify-plugin` for HTML minification.
 
 | Dependency | Version | Purpose |
