@@ -6,7 +6,7 @@ v2.0.6 production-ready. All phases complete.
 
 ### Quick Commands
 
-`./build.sh docs` builds `src_docs/md/` into `docs/` with fly-january 0.1.1
+`./build.sh docs` builds `src_docs/md/` into `docs/` with fly-january 0.2.1
 in strict mode. The Pages workflow runs the same command.
 
 ```bash

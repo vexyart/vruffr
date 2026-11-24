@@ -62,7 +62,7 @@ cmd_universal() {
 
 cmd_docs() {
     log "Building documentation"
-    uvx --python 3.13 --with fly-january==0.1.1 --with mkdocs-minify-plugin \
+    uvx --python 3.13 --with fly-january==0.2.1 --with mkdocs-minify-plugin \
         mkdocs build --strict --config-file src_docs/mkdocs.yml
     log "Docs built: docs/"
 }

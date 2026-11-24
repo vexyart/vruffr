@@ -134,7 +134,7 @@ pixmap.save_png("output.png")?;
 ## Documentation
 
 With `uv` installed, run `./build.sh docs` to build the site in strict mode.
-The output is in `docs/`. The site uses fly-january 0.1.1 with the vruffr icon.
+The output is in `docs/`. The site uses fly-january 0.2.1 with the vruffr icon.
 
 ## License
 
